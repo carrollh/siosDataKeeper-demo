@@ -76,8 +76,8 @@
       }
     ],
     "configuration": {
-      "vnetwithDNSTemplateURL": "[concat(variables('baseUrl'),'/Templates/vnet-with-dns-server.json')]",
-      "nicTemplateURL": "[concat(variables('baseUrl'),'/Templates/nic.json')]",
+      "vnetwithDNSTemplateURL": "[concat(variables('baseUrl'),'/Templates/creatingVNetWithDNSServer.json.json')]",
+      "nicTemplateURL": "[concat(variables('baseUrl'),'/Templates/creatingSingleNIC.json')]",
       "adPDCModulesURL": "[concat(variables('baseUrl'),'/Scripts/CreateADPDC.ps1.zip')]",
       "adPDCConfigurationFunction": "CreateADPDC.ps1\\CreateADPDC",
       "adBDCModulesURL": "[concat(variables('baseUrl'),'/Scripts/CreateADBDC.ps1.zip')]",
@@ -90,8 +90,8 @@
       "provisioningBackupDCURL": "[concat(variables('baseUrl'),'/Templates/provisioningBackupDomainController.json')]",
       "creatingStorageAccounts": "[concat(variables('baseUrl'),'/Templates/creatingStorageAccounts.json')]",
       "creatingSiosVMsURL": "[concat(variables('baseUrl'),'/Templates/creatingSiosVMs.json')]",
-      "vnetSetupURL": "[concat(variables('baseUrl'),'/Templates/vnet-new.json')]",
-      "creatingNicsUrl": "[concat(variables('baseUrl'),'/Templates/creatingNICS.json')]"
+      "vnetSetupURL": "[concat(variables('baseUrl'),'/Templates/creatingNewVNet.json')]",
+      "creatingNicsUrl": "[concat(variables('baseUrl'),'/Templates/creatingNICs.json')]"
     }
   },
    "resources":[
