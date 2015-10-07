@@ -1,0 +1,102 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "siosVMName": {
+      "type": "string"
+    },
+    "location": {
+      "type": "string"
+    },
+    "globallyUniqueIdentifier": {
+      "type": "string"
+    },
+    "availabilitySet" : {
+      "type" : "string"
+    },
+    "siosVMSize" : {
+      "type" : "string"
+    },
+    "adminUsername" : {
+      "type" : "string"
+    },
+    "adminPassword" : {
+      "type" : "securestring"
+    },
+    "vmContainerName" : {
+      "type" : "string"
+    }
+  },
+  "resources": [
+    {
+      "apiVersion": "2015-06-15",
+      "type": "Microsoft.Compute/virtualMachines",
+      "name": "[concat(parameters('siosVMName'), copyIndex())]",
+      "location": "[parameters('location')]",
+      "copy": {
+        "name": "siosVirtualMachineLoop",
+        "count": 2
+      },
+	  "plan": {
+        "name": "bring_your_own_license",
+        "publisher": "sios_datakeeper",
+        "product": "sios-datakeeper-8"
+      },
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "[parameters('siosVMSize')]"
+        },
+        "availabilitySet": {
+          "id": "[parameters('availabilitySet')]"
+        },
+        "osProfile": {
+          "computerName": "[concat(parameters('siosVMName'), copyIndex())]",
+          "adminUsername": "[parameters('adminUsername')]",
+          "adminPassword": "[parameters('adminPassword')]"
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "sios_datakeeper",
+            "offer": "sios-datakeeper-8",
+            "sku": "bring_your_own_license",
+            "version": "latest"
+          },
+          "osDisk": {
+            "name": "osdisk",
+            "vhd": {
+              "uri": "[concat('http://',parameters('globallyUniqueIdentifier'),'1.blob.core.windows.net/',parameters('vmContainerName'),'/',parameters('siosVMName'), copyindex(), '-osdisk.vhd')]"
+            },
+            "caching": "ReadWrite",
+            "createOption": "FromImage"
+          },
+          "dataDisks": [
+            {
+              "vhd": {
+                "uri":"[concat('http://',parameters('globallyUniqueIdentifier'),'1.blob.core.windows.net/',parameters('vmContainerName'),'/', parameters('siosVMName'), copyindex(), '-Data-1.vhd')]"
+              },
+              "name":"[concat(parameters('siosVMName'), copyindex(),'-data-disk1')]",
+              "caching" : "None",
+              "createOption": "empty",
+              "diskSizeGB": 100,
+              "lun": 0
+            }
+          ]
+		},
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId(resourceGroup().name,'Microsoft.Network/networkInterfaces',concat(parameters('siosVMName'), copyindex(),'-nic'))]"
+            }
+          ]
+        },
+        "diagnosticsProfile": {
+          "bootDiagnostics": {
+            "enabled": "true",
+            "storageUri": "[concat('http://',parameters('globallyUniqueIdentifier'),'diag.blob.core.windows.net')]"
+          }
+        }
+      }
+    }
+  ],
+  "outputs": {}
+}
