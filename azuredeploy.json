@@ -85,7 +85,7 @@
       "createClusterModulesURL": "[concat(variables('baseUrl'),'/Scripts/CreateFailoverCluster.ps1.zip')]",
       "createClusterConfigurationFunction": "CreateFailoverCluster.ps1\\CreateFailoverCluster",
       "rdpIPAdressSetupURL": "[concat(variables('baseUrl'),'/Templates/creatingPublicIP-RDP.json')]",
-      "availabilitySetSetupURL": "[concat(variables('baseUrl'),'/Templates/availabilitySets.json')]",
+      "availabilitySetSetupURL": "[concat(variables('baseUrl'),'/Templates/creatingAvailabilitySets.json')]",
       "provisioningPrimaryDCURL": "[concat(variables('baseUrl'),'/Templates/provisioningPrimaryDomainController.json')]",
       "provisioningBackupDCURL": "[concat(variables('baseUrl'),'/Templates/provisioningBackupDomainController.json')]",
       "creatingStorageAccounts": "[concat(variables('baseUrl'),'/Templates/creatingStorageAccounts.json')]",
