@@ -90,7 +90,9 @@
       "provisioningBackupDCURL": "[concat(variables('baseUrl'),'/Templates/provisioningBackupDomainController.json')]",
       "creatingStorageAccounts": "[concat(variables('baseUrl'),'/Templates/creatingStorageAccounts.json')]",
       "creatingSiosVMsURL": "[concat(variables('baseUrl'),'/Templates/creatingSiosVMs.json')]",
-      "vnetSetupURL": "[concat(variables('baseUrl'),'/Templates/creatingNewVNet.json')]",
+      "siosVMModulesURL": "[concat(variables('baseUrl'),'/Scripts/CreateSiosVM.ps1.zip')]",
+	  "siosVMConfigurationFunction":"CreateSiosVM.ps1\\CreateSiosVM",
+	  "vnetSetupURL": "[concat(variables('baseUrl'),'/Templates/creatingNewVNet.json')]",
       "creatingNicsUrl": "[concat(variables('baseUrl'),'/Templates/creatingNICs.json')]"
     }
   },
@@ -480,7 +482,13 @@
                },
                "vmContainerName":{
                   "value":"[variables('vmSettings').vmContainerName]"
-               }
+               },
+			   "siosVMConfigurationFunction":{
+				   "value":"[variables('configuration').siosVMConfigurationFunction]"
+			   },
+               "siosVMModulesURL":{
+                  "value":"[variables('configuration').siosVMModulesURL]"
+               }			   
             }
          }
       }
