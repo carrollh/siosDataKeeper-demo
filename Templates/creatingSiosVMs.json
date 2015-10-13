@@ -11,27 +11,33 @@
     "globallyUniqueIdentifier": {
       "type": "string"
     },
-    "availabilitySet" : {
-      "type" : "string"
+    "availabilitySet": {
+      "type": "string"
     },
-    "siosVMSize" : {
-      "type" : "string"
+    "siosVMSize": {
+      "type": "string"
     },
-    "adminUsername" : {
-      "type" : "string"
+    "adminUsername": {
+      "type": "string"
     },
-    "adminPassword" : {
-      "type" : "securestring"
+    "adminPassword": {
+      "type": "securestring"
     },
-    "vmContainerName" : {
-      "type" : "string"
+    "vmContainerName": {
+      "type": "string"
     },
-	"siosVMConfigurationFunction" : {
-	  "type" : "string"
-	},
-	"siosVMModulesURL":{
-	  "type" : "string"
-	}
+    "siosVMConfigurationFunction": {
+      "type": "string"
+    },
+    "siosVMModulesURL": {
+      "type": "string"
+    },
+    "_artifactsLocation": {
+      "type": "string"
+    },
+    "_artifactsLocationSasToken": {
+      "type": "securestring"
+    }
   },
   "resources": [
     {
@@ -43,7 +49,7 @@
         "name": "siosVirtualMachineLoop",
         "count": 2
       },
-			"plan": {
+      "plan": {
         "name": "bring_your_own_license",
         "publisher": "sios_datakeeper",
         "product": "sios-datakeeper-8"
@@ -78,16 +84,16 @@
           "dataDisks": [
             {
               "vhd": {
-                "uri":"[concat('http://',parameters('globallyUniqueIdentifier'),'1.blob.core.windows.net/',parameters('vmContainerName'),'/', parameters('siosVMName'), copyIndex(), '-Data-1.vhd')]"
+                "uri": "[concat('http://',parameters('globallyUniqueIdentifier'),'1.blob.core.windows.net/',parameters('vmContainerName'),'/', parameters('siosVMName'), copyIndex(), '-Data-1.vhd')]"
               },
-              "name":"[concat(parameters('siosVMName'), copyIndex(),'-data-disk1')]",
-              "caching" : "None",
+              "name": "[concat(parameters('siosVMName'), copyIndex(),'-data-disk1')]",
+              "caching": "None",
               "createOption": "empty",
               "diskSizeGB": 100,
               "lun": 0
             }
           ]
-				},
+        },
         "networkProfile": {
           "networkInterfaces": [
             {
@@ -101,27 +107,35 @@
             "storageUri": "[concat('http://',parameters('globallyUniqueIdentifier'),'diag.blob.core.windows.net')]"
           }
         }
-      }
-		},
-		{
-			"type": "Microsoft.Compute/virtualMachines/extensions",
-			"name": "[concat(parameters('siosVMName'),'0','/ProvisionDataDisks')]",
-			"apiVersion": "2015-06-15",
-			"location": "[parameters('location')]",
-			"dependsOn":[
-				"[concat('Microsoft.Compute/virtualMachines/',parameters('siosVMName'),copyIndex())]"
-			],
-			"properties": {
-				"publisher": "Microsoft.Powershell",
-				"type": "DSC",
-				"typeHandlerVersion": "2.6",
-				"autoUpgradeMinorVersion": true,
-				"settings": {
-				"modulesURL": "[parameters('siosVMModulesURL')]",
-				"configurationFunction": "[parameters('siosVMConfigurationFunction')]"
-				}
-			}
-	  }
-	],
-  "outputs": {}
+      },
+      "resources": [
+        {
+          "type": "Microsoft.Compute/virtualMachines/extensions",
+          "name": "[concat(parameters('siosVMName'),'0','/ProvisionDataDisks')]",
+          "apiVersion": "2015-06-15",
+          "location": "[parameters('location')]",
+          "dependsOn": [
+            "[concat('Microsoft.Compute/virtualMachines/',parameters('siosVMName'),copyIndex())]"
+          ],
+          "tags": {
+              "displayName": "Provisioning data disks"
+          },
+          "properties": {
+            "publisher": "Microsoft.Powershell",
+            "type": "DSC",
+            "typeHandlerVersion": "2.6",
+            "autoUpgradeMinorVersion": true,
+            "settings": {
+              "modulesURL": "[parameters('siosVMModulesURL')]",
+              "configurationFunction": "[parameters('siosVMConfigurationFunction')]",
+              "properties": {
+                  "nodeName": "[concat(parameters('siosVMName'), copyIndex())]"
+              }
+            }
+          }
+        }
+      ]
+    }
+  ],
+	"outputs": { }
 }
