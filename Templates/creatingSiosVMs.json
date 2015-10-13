@@ -70,7 +70,7 @@
           "osDisk": {
             "name": "osdisk",
             "vhd": {
-              "uri": "[concat('http://',parameters('globallyUniqueIdentifier'),'1.blob.core.windows.net/',parameters('vmContainerName'),'/',parameters('siosVMName'), copyindex(), '-osdisk.vhd')]"
+              "uri": "[concat('http://',parameters('globallyUniqueIdentifier'),'1.blob.core.windows.net/',parameters('vmContainerName'),'/',parameters('siosVMName'), copyIndex(), '-osdisk.vhd')]"
             },
             "caching": "ReadWrite",
             "createOption": "FromImage"
@@ -78,9 +78,9 @@
           "dataDisks": [
             {
               "vhd": {
-                "uri":"[concat('http://',parameters('globallyUniqueIdentifier'),'1.blob.core.windows.net/',parameters('vmContainerName'),'/', parameters('siosVMName'), copyindex(), '-Data-1.vhd')]"
+                "uri":"[concat('http://',parameters('globallyUniqueIdentifier'),'1.blob.core.windows.net/',parameters('vmContainerName'),'/', parameters('siosVMName'), copyIndex(), '-Data-1.vhd')]"
               },
-              "name":"[concat(parameters('siosVMName'), copyindex(),'-data-disk1')]",
+              "name":"[concat(parameters('siosVMName'), copyIndex(),'-data-disk1')]",
               "caching" : "None",
               "createOption": "empty",
               "diskSizeGB": 100,
@@ -91,7 +91,7 @@
         "networkProfile": {
           "networkInterfaces": [
             {
-              "id": "[resourceId(resourceGroup().name,'Microsoft.Network/networkInterfaces',concat(parameters('siosVMName'), copyindex(),'-nic'))]"
+              "id": "[resourceId(resourceGroup().name,'Microsoft.Network/networkInterfaces',concat(parameters('siosVMName'), copyIndex(),'-nic'))]"
             }
           ]
         },
@@ -105,11 +105,12 @@
     "resources" :[
       {
         "type": "Microsoft.Compute/virtualMachines/extensions",
-        "name": "[concat(parameters('siosVMName'), copyindex(),'/ProvisionDataDisks')]",
+        "name": "[concat(parameters('siosVMName'), copyIndex(),'/ProvisionDataDisks')]",
         "apiVersion": "2015-06-15",
         "location": "[parameters('location')]",
         "dependsOn":[
-          "[resourceId('Microsoft.Compute/virtualMachines', parameters('siosVMName'), copyindex())]"
+          "[resourceId('Microsoft.Compute/virtualMachines', parameters('siosVMName'), '0')]",
+		  "[resourceId('Microsoft.Compute/virtualMachines', parameters('siosVMName'), '1')]"
         ],
         "properties": {
           "publisher": "Microsoft.Powershell",
