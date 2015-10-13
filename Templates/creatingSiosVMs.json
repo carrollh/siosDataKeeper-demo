@@ -135,7 +135,12 @@
 									"password": "privateSettingsRef:AdminPassword"
 								}
 							}
-            }
+            },
+						"protectedSettings": {
+							"items": {
+								"adminPassword": "[parameters('adminPassword')]"
+							}
+						}
           }
         }
       ]
