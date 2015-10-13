@@ -2,13 +2,6 @@
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "globallyUniqueIdentifier": {
-      "type": "string",
-      "defaultValue": "datakeeper",
-      "metadata": {
-        "description": "The prefix of the new storage account created to store the VMs disks, different storage accounts will be created for AD and DataKeeper VMs"
-      }
-    },
     "adminUsername": {
       "type": "string",
       "defaultValue": "siosadmin",
@@ -25,6 +18,8 @@
     }
   },
   "variables": {
+		"resourceGroupName": "[resourceGroup().name]",
+		"globallyUniqueIdentifier": "[toLower(replace(variables('resourceGroupName'),'-demo',''))]",
     "location": "[resourceGroup().location]",
     "adVMSize": "Standard_A1",
     "siosVMSize": "Standard_A1",
@@ -91,8 +86,8 @@
       "creatingStorageAccounts": "[concat(variables('baseUrl'),'/Templates/creatingStorageAccounts.json')]",
       "creatingSiosVMsURL": "[concat(variables('baseUrl'),'/Templates/creatingSiosVMs.json')]",
       "siosVMModulesURL": "[concat(variables('baseUrl'),'/Scripts/CreateSiosVM.ps1.zip')]",
-	  "siosVMConfigurationFunction":"CreateSiosVM.ps1\\CreateSiosVM",
-	  "vnetSetupURL": "[concat(variables('baseUrl'),'/Templates/creatingNewVNet.json')]",
+			"siosVMConfigurationFunction":"CreateSiosVM.ps1\\CreateSiosVM",
+			"vnetSetupURL": "[concat(variables('baseUrl'),'/Templates/creatingNewVNet.json')]",
       "creatingNicsUrl": "[concat(variables('baseUrl'),'/Templates/creatingNICs.json')]"
     }
   },
@@ -112,7 +107,7 @@
                   "value":"[variables('location')]"
                },
                "globallyUniqueIdentifier":{
-                  "value":"[parameters('globallyUniqueIdentifier')]"
+                  "value":"[variables('globallyUniqueIdentifier')]"
                },
                "storageAccountType":{
                   "value":"[variables('storageAccountType')]"
@@ -267,7 +262,7 @@
                   "value":"[variables('location')]"
                },
                "globallyUniqueIdentifier":{
-                  "value":"[parameters('globallyUniqueIdentifier')]"
+                  "value":"[variables('globallyUniqueIdentifier')]"
                },
                "availabilitySet":{
                   "value":"[reference('CreatingAvailabilitySets').outputs.adAvailabilitySetName.value]"
@@ -366,7 +361,7 @@
                   "value":"[variables('location')]"
                },
                "globallyUniqueIdentifier":{
-                  "value":"[parameters('globallyUniqueIdentifier')]"
+                  "value":"[variables('globallyUniqueIdentifier')]"
                },
                "availabilitySet":{
                   "value":"[reference('CreatingAvailabilitySets').outputs.adAvailabilitySetName.value]"
@@ -466,7 +461,7 @@
                   "value":"[variables('location')]"
                },
                "globallyUniqueIdentifier":{
-                  "value":"[parameters('globallyUniqueIdentifier')]"
+                  "value":"[variables('globallyUniqueIdentifier')]"
                },
                "availabilitySet":{
                   "value":"[reference('CreatingAvailabilitySets').outputs.siosAvailabilitySetName.value]"
@@ -483,9 +478,9 @@
                "vmContainerName":{
                   "value":"[variables('vmSettings').vmContainerName]"
                },
-			   "siosVMConfigurationFunction":{
-				   "value":"[variables('configuration').siosVMConfigurationFunction]"
-			   },
+							 "siosVMConfigurationFunction":{
+								 "value":"[variables('configuration').siosVMConfigurationFunction]"
+							 },
                "siosVMModulesURL":{
                   "value":"[variables('configuration').siosVMModulesURL]"
                }			   
