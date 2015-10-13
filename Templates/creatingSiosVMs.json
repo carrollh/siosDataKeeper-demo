@@ -25,13 +25,7 @@
     },
     "vmContainerName" : {
       "type" : "string"
-    },
-	"siosVMConfigurationFunction" : {
-	  "type" : "string"
-	},
-	"siosVMModulesURL":{
-	  "type" : "string"
-	}
+    }
   },
   "resources": [
     {
@@ -101,29 +95,8 @@
             "storageUri": "[concat('http://',parameters('globallyUniqueIdentifier'),'diag.blob.core.windows.net')]"
           }
         }
-    },
-    "resources" :[
-      {
-        "type": "Microsoft.Compute/virtualMachines/extensions",
-        "name": "[concat(parameters('siosVMName'), copyIndex(),'/ProvisionDataDisks')]",
-        "apiVersion": "2015-06-15",
-        "location": "[parameters('location')]",
-        "dependsOn":[
-          "[resourceId('Microsoft.Compute/virtualMachines', parameters('siosVMName'), '0')]"
-        ],
-        "properties": {
-          "publisher": "Microsoft.Powershell",
-          "type": "DSC",
-          "typeHandlerVersion": "2.6",
-          "autoUpgradeMinorVersion": true,
-          "settings": {
-            "modulesURL": "[parameters('siosVMModulesURL')]",
-            "configurationFunction": "[parameters('siosVMConfigurationFunction')]",
-          }
-        }
       }
-    ]
-  }
+	}
   ],
   "outputs": {}
 }
