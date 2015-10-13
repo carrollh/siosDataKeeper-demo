@@ -17,6 +17,9 @@
     "siosVMSize": {
       "type": "string"
     },
+		"domainName": {
+			"type": "string"
+		},
     "adminUsername": {
       "type": "string"
     },
@@ -131,7 +134,7 @@
               "properties": {
 								"domainName": "[parameters('domainName')]",
 								"adminCreds":{
-									"userName": "[parameters('adminUserName')]",
+									"userName": "[parameters('adminUsername')]",
 									"password": "privateSettingsRef:AdminPassword"
 								}
 							}
