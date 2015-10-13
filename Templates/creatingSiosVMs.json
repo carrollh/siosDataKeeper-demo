@@ -129,8 +129,12 @@
               "modulesURL": "[parameters('siosVMModulesURL')]",
               "configurationFunction": "[parameters('siosVMConfigurationFunction')]",
               "properties": {
-                  "nodeName": "[concat(parameters('siosVMName'), copyIndex())]"
-              }
+								"domainName": "[parameters('domainName')]",
+								"adminCreds":{
+									"userName": "[parameters('adminUserName')]",
+									"password": "privateSettingsRef:AdminPassword"
+								}
+							}
             }
           }
         }
