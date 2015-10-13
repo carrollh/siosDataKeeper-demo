@@ -5,4 +5,8 @@
     <img src="http://azuredeploy.net/deploybutton.png"/>
 </a>
 
+<a href="https://azuredeploy.net" target="_blank">
+    <img src="http://azuredeploy.net/deploybutton.png"/>
+</a>
+
 This template creates a demo environment consisting of primary and secondary AD VMs and two SIOS DataKeeper nodes. All VMs are running Windows Server 2012 R2.
