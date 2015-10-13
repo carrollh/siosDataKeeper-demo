@@ -109,8 +109,7 @@
         "apiVersion": "2015-06-15",
         "location": "[parameters('location')]",
         "dependsOn":[
-          "[resourceId('Microsoft.Compute/virtualMachines', parameters('siosVMName'), '0')]",
-		  "[resourceId('Microsoft.Compute/virtualMachines', parameters('siosVMName'), '1')]"
+          "[resourceId('Microsoft.Compute/virtualMachines', parameters('siosVMName'), '0')]"
         ],
         "properties": {
           "publisher": "Microsoft.Powershell",
