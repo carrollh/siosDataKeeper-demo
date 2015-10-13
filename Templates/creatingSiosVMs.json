@@ -30,7 +30,7 @@
 	  "type" : "string"
 	},
 	"siosVMModulesURL":{
-	  "value":"[variables('configuration').siosVMModulesURL]"
+	  "type" : "string"
 	}
   },
   "resources": [
