@@ -27,10 +27,10 @@
   "variables": {
     "location": "[resourceGroup().location]",
 		"adminBase64Password": "[base64(parameters('adminPassword'))]",
-    "adVMSize": "Standard_DS1",
-    "siosVMSize": "Standard_DS1",
+    "adVMSize": "Standard_A1",
+    "siosVMSize": "Standard_A1",
     "domainName": "datakeeper.local",
-    "storageAccountType": "Premium_LRS",
+    "storageAccountType": "Standard_LRS",
     "pdcRdpIPAddressName": "pdcRdpIP",
     "bdcRdpIPAddressName": "bdcRdpIP",
     "siosVMRdpIPAddressNamePrefix": "sios",
