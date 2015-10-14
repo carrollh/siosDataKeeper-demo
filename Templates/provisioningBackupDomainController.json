@@ -8,7 +8,7 @@
     "location": {
       "type": "string"
     },
-    "globallyUniqueIdentifier": {
+    "newStorageAccountNamePrefix": {
       "type": "string"
     },
     "availabilitySet" : {
@@ -76,7 +76,7 @@
         "osDisk": {
           "name": "osdisk",
           "vhd": {
-            "uri": "[concat('http://',parameters('globallyUniqueIdentifier'),'0.blob.core.windows.net/',parameters('vmContainerName'),'/',parameters('adBDCVMName'),'-osdisk.vhd')]"
+            "uri": "[concat('http://',parameters('newStorageAccountNamePrefix'),'0.blob.core.windows.net/',parameters('vmContainerName'),'/',parameters('adBDCVMName'),'-osdisk.vhd')]"
           },
           "caching": "ReadWrite",
           "createOption": "FromImage"
@@ -84,7 +84,7 @@
         "dataDisks": [
           {
             "vhd": {
-              "uri":"[concat('http://',parameters('globallyUniqueIdentifier'),'0.blob.core.windows.net/',parameters('vmContainerName'),'/', parameters('adBDCVMName'),'data-1.vhd')]"
+              "uri":"[concat('http://',parameters('newStorageAccountNamePrefix'),'0.blob.core.windows.net/',parameters('vmContainerName'),'/', parameters('adBDCVMName'),'data-1.vhd')]"
               },
             "name":"[concat(parameters('adBDCVMName'),'-data-disk1')]",
             "createOption": "empty",
@@ -104,7 +104,7 @@
       "diagnosticsProfile": {
         "bootDiagnostics": {
           "enabled": "true",
-          "storageUri": "[concat('http://',parameters('globallyUniqueIdentifier'),'diag.blob.core.windows.net')]"
+          "storageUri": "[concat('http://',parameters('newStorageAccountNamePrefix'),'diag.blob.core.windows.net')]"
         }
       }
     },
