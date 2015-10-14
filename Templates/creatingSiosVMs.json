@@ -29,17 +29,11 @@
     "vmContainerName": {
       "type": "string"
     },
-    "siosVMConfigurationFunction": {
+    "prepareDataDisksModuleURL": {
       "type": "string"
     },
-    "siosVMModulesURL": {
+    "prepareDataDisksCommandStr": {
       "type": "string"
-    },
-    "_artifactsLocation": {
-      "type": "string"
-    },
-    "_artifactsLocationSasToken": {
-      "type": "securestring"
     }
   },
   "resources": [
@@ -111,42 +105,33 @@
           }
         }
       },
-      "resources": [
-        {
-          "type": "Microsoft.Compute/virtualMachines/extensions",
-          "name": "[concat(parameters('siosVMName'),'0','/ProvisionDataDisks')]",
-          "apiVersion": "2015-06-15",
-          "location": "[parameters('location')]",
-          "dependsOn": [
-            "[concat('Microsoft.Compute/virtualMachines/',parameters('siosVMName'),copyIndex())]"
-          ],
-          "tags": {
-              "displayName": "Provisioning data disks"
-          },
-          "properties": {
-            "publisher": "Microsoft.Powershell",
-            "type": "DSC",
-            "typeHandlerVersion": "2.6",
-            "autoUpgradeMinorVersion": true,
-            "settings": {
-              "modulesURL": "[parameters('siosVMModulesURL')]",
-              "configurationFunction": "[parameters('siosVMConfigurationFunction')]",
-              "properties": {
-								"domainName": "[parameters('domainName')]",
-								"adminCreds":{
-									"userName": "[parameters('adminUsername')]",
-									"password": "privateSettingsRef:AdminPassword"
-								}
-							}
-            },
-						"protectedSettings": {
-							"items": {
-								"adminPassword": "[parameters('adminPassword')]"
-							}
-						}
-          }
-        }
-      ]
+        "resources": [
+            {
+                "type": "Microsoft.Compute/virtualMachines/extensions",
+                "name": "[concat(parameters('siosVMName'), copyIndex(), '/configureSiosVM')]",
+                "apiVersion": "2015-06-15",
+                "location": "[parameters('location')]",
+                "dependsOn": [
+                    "[concat('Microsoft.Compute/virtualMachines/', concat(parameters('siosVMName'), copyIndex()))]"
+                ],
+                "copy": {
+                  "name": "SiosVMDiskPrepareLoop",
+                  "count": 2
+                },
+                "properties": {
+                    "publisher": "Microsoft.Compute",
+                    "type": "CustomScriptExtension",
+                    "typeHandlerVersion": "1.4",
+                    "autoUpgradeMinorVersion": true,
+                    "settings": {
+                        "fileUris": [
+                          "[parameters('prepareDataDisksModuleURL')]"
+                        ],
+                        "commandToExecute": "[parameters('prepareDataDisksCommandStr')]"
+                    }
+                }
+            }
+        ]
     }
   ],
 	"outputs": { }
