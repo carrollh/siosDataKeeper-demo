@@ -2,6 +2,13 @@
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
+    "newStorageAccountNamePrefix": {
+      "type": "string",
+      "defaultValue": "datakeeper",
+      "metadata": {
+        "description": "The prefix of the new storage account created to store the VMs disks, different storage accounts will be created for AD and DataKeeper VMs"
+      }
+    },
     "adminUsername": {
       "type": "string",
       "defaultValue": "siosadmin",
@@ -18,9 +25,8 @@
     }
   },
   "variables": {
-		"resourceGroupName": "[resourceGroup().name]",
-		"globallyUniqueIdentifier": "[toLower(replace(variables('resourceGroupName'),'-demo',''))]",
     "location": "[resourceGroup().location]",
+		"adminBase64Password": "[base64(parameters('adminPassword'))]",
     "adVMSize": "Standard_A1",
     "siosVMSize": "Standard_A1",
     "domainName": "datakeeper.local",
@@ -77,18 +83,16 @@
       "adPDCConfigurationFunction": "CreateADPDC.ps1\\CreateADPDC",
       "adBDCModulesURL": "[concat(variables('baseUrl'),'/Scripts/CreateADBDC.ps1.zip')]",
       "adBDCConfigurationFunction": "CreateADBDC.ps1\\CreateADBDC",
-      "createClusterModulesURL": "[concat(variables('baseUrl'),'/Scripts/CreateFailoverCluster.ps1.zip')]",
-      "createClusterConfigurationFunction": "CreateFailoverCluster.ps1\\CreateFailoverCluster",
       "rdpIPAdressSetupURL": "[concat(variables('baseUrl'),'/Templates/creatingPublicIP-RDP.json')]",
       "availabilitySetSetupURL": "[concat(variables('baseUrl'),'/Templates/creatingAvailabilitySets.json')]",
       "provisioningPrimaryDCURL": "[concat(variables('baseUrl'),'/Templates/provisioningPrimaryDomainController.json')]",
       "provisioningBackupDCURL": "[concat(variables('baseUrl'),'/Templates/provisioningBackupDomainController.json')]",
       "creatingStorageAccounts": "[concat(variables('baseUrl'),'/Templates/creatingStorageAccounts.json')]",
       "creatingSiosVMsURL": "[concat(variables('baseUrl'),'/Templates/creatingSiosVMs.json')]",
-      "siosVMModulesURL": "[concat(variables('baseUrl'),'/Scripts/CreateSiosVM.ps1.zip')]",
-			"siosVMConfigurationFunction":"CreateSiosVM.ps1\\CreateSiosVM",
-			"vnetSetupURL": "[concat(variables('baseUrl'),'/Templates/creatingNewVNet.json')]",
-      "creatingNicsUrl": "[concat(variables('baseUrl'),'/Templates/creatingNICs.json')]"
+      "vnetSetupURL": "[concat(variables('baseUrl'),'/Templates/creatingNewVNet.json')]",
+      "creatingNicsUrl": "[concat(variables('baseUrl'),'/Templates/creatingNICs.json')]",
+			"prepareDataDisksModuleURL": "[concat(variables('baseUrl'),'/Scripts/PrepareDataDisks.ps1')]",
+      "prepareDataDisksCommandStr": "[concat('powershell.exe -ExecutionPolicy Unrestricted -File PrepareDataDisks.ps1 -DomainFQDN ', variables('domainName'), ' -AdminUserName ', parameters('adminUsername'), ' -AdminBase64Password \"', variables('adminBase64Password'), '\"')]"
     }
   },
    "resources":[
@@ -106,8 +110,8 @@
                "location":{
                   "value":"[variables('location')]"
                },
-               "globallyUniqueIdentifier":{
-                  "value":"[variables('globallyUniqueIdentifier')]"
+               "newStorageAccountNamePrefix":{
+                  "value":"[parameters('newStorageAccountNamePrefix')]"
                },
                "storageAccountType":{
                   "value":"[variables('storageAccountType')]"
@@ -261,8 +265,8 @@
                "location":{
                   "value":"[variables('location')]"
                },
-               "globallyUniqueIdentifier":{
-                  "value":"[variables('globallyUniqueIdentifier')]"
+               "newStorageAccountNamePrefix":{
+                  "value":"[parameters('newStorageAccountNamePrefix')]"
                },
                "availabilitySet":{
                   "value":"[reference('CreatingAvailabilitySets').outputs.adAvailabilitySetName.value]"
@@ -360,8 +364,8 @@
                "location":{
                   "value":"[variables('location')]"
                },
-               "globallyUniqueIdentifier":{
-                  "value":"[variables('globallyUniqueIdentifier')]"
+               "newStorageAccountNamePrefix":{
+                  "value":"[parameters('newStorageAccountNamePrefix')]"
                },
                "availabilitySet":{
                   "value":"[reference('CreatingAvailabilitySets').outputs.adAvailabilitySetName.value]"
@@ -447,45 +451,48 @@
             "Microsoft.Resources/deployments/CreatingAvailabilitySets",
             "Microsoft.Resources/deployments/UpdatingDNStoPrimaryADVM"
          ],
-         "properties":{
-            "mode":"Incremental",
-            "templateLink":{
-               "uri":"[variables('configuration').creatingSiosVMsURL]",
-               "contentVersion":"1.0.0.0"
-            },
-            "parameters":{
-               "siosVMName":{
-                  "value":"[variables('vmSettings').siosVMName]"
-               },
-               "location":{
-                  "value":"[variables('location')]"
-               },
-               "globallyUniqueIdentifier":{
-                  "value":"[variables('globallyUniqueIdentifier')]"
-               },
-               "availabilitySet":{
-                  "value":"[reference('CreatingAvailabilitySets').outputs.siosAvailabilitySetName.value]"
-               },
-               "siosVMSize":{
-                  "value":"[variables('siosVMSize')]"
-               },
-               "adminUsername":{
-                  "value":"[parameters('adminUsername')]"
-               },
-               "adminPassword":{
-                  "value":"[parameters('adminPassword')]"
-               },
-               "vmContainerName":{
-                  "value":"[variables('vmSettings').vmContainerName]"
-               },
-							 "siosVMConfigurationFunction":{
-								 "value":"[variables('configuration').siosVMConfigurationFunction]"
-							 },
-               "siosVMModulesURL":{
-                  "value":"[variables('configuration').siosVMModulesURL]"
-               }			   
-            }
-         }
-      }
-   ]
+				"properties": {
+					"mode": "Incremental",
+					"templateLink": {
+						"uri": "[variables('configuration').creatingSiosVMsURL]",
+						"contentVersion": "1.0.0.0"
+					},
+					"parameters": {
+						"siosVMName": {
+							"value": "[variables('vmSettings').siosVMName]"
+						},
+						"location": {
+							"value": "[variables('location')]"
+						},
+						"newStorageAccountNamePrefix": {
+							"value": "[parameters('newStorageAccountNamePrefix')]"
+						},
+						"availabilitySet": {
+							"value": "[reference('CreatingAvailabilitySets').outputs.siosAvailabilitySetName.value]"
+						},
+						"siosVMSize": {
+							"value": "[variables('siosVMSize')]"
+						},
+						"domainName": {
+							"value": "[variables('domainName')]"
+						},
+						"adminUsername": {
+							"value": "[parameters('adminUsername')]"
+						},
+						"adminPassword": {
+							"value": "[parameters('adminPassword')]"
+						},
+						"vmContainerName": {
+							"value": "[variables('vmSettings').vmContainerName]"
+						},
+						"prepareDataDisksModuleURL": {
+							"value": "[variables('configuration').prepareDataDisksModuleURL]"
+						},
+						"prepareDataDisksCommandStr": {
+							"value": "[variables('configuration').prepareDataDisksCommandStr]"
+						}
+					}
+				}
+			}
+		]
 }
