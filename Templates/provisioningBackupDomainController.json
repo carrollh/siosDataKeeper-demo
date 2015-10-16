@@ -80,7 +80,19 @@
           },
           "caching": "ReadWrite",
           "createOption": "FromImage"
-        }
+        },
+        "dataDisks": [
+          {
+            "vhd": {
+              "uri":"[concat('http://',parameters('newStorageAccountNamePrefix'),'0.blob.core.windows.net/',parameters('vmContainerName'),'/', parameters('adBDCVMName'),'-datadisk.vhd')]"
+              },
+            "name":"[concat(parameters('adBDCVMName'),'-datadisk')]",
+            "createOption": "empty",
+            "caching" : "None",
+            "diskSizeGB": 100,
+            "lun": 0
+          }
+        ]
       },
       "networkProfile": {
         "networkInterfaces": [
