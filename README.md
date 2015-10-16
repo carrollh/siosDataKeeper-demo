@@ -5,4 +5,4 @@
     <img src="http://azuredeploy.net/deploybutton.png"/>
 </a>
 
-This template creates a demo environment consisting of primary and secondary AD VMs and two SIOS DataKeeper nodes. All VMs are running Windows Server 2012 R2.
+This template creates 4 virtual machines: both a primary and backup AD domain controller, and 2 Sios DataKeeper nodes. All VMs are running Windows Server 2012 R2.

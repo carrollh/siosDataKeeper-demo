@@ -79,9 +79,9 @@
     "configuration": {
       "vnetwithDNSTemplateURL": "[concat(variables('baseUrl'),'/Templates/creatingVNetWithDNSServer.json')]",
       "nicTemplateURL": "[concat(variables('baseUrl'),'/Templates/creatingSingleNIC.json')]",
-      "adPDCModulesURL": "[concat(variables('baseUrl'),'/Scripts/CreateADPDC.ps1.zip')]",
+      "adPDCModulesURL": "[concat(variables('baseUrl'),'/DSC/CreateADPDC.ps1.zip')]",
       "adPDCConfigurationFunction": "CreateADPDC.ps1\\CreateADPDC",
-      "adBDCModulesURL": "[concat(variables('baseUrl'),'/Scripts/CreateADBDC.ps1.zip')]",
+      "adBDCModulesURL": "[concat(variables('baseUrl'),'/DSC/CreateADBDC.ps1.zip')]",
       "adBDCConfigurationFunction": "CreateADBDC.ps1\\CreateADBDC",
       "rdpIPAdressSetupURL": "[concat(variables('baseUrl'),'/Templates/creatingPublicIP-RDP.json')]",
       "availabilitySetSetupURL": "[concat(variables('baseUrl'),'/Templates/creatingAvailabilitySets.json')]",
