@@ -81,9 +81,9 @@
           "dataDisks": [
             {
               "vhd": {
-                "uri": "[concat('http://',parameters('newStorageAccountNamePrefix'),'1.blob.core.windows.net/',parameters('vmContainerName'),'/', parameters('siosVMName'), copyIndex(), '-Data-1.vhd')]"
+                "uri": "[concat('http://',parameters('newStorageAccountNamePrefix'),'1.blob.core.windows.net/',parameters('vmContainerName'),'/', parameters('siosVMName'), copyIndex(), '-datadisk.vhd')]"
               },
-              "name": "[concat(parameters('siosVMName'), copyIndex(),'-data-disk1')]",
+              "name": "[concat(parameters('siosVMName'), copyIndex(),'-datadisk')]",
               "caching": "None",
               "createOption": "empty",
               "diskSizeGB": 100,
