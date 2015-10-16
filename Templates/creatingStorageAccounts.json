@@ -16,7 +16,7 @@
   {
     "type": "Microsoft.Storage/storageAccounts",
     "name": "[concat(parameters('newStorageAccountNamePrefix'), copyindex())]",
-    "apiVersion": "2015-05-01-preview",
+    "apiVersion": "2015-06-15",
     "location": "[parameters('location')]",
     "copy": {
       "name": "storageAccountLoop",
@@ -29,7 +29,7 @@
   {
     "type": "Microsoft.Storage/storageAccounts",
     "name": "[concat(parameters('newStorageAccountNamePrefix'), 'diag')]",
-    "apiVersion": "2015-05-01-preview",
+    "apiVersion": "2015-06-15",
     "location": "[parameters('location')]",
     "properties": {
     "accountType": "Standard_LRS"
