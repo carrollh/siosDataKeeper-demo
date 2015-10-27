@@ -14,19 +14,10 @@
     "staticSubnetRef": {
       "type": "string"
     },
-    "adBDCNicName": {
-      "type": "string"
-    },
-    "adBDCNICIPAddress": {
-      "type": "string"
-    },
     "siosVMName": {
       "type": "string"
     },
     "pdcRdpIPAddressName": {
-      "type": "string"
-    },
-    "bdcRdpIPAddressName": {
       "type": "string"
     },
     "siosVMRdpIPAddressNamePrefix": {
@@ -58,29 +49,6 @@
       }
     },
     {
-      "name": "[parameters('adBDCNicName')]",
-      "type": "Microsoft.Network/networkInterfaces",
-      "location": "[parameters('location')]",
-      "apiVersion": "2015-06-15",
-      "properties": {
-        "ipConfigurations": [
-          {
-            "name": "ipconfig1",
-            "properties": {
-              "privateIPAllocationMethod": "Static",
-              "privateIPAddress": "[parameters('adBDCNICIPAddress')]",
-              "publicIPAddress": {
-                "id": "[resourceId('Microsoft.Network/publicIPAddresses',parameters('bdcRdpIPAddressName'))]"
-              },
-              "subnet": {
-                "id": "[parameters('staticSubnetRef')]"
-              }
-            }
-          }
-        ]
-      }
-    },
-    {
       "name": "[concat(parameters('siosVMName'), '0-nic')]",
       "type": "Microsoft.Network/networkInterfaces",
       "location": "[parameters('location')]",
@@ -91,7 +59,7 @@
             "name": "ipconfig1",
             "properties": {
               "privateIPAllocationMethod": "Static",
-              "privateIPAddress": "10.0.0.6",
+              "privateIPAddress": "10.0.0.5",
               "publicIPAddress": {
                 "id": "[resourceId('Microsoft.Network/publicIPAddresses',concat(parameters('siosVMRdpIPAddressNamePrefix'), '0RdpIP'))]"
               },
@@ -114,7 +82,7 @@
             "name": "ipconfig1",
             "properties": {
               "privateIPAllocationMethod": "Static",
-              "privateIPAddress": "10.0.0.7",
+              "privateIPAddress": "10.0.0.6",
               "publicIPAddress": {
                 "id": "[resourceId('Microsoft.Network/publicIPAddresses',concat(parameters('siosVMRdpIPAddressNamePrefix'), '1RdpIP'))]"
               },

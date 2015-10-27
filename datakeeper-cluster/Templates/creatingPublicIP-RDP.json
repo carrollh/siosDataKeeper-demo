@@ -28,15 +28,6 @@
     {
       "apiVersion": "2015-06-15",
       "type": "Microsoft.Network/publicIPAddresses",
-      "name": "[parameters('bdcRdpIPAddressName')]",
-      "location": "[parameters('location')]",
-      "properties": {
-        "publicIPAllocationMethod": "dynamic"
-      }
-    },
-    {
-      "apiVersion": "2015-06-15",
-      "type": "Microsoft.Network/publicIPAddresses",
       "name": "[concat(parameters('siosVMRdpIPAddressNamePrefix'), '0RdpIP')]",
       "location": "[parameters('location')]",
       "properties": {
@@ -57,10 +48,6 @@
     "pdcRdpPublicIP": {
       "type": "string",
       "value": "[resourceId('Microsoft.Network/publicIPAddresses',parameters('pdcRdpIPAddressName'))]"
-    },
-    "bdcRdpPublicIP": {
-      "type": "string",
-      "value": "[resourceId('Microsoft.Network/publicIPAddresses',parameters('bdcRdpIPAddressName'))]"
     },
     "siosVM0RdpPublicIP": {
       "type": "string",
