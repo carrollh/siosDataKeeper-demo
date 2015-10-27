@@ -8,9 +8,6 @@
     "pdcRdpIPAddressName": {
       "type": "string"
     },
-    "bdcRdpIPAddressName": {
-      "type": "string"
-    },
     "siosVMRdpIPAddressNamePrefix": {
       "type": "string"
     }
