@@ -32,7 +32,7 @@
     "prepareDataKeeperNodeModuleURL": {
       "type": "string"
     },
-    "prepareDataKeeperNodeCommandStr": {
+    "prepareDataKeeperNodeCommandStrPrefix": {
       "type": "string"
     }
   },
@@ -127,7 +127,7 @@
 						"fileUris": [
 							"[parameters('prepareDataKeeperNodeModuleURL')]"
 						],
-						"commandToExecute": "[concat(parameters('prepareDataKeeperNodeCommandStr'), ' -NodeIndex ', copyIndex())]"
+						"commandToExecute": "[concat(parameters('prepareDataKeeperNodeCommandStrPrefix'), ' -NodeIndex ', copyIndex())]"
 				}
 			}
 		}
