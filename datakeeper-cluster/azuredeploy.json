@@ -23,11 +23,11 @@
         "description": "The password for the Administrator account of the new VMs and Domain"
       }
     },
-		"temporaryLicenseKey": {
-			"type": "string",
-			"metadata": {
-				"description": "The temporary access key used to run DataKeeper. Please contact SIOS support for permanent licenses after deployment is complete."
-			}
+    "temporaryLicenseKey": {
+      "type": "string",
+      "metadata": {
+        "description": "The temporary access key used to run DataKeeper. Please contact SIOS support for permanent licenses after deployment is complete."
+      }
 		}
   },
   "variables": {
