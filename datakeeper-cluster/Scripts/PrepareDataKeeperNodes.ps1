@@ -18,15 +18,12 @@ param
 
 function TraceInfo($log)
 {
-    if ($script:LogFile -ne $null)
-    {
-        "$(Get-Date -format 'MM/dd/yyyy HH:mm:ss') $log" | Out-File -Confirm:$false -FilePath $script:LogFile -Append
-    }    
+     "$(Get-Date -format 'MM/dd/yyyy HH:mm:ss') $log" | Add-Content -Confirm:$false -FilePath $script:LogFile -Append
 }
 
 Set-StrictMode -Version 3
 $datetimestr = (Get-Date).ToString("yyyyMMddHHmmssfff")        
-$script:LogFile = "$env:windir\Temp\HpcPrepareCNLog-$datetimestr.txt"
+$script:LogFile = "$env:windir\Temp\datakeeperInstallLog-$datetimestr.txt"
 
 $AdminPassword = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($AdminBase64Password))
 $domainNetBios = $DomainFQDN.Split(".")[0].ToUpper()
