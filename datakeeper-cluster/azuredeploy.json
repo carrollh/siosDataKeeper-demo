@@ -90,9 +90,7 @@
       "vnetSetupURL": "[concat(variables('baseUrl'),'/Templates/creatingNewVNet.json')]",
       "creatingNicsUrl": "[concat(variables('baseUrl'),'/Templates/creatingNICs.json')]",
 			"prepareDataKeeperNodeModuleURL": "[concat(variables('baseUrl'),'/Scripts/PrepareDataKeeperNodes.ps1')]",
-			"prepareDataKeeperNodeCommandStr": "[concat('powershell.exe -ExecutionPolicy Unrestricted -File PrepareDataKeeperNodes.ps1 -DomainFQDN ', variables('domainName'), ' -AdminUserName ', parameters('adminUsername'), ' -AdminBase64Password \"', variables('adminBase64Password'), '\"', ' -TempLicense ', parameters('temporaryLicenseKey'))]",
-			"prepareMirrorsModuleURL": "[concat(variables('baseUrl'),'/Scripts/PrepareMirrors.ps1')]",
-			"prepareMirrorsCommandStr": "powershell.exe -ExecutionPolicy Unrestricted -File PrepareMirrors.ps1"
+			"prepareDataKeeperNodeCommandStrPrefix": "[concat('powershell.exe -ExecutionPolicy Unrestricted -File PrepareDataKeeperNodes.ps1 -DomainFQDN ', variables('domainName'), ' -AdminUserName ', parameters('adminUsername'), ' -AdminBase64Password \"', variables('adminBase64Password'), '\"', ' -TempLicense ', parameters('temporaryLicenseKey'))]"
     }
   },
    "resources":[
@@ -373,30 +371,9 @@
 						"prepareDataKeeperNodeModuleURL": {
 							"value": "[variables('configuration').prepareDataKeeperNodeModuleURL]"
 						},
-						"prepareDataKeeperNodeCommandStr": {
-							"value": "[variables('configuration').prepareDataKeeperNodeCommandStr]"
+						"prepareDataKeeperNodeCommandStrPrefix": {
+							"value": "[variables('configuration').prepareDataKeeperNodeCommandStrPrefix]"
 						}
-					}
-				}
-			},
-			{
-				"type": "Microsoft.Compute/virtualMachines/extensions",
-				"name": "[concat(variables('vmSettings').siosVMName, '0', '/configureMirror')]",
-				"apiVersion": "2015-06-15",
-				"location": "[variables('location')]",
-				"dependsOn": [
-						"Microsoft.Resources/deployments/CreatingSiosVirtualMachines"
-				],
-				"properties": {
-					"publisher": "Microsoft.Compute",
-					"type": "CustomScriptExtension",
-					"typeHandlerVersion": "1.4",
-					"autoUpgradeMinorVersion": true,
-					"settings": {
-							"fileUris": [
-								"[variables('configuration').prepareMirrorsModuleURL]"
-							],
-							"commandToExecute": "[variables('configuration').prepareMirrorsCommandStr]"
 					}
 				}
 			}

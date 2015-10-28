@@ -125,9 +125,11 @@
 				"autoUpgradeMinorVersion": true,
 				"settings": {
 						"fileUris": [
-							"[parameters('prepareDataKeeperNodeModuleURL')]"
+							"[parameters('prepareDataKeeperNodeModuleURL')]",
+							"[parameters('prepareMirrorsModuleURL')]"
 						],
-						"commandToExecute": "[parameters('prepareDataKeeperNodeCommandStr')]"
+						"commandToExecute": "[parameters('prepareDataKeeperNodeCommandStr')]",
+						"commandToExecute": "[concat(parameters('prepareMirrorsCommandStrPrefix'), ' -NodeIndex ', copyIndex())]"
 				}
 			}
 		}
