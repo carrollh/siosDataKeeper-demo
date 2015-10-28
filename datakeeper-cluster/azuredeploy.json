@@ -375,13 +375,28 @@
 						},
 						"prepareDataKeeperNodeCommandStr": {
 							"value": "[variables('configuration').prepareDataKeeperNodeCommandStr]"
-						},
-						"prepareMirrorsModuleURL": {
-							"value": "[variables('configuration').prepareMirrorsModuleURL]"
-						},
-						"prepareMirrorsCommandStr": {
-							"value": "[variables('configuration').prepareMirrorsCommandStr]"
 						}
+					}
+				}
+			},
+			{
+				"type": "Microsoft.Compute/virtualMachines/extensions",
+				"name": "[concat(variables('siosVMName'), "0", '/configureMirror')]",
+				"apiVersion": "2015-06-15",
+				"location": "[variables('location')]",
+				"dependsOn": [
+						"Microsoft.Resources/deployments/CreatingSiosVirtualMachines"
+				],
+				"properties": {
+					"publisher": "Microsoft.Compute",
+					"type": "CustomScriptExtension",
+					"typeHandlerVersion": "1.4",
+					"autoUpgradeMinorVersion": true,
+					"settings": {
+							"fileUris": [
+								"[variables('configuration').prepareMirrorsModuleURL]"
+							],
+							"commandToExecute": "[variables('configuration').prepareMirrorsCommandStr]"
 					}
 				}
 			}
