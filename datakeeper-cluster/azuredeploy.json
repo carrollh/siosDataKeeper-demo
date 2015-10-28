@@ -381,7 +381,7 @@
 			},
 			{
 				"type": "Microsoft.Compute/virtualMachines/extensions",
-				"name": "[concat(variables('siosVMName'), "0", '/configureMirror')]",
+				"name": "[concat(variables('vmSettings').siosVMName, '0', '/configureMirror')]",
 				"apiVersion": "2015-06-15",
 				"location": "[variables('location')]",
 				"dependsOn": [
