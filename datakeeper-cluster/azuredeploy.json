@@ -24,7 +24,7 @@
       }
     },
 		"temporaryLicenseKey": {
-			"type": "",
+			"type": "string",
 			"metadata": {
 				"description": "The temporary access key used to run DataKeeper. Please contact SIOS support for permanent licenses after deployment is complete."
 			}
