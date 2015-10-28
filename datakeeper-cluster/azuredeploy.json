@@ -89,11 +89,10 @@
       "creatingSiosVMsURL": "[concat(variables('baseUrl'),'/Templates/creatingSiosVMs.json')]",
       "vnetSetupURL": "[concat(variables('baseUrl'),'/Templates/creatingNewVNet.json')]",
       "creatingNicsUrl": "[concat(variables('baseUrl'),'/Templates/creatingNICs.json')]",
-			"prepareDataDisksModuleURL": "[concat(variables('baseUrl'),'/Scripts/PrepareDataDisks.ps1')]",
-      "prepareDataDisksCommandStr": "[concat('powershell.exe -ExecutionPolicy Unrestricted -File PrepareDataDisks.ps1 -DomainFQDN ', variables('domainName'), ' -AdminUserName ', parameters('adminUsername'), ' -AdminBase64Password \"', variables('adminBase64Password'), '\"', ' -TempLicense ', parameters('temporaryLicenseKey'))]",
+			"prepareDataKeeperNodeModuleURL": "[concat(variables('baseUrl'),'/Scripts/PrepareDataKeeperNodes.ps1')]",
+			"prepareDataKeeperNodeCommandStr": "[concat('powershell.exe -ExecutionPolicy Unrestricted -File PrepareDataKeeperNodes.ps1 -DomainFQDN ', variables('domainName'), ' -AdminUserName ', parameters('adminUsername'), ' -AdminBase64Password \"', variables('adminBase64Password'), '\"', ' -TempLicense ', parameters('temporaryLicenseKey'))]",
 			"prepareMirrorsModuleURL": "[concat(variables('baseUrl'),'/Scripts/PrepareMirrors.ps1')]",
 			"prepareMirrorsCommandStr": "powershell.exe -ExecutionPolicy Unrestricted -File PrepareMirrors.ps1"
-			
     }
   },
    "resources":[
@@ -371,11 +370,11 @@
 						"vmContainerName": {
 							"value": "[variables('vmSettings').vmContainerName]"
 						},
-						"prepareDataDisksModuleURL": {
-							"value": "[variables('configuration').prepareDataDisksModuleURL]"
+						"prepareDataKeeperNodeModuleURL": {
+							"value": "[variables('configuration').prepareDataKeeperNodeModuleURL]"
 						},
-						"prepareDataDisksCommandStr": {
-							"value": "[variables('configuration').prepareDataDisksCommandStr]"
+						"prepareDataKeeperNodeCommandStr": {
+							"value": "[variables('configuration').prepareDataKeeperNodeCommandStr]"
 						},
 						"prepareMirrorsModuleURL": {
 							"value": "[variables('configuration').prepareMirrorsModuleURL]"

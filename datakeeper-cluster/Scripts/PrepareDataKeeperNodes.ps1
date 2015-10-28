@@ -64,5 +64,11 @@ TraceInfo "Installing DataKeeper license"
 Add-Content $env:windir\SysWOW64\LKLicense\extmirrsvc.lic $TempLicense
 TraceInfo "Finished installing DataKeeper license"
 
+TraceInfo "Enabling and Configuring WSFC"
+Install-WindowsFeature -Name Failover-Clustering -IncludeManagementTools
+Import-Module FailoverClusters
+# TODO: add node to cluster 
+TraceInfo "Finished Configuring WSFC"
+
 TraceInfo "Restart after 30 seconds"
 Start-Process -FilePath "cmd.exe" -ArgumentList "/c shutdown /r /t 30"

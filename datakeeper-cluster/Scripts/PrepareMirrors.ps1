@@ -21,7 +21,9 @@ if($(Get-Service extmirrsvc).Status -eq "Running") {
 		TraceInfo "Creating mirror on volume F"
 		New-DataKeeperJob "Volume F" "Initial Mirror" "sios-0" "10.0.0.5" "F" "sios-1" "10.0.0.6" "F" "Async"
 		New-DataKeeperMirror "10.0.0.5" "F" "10.0.0.6" "F" "Async"
+		# TODO: register mirror with cluster
 		TraceInfo "Finished creating mirror"
 } else {
 		TraceInfo "ExtMirr Service failed to start. Mirror not created."
 }
+

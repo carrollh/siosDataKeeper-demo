@@ -29,10 +29,10 @@
     "vmContainerName": {
       "type": "string"
     },
-    "prepareDataDisksModuleURL": {
+    "prepareDataKeeperNodeModuleURL": {
       "type": "string"
     },
-    "prepareDataDisksCommandStr": {
+    "prepareDataKeeperNodeCommandStr": {
       "type": "string"
     },
 		"prepareMirrorsModuleURL": {
@@ -131,9 +131,9 @@
 				"autoUpgradeMinorVersion": true,
 				"settings": {
 						"fileUris": [
-							"[parameters('prepareDataDisksModuleURL')]"
+							"[parameters('prepareDataKeeperNodeModuleURL')]"
 						],
-						"commandToExecute": "[parameters('prepareDataDisksCommandStr')]"
+						"commandToExecute": "[parameters('prepareDataKeeperNodeCommandStr')]"
 				}
 			}
 		},
@@ -143,7 +143,7 @@
 			"apiVersion": "2015-06-15",
 			"location": "[parameters('location')]",
 			"dependsOn": [
-					"[concat('Microsoft.Compute/virtualMachines/extensions/', concat(parameters('siosVMName'), copyIndex(),/configureSiosVM))]"
+					"[concat('Microsoft.Compute/virtualMachines/extensions/', parameters('siosVMName'), copyIndex(),/configureSiosVM)]"
 			],
 			"copy": {
 				"name": "SiosVMMirrorPrepareLoop",
