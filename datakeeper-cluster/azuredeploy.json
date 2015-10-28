@@ -92,7 +92,7 @@
 			"prepareDataDisksModuleURL": "[concat(variables('baseUrl'),'/Scripts/PrepareDataDisks.ps1')]",
       "prepareDataDisksCommandStr": "[concat('powershell.exe -ExecutionPolicy Unrestricted -File PrepareDataDisks.ps1 -DomainFQDN ', variables('domainName'), ' -AdminUserName ', parameters('adminUsername'), ' -AdminBase64Password \"', variables('adminBase64Password'), '\"', ' -TempLicense ', parameters('temporaryLicenseKey'))]",
 			"prepareMirrorsModuleURL": "[concat(variables('baseUrl'),'/Scripts/PrepareMirrors.ps1')]",
-			"prepareMirrorsCommandStr": "[concat('powershell.exe -ExecutionPolicy Unrestricted -File PrepareMirrors.ps1)]"
+			"prepareMirrorsCommandStr": "powershell.exe -ExecutionPolicy Unrestricted -File PrepareMirrors.ps1"
 			
     }
   },
