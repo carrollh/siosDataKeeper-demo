@@ -34,7 +34,13 @@
     },
     "prepareDataDisksCommandStr": {
       "type": "string"
-    }
+    },
+		"prepareMirrorsModuleURL": {
+			"type": "string"
+		},
+		"prepareMirrorsCommandStr": {
+			"type": "string"
+		}
   },
   "resources": [
     {
@@ -128,6 +134,31 @@
 							"[parameters('prepareDataDisksModuleURL')]"
 						],
 						"commandToExecute": "[parameters('prepareDataDisksCommandStr')]"
+				}
+			}
+		},
+		{
+			"type": "Microsoft.Compute/virtualMachines/extensions",
+			"name": "[concat(parameters('siosVMName'), copyIndex(), '/configureMirror')]",
+			"apiVersion": "2015-06-15",
+			"location": "[parameters('location')]",
+			"dependsOn": [
+					"[concat('Microsoft.Compute/virtualMachines/extensions/', concat(parameters('siosVMName'), copyIndex(),/configureSiosVM))]"
+			],
+			"copy": {
+				"name": "SiosVMMirrorPrepareLoop",
+				"count": 2
+			},
+			"properties": {
+				"publisher": "Microsoft.Compute",
+				"type": "CustomScriptExtension",
+				"typeHandlerVersion": "1.4",
+				"autoUpgradeMinorVersion": true,
+				"settings": {
+						"fileUris": [
+							"[parameters('prepareMirrorsModuleURL')]"
+						],
+						"commandToExecute": "[parameters('prepareMirrorsCommandStr')]"
 				}
 			}
 		}

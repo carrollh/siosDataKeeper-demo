@@ -22,7 +22,13 @@
       "metadata": {
         "description": "The password for the Administrator account of the new VMs and Domain"
       }
-    }
+    },
+		"temporaryLicenseKey": {
+			"type": "",
+			"metadata": {
+				"description": "The temporary access key used to run DataKeeper. Please contact SIOS support for permanent licenses after deployment is complete."
+			}
+		}
   },
   "variables": {
     "location": "[resourceGroup().location]",
@@ -84,7 +90,10 @@
       "vnetSetupURL": "[concat(variables('baseUrl'),'/Templates/creatingNewVNet.json')]",
       "creatingNicsUrl": "[concat(variables('baseUrl'),'/Templates/creatingNICs.json')]",
 			"prepareDataDisksModuleURL": "[concat(variables('baseUrl'),'/Scripts/PrepareDataDisks.ps1')]",
-      "prepareDataDisksCommandStr": "[concat('powershell.exe -ExecutionPolicy Unrestricted -File PrepareDataDisks.ps1 -DomainFQDN ', variables('domainName'), ' -AdminUserName ', parameters('adminUsername'), ' -AdminBase64Password \"', variables('adminBase64Password'), '\"')]"
+      "prepareDataDisksCommandStr": "[concat('powershell.exe -ExecutionPolicy Unrestricted -File PrepareDataDisks.ps1 -DomainFQDN ', variables('domainName'), ' -AdminUserName ', parameters('adminUsername'), ' -AdminBase64Password \"', variables('adminBase64Password'), '\"', ' -TempLicense ', parameters('temporaryLicenseKey'))]",
+			"prepareMirrorsModuleURL": "[concat(variables('baseUrl'),'/Scripts/PrepareMirrors.ps1')]",
+			"prepareMirrorsCommandStr": "[concat('powershell.exe -ExecutionPolicy Unrestricted -File PrepareMirrors.ps1)]"
+			
     }
   },
    "resources":[
@@ -367,6 +376,12 @@
 						},
 						"prepareDataDisksCommandStr": {
 							"value": "[variables('configuration').prepareDataDisksCommandStr]"
+						},
+						"prepareMirrorsModuleURL": {
+							"value": "[variables('configuration').prepareMirrorsModuleURL]"
+						},
+						"prepareMirrorsCommandStr": {
+							"value": "[variables('configuration').prepareMirrorsCommandStr]"
 						}
 					}
 				}

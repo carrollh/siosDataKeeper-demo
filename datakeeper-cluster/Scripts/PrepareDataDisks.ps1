@@ -7,7 +7,10 @@ param
     [String] $AdminUserName,
 
     [Parameter(Mandatory=$true)]
-    [String] $AdminBase64Password
+    [String] $AdminBase64Password,
+		
+		[Parameter(Mandatory=$true)]
+    [String] $TempLicense	
 )
 
 function TraceInfo($log)
@@ -56,6 +59,10 @@ if($domainRole -ne 3)
 TraceInfo "Start to set initialize data disk(s)"
 Get-Disk | Where partitionstyle -eq 'raw' | Initialize-Disk -PartitionStyle MBR -PassThru |	New-Partition -AssignDriveLetter -UseMaximumSize | Format-Volume -FileSystem NTFS -Confirm:$false
 TraceInfo "Finished formatting data disk(s)"
+
+TraceInfo "Installing DataKeeper license"
+Add-Content $env:windir\SysWOW64\LKLicense\extmirrsvc.lic $TempLicense
+TraceInfo "Finished installing DataKeeper license"
 
 TraceInfo "Restart after 30 seconds"
 Start-Process -FilePath "cmd.exe" -ArgumentList "/c shutdown /r /t 30"
