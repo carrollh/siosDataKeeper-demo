@@ -18,12 +18,15 @@ param
 
 function TraceInfo($log)
 {
-     "$(Get-Date -format 'MM/dd/yyyy HH:mm:ss') $log" | Add-Content -Confirm:$false -FilePath $script:LogFile -Append
+     "$(Get-Date -format 'MM/dd/yyyy HH:mm:ss') $log" | Add-Content -Confirm:$false $logFile 
 }
 
 Set-StrictMode -Version 3
 $datetimestr = (Get-Date).ToString("yyyyMMddHHmmssfff")        
-$script:LogFile = "$env:windir\Temp\datakeeperInstallLog-$datetimestr.txt"
+$logFile = "$env:windir\Temp\datakeeperInstallLog-$datetimestr.txt"
+
+TraceInfo "PrepareDataKeeperNodes script called with license:"
+TraceInfo $TempLicense
 
 $AdminPassword = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($AdminBase64Password))
 $domainNetBios = $DomainFQDN.Split(".")[0].ToUpper()
