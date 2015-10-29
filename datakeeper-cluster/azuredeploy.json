@@ -24,7 +24,7 @@
       }
     },
     "temporaryLicenseKey": {
-      "type": "string",
+      "type": "securestring",
       "metadata": {
         "description": "The temporary access key used to run DataKeeper. Please contact SIOS support for permanent licenses after deployment is complete."
       }
@@ -33,6 +33,7 @@
   "variables": {
     "location": "[resourceGroup().location]",
 		"adminBase64Password": "[base64(parameters('adminPassword'))]",
+		"base64TempLicense": "[base64(parameters('temporaryLicenseKey'))]",
     "adVMSize": "Standard_DS1",
     "siosVMSize": "Standard_DS1",
     "domainName": "datakeeper.local",
@@ -90,7 +91,7 @@
       "vnetSetupURL": "[concat(variables('baseUrl'),'/Templates/creatingNewVNet.json')]",
       "creatingNicsUrl": "[concat(variables('baseUrl'),'/Templates/creatingNICs.json')]",
 			"prepareDataKeeperNodesModuleURL": "[concat(variables('baseUrl'),'/Scripts/PrepareDataKeeperNodes.ps1')]",
-			"prepareDataKeeperNodesCommandStrPrefix": "[concat('powershell.exe -ExecutionPolicy Unrestricted -File PrepareDataKeeperNodes.ps1 -DomainFQDN ', variables('domainName'), ' -AdminUserName ', parameters('adminUsername'), ' -AdminBase64Password \"', variables('adminBase64Password'), '\"', ' -TempLicense ', parameters('temporaryLicenseKey'))]"
+			"prepareDataKeeperNodesCommandStrPrefix": "[concat('powershell.exe -ExecutionPolicy Unrestricted -File PrepareDataKeeperNodes.ps1 -DomainFQDN ', variables('domainName'), ' -AdminUserName ', parameters('adminUsername'), ' -AdminBase64Password \"', variables('adminBase64Password'), '\"', ' -TempLicense \"', variables('base64TempLicense'), '\"')]"
     }
   },
    "resources":[
