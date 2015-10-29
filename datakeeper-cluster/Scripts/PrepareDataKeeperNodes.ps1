@@ -7,7 +7,10 @@ param
     [String] $AdminUserName,
 
     [Parameter(Mandatory=$true)]
-    [String] $AdminBase64Password
+    [String] $AdminBase64Password,
+		
+		[Parameter(Mandatory=$true)]
+    [String] $TempLicense
 )
 
 function TraceInfo($log)
