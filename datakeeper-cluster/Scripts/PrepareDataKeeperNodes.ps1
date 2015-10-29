@@ -10,10 +10,7 @@ param
     [String] $AdminBase64Password,
 		
 		[Parameter(Mandatory=$true)]
-    [String] $TempLicense,
-		
-		[Parameter(Mandatory=$true)]
-    [int] $NodeIndex	
+    [String] $TempLicense
 )
 
 

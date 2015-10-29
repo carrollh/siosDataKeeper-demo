@@ -89,8 +89,8 @@
       "creatingSiosVMsURL": "[concat(variables('baseUrl'),'/Templates/creatingSiosVMs.json')]",
       "vnetSetupURL": "[concat(variables('baseUrl'),'/Templates/creatingNewVNet.json')]",
       "creatingNicsUrl": "[concat(variables('baseUrl'),'/Templates/creatingNICs.json')]",
-			"prepareDataKeeperNodeModuleURL": "[concat(variables('baseUrl'),'/Scripts/PrepareDataKeeperNodes.ps1')]",
-			"prepareDataKeeperNodeCommandStrPrefix": "[concat('powershell.exe -ExecutionPolicy Unrestricted -File PrepareDataKeeperNodes.ps1 -DomainFQDN ', variables('domainName'), ' -AdminUserName ', parameters('adminUsername'), ' -AdminBase64Password \"', variables('adminBase64Password'), '\"', ' -TempLicense ', parameters('temporaryLicenseKey'))]"
+			"prepareDataKeeperNodesModuleURL": "[concat(variables('baseUrl'),'/Scripts/PrepareDataKeeperNodes.ps1')]",
+			"prepareDataKeeperNodesCommandStrPrefix": "[concat('powershell.exe -ExecutionPolicy Unrestricted -File PrepareDataKeeperNodes.ps1 -DomainFQDN ', variables('domainName'), ' -AdminUserName ', parameters('adminUsername'), ' -AdminBase64Password \"', variables('adminBase64Password'), '\"', ' -TempLicense ', parameters('temporaryLicenseKey'))]"
     }
   },
    "resources":[
@@ -369,10 +369,10 @@
 							"value": "[variables('vmSettings').vmContainerName]"
 						},
 						"prepareDataKeeperNodeModuleURL": {
-							"value": "[variables('configuration').prepareDataKeeperNodeModuleURL]"
+							"value": "[variables('configuration').prepareDataKeeperNodesModuleURL]"
 						},
 						"prepareDataKeeperNodeCommandStrPrefix": {
-							"value": "[variables('configuration').prepareDataKeeperNodeCommandStrPrefix]"
+							"value": "[variables('configuration').prepareDataKeeperNodesCommandStrPrefix]"
 						}
 					}
 				}
