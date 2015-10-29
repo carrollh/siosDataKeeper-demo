@@ -368,10 +368,10 @@
 						"vmContainerName": {
 							"value": "[variables('vmSettings').vmContainerName]"
 						},
-						"prepareDataKeeperNodeModuleURL": {
+						"prepareDataKeeperNodesModuleURL": {
 							"value": "[variables('configuration').prepareDataKeeperNodesModuleURL]"
 						},
-						"prepareDataKeeperNodeCommandStrPrefix": {
+						"prepareDataKeeperNodesCommandStrPrefix": {
 							"value": "[variables('configuration').prepareDataKeeperNodesCommandStrPrefix]"
 						}
 					}
