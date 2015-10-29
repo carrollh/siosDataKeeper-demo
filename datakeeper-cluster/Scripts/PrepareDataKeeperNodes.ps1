@@ -7,25 +7,20 @@ param
     [String] $AdminUserName,
 
     [Parameter(Mandatory=$true)]
-    [String] $AdminBase64Password,
-		
-		[Parameter(Mandatory=$true)]
-    [String] $TempLicense
+    [String] $AdminBase64Password
 )
-
-
-
-Set-StrictMode -Version 3
-$datetimestr = (Get-Date).ToString("yyyyMMddHHmmssfff")        
-$logFile = "$env:windir\Temp\datakeeperInstallLog-$datetimestr.txt"
 
 function TraceInfo($log)
 {
-     "$(Get-Date -format 'MM/dd/yyyy HH:mm:ss') $log" | Add-Content -Confirm:$false $logFile 
+    if ($script:LogFile -ne $null)
+    {
+        "$(Get-Date -format 'MM/dd/yyyy HH:mm:ss') $log" | Out-File -Confirm:$false -FilePath $script:LogFile -Append
+    }    
 }
 
-# test the log and the license
-TraceInfo "License: $TempLicense"
+Set-StrictMode -Version 3
+$datetimestr = (Get-Date).ToString("yyyyMMddHHmmssfff")        
+$script:LogFile = "$env:windir\Temp\HpcPrepareCNLog-$datetimestr.txt"
 
 $AdminPassword = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($AdminBase64Password))
 $domainNetBios = $DomainFQDN.Split(".")[0].ToUpper()
