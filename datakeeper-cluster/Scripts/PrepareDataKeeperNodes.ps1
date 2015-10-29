@@ -27,6 +27,9 @@ function TraceInfo($log)
      "$(Get-Date -format 'MM/dd/yyyy HH:mm:ss') $log" | Add-Content -Confirm:$false $logFile 
 }
 
+# test the log and the license
+TraceInfo "License: $TempLicense"
+
 $AdminPassword = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($AdminBase64Password))
 $domainNetBios = $DomainFQDN.Split(".")[0].ToUpper()
 $domainUserCred = New-Object -TypeName System.Management.Automation.PSCredential `
