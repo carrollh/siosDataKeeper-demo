@@ -68,9 +68,7 @@ TraceInfo "Finished formatting data disk(s)"
 
 TraceInfo "Installing DataKeeper license"
 $licfile = $env:windir\SysWOW64\LKLicense\extmirrsvc.lic
-Add-Content $licfile 'FEATURE dkwfce steeleye 1.000 03-nov-2015 uncounted HOSTID=ANY TS_OK SIGN="'
 Add-Content $licfile $license
-Add-Content $licfile '"'
 TraceInfo "Finished installing DataKeeper license"
 
 TraceInfo "Enabling and Configuring WSFC"
