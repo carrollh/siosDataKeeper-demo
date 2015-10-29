@@ -29,10 +29,10 @@
     "vmContainerName": {
       "type": "string"
     },
-    "prepareDataKeeperNodeModuleURL": {
+    "prepareDataKeeperNodesModuleURL": {
       "type": "string"
     },
-    "prepareDataKeeperNodeCommandStrPrefix": {
+    "prepareDataKeeperNodesCommandStrPrefix": {
       "type": "string"
     }
   },
@@ -125,9 +125,9 @@
 				"autoUpgradeMinorVersion": true,
 				"settings": {
 						"fileUris": [
-							"[parameters('prepareDataKeeperNodeModuleURL')]"
+							"[parameters('prepareDataKeeperNodesModuleURL')]"
 						],
-						"commandToExecute": "[concat(parameters('prepareDataKeeperNodeCommandStrPrefix'), ' -NodeIndex ', copyIndex())]"
+						"commandToExecute": "[concat(parameters('prepareDataKeeperNodesCommandStrPrefix'), ' -NodeIndex ', copyIndex())]"
 				}
 			}
 		}
