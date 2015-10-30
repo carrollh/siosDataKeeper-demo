@@ -68,9 +68,6 @@
                             "privateIPAddress": "10.0.0.5",
                             "publicIPAddress": {
                                 "id": "[resourceId('Microsoft.Network/publicIPAddresses','sios-0-RDP')]"
-                            },
-                            "subnet": {
-                                "id": "sios-0-SUBNET"
                             }
                         }
                     }
