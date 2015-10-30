@@ -33,7 +33,7 @@
   "variables": {
     "location": "[resourceGroup().location]",
 		"adminBase64Password": "[base64(parameters('adminPassword'))]",
-		"base64TempLicense": "[base64(replace(parameters('temporaryLicenseKey'),'X','"')))]",
+		"base64TempLicense": "[base64(replace(parameters('temporaryLicenseKey'),'X','\"'))]",
     "adVMSize": "Standard_DS1",
     "siosVMSize": "Standard_DS1",
     "domainName": "datakeeper.local",
