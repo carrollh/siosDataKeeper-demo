@@ -31,7 +31,7 @@ TraceInfo "Finished formatting data disk(s)"
 
 
 TraceInfo "Installing DataKeeper license"
-$licfile = $env:windir\SysWOW64\LKLicense\extmirrsvc.lic
+$licfile = "$env:windir\SysWOW64\LKLicense\extmirrsvc.lic"
 Add-Content $licfile $license
 TraceInfo "Finished installing DataKeeper license"
 
