@@ -49,7 +49,7 @@
             }
         },
         {
-            "name": "sios-0-NIC')]",
+            "name": "sios-0-NIC",
             "type": "Microsoft.Network/networkInterfaces",
             "location": "[variables('location')]",
             "apiVersion": "2015-06-15",
