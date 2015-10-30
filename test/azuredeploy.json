@@ -1,0 +1,157 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+		"temporaryLicenseKey": {
+      "type": "securestring",
+      "metadata": {
+        "description": "The temporary access key used to run DataKeeper. Please contact SIOS support for permanent licenses after deployment is complete."
+      }
+		}
+  },
+	"variables": {
+		"location": "[resourceGroup().location]",
+		"username": "admin",
+		"base64Password": "[base64('password')]"
+		"base64TempLicense": "[base64(replace(parameters('temporaryLicenseKey'),'X','SUCCESS'))]"
+	},
+  "resources": [
+		{
+			"type": "Microsoft.Storage/storageAccounts",
+			"name": "sios-0-SA",
+			"apiVersion": "2015-06-15",
+			"location": "[variables('location')]",
+			"properties": {
+			"accountType": "Premium_LRS"
+			}
+		}
+    {
+      "apiVersion": "2015-06-15",
+      "type": "Microsoft.Network/publicIPAddresses",
+      "name": "sios-0-RDP",
+      "location": "[variables('location')]",
+      "properties": {
+        "publicIPAllocationMethod": "dynamic"
+      }
+    },
+		{
+			"name": "sios-0-VNET",
+			"type": "Microsoft.Network/virtualNetworks",
+			"location": "[variables('location')]",
+			"apiVersion": "2015-06-15",
+			"properties": {
+				"addressSpace": {
+					"addressPrefixes": [
+						"10.0.0.0/24"
+					]
+				},
+				"subnets": "sios-0-SUBNET"
+			}
+		},
+		{
+      "name": "sios-0-NIC')]",
+      "type": "Microsoft.Network/networkInterfaces",
+      "location": "[variables('location')]",
+      "apiVersion": "2015-06-15",
+			"dependsOn": [
+				"Microsoft.Network/publicIPAddresses/sios-0-RDP",
+				"Microsoft.Network/virtualNetworks/sios-0-VNET"
+			],
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAllocationMethod": "Static",
+              "privateIPAddress": "10.0.0.5",
+              "publicIPAddress": {
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses','/sios-0-RDP')]"
+              },
+              "subnet": {
+                "id": "sios-0-SUBNET"
+              }
+            }
+          }
+        ]
+      }
+    },
+		{
+      "apiVersion": "2015-06-15",
+      "type": "Microsoft.Compute/virtualMachines",
+      "name": "sios-0",
+      "location": "[variables('location')]",
+			"dependsOn": [
+				"Microsoft.Storage/storageAccounts/sios-0-SA",
+				"Microsoft.Network/networkInterfaces/sios-0-NIC"
+      ],
+      "plan": {
+        "name": "bring_your_own_license",
+        "publisher": "sios_datakeeper",
+        "product": "sios-datakeeper-8"
+      },
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "Standard_DS1"
+        },
+				{
+					"type": "Microsoft.Storage/storageAccounts",
+					"name": "frustraationSA",
+					"apiVersion": "2015-06-15",
+					"location": "[variables('location')]",
+					"properties": {
+					"accountType": "Premium_LRS"
+					}
+				},
+        "osProfile": {
+          "computerName": "sios-0",
+          "adminUsername": "[variables('username')]",
+          "adminPassword": "[variables('base64Password')]"
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "sios_datakeeper",
+            "offer": "sios-datakeeper-8",
+            "sku": "bring_your_own_license",
+            "version": "latest"
+          },
+          "osDisk": {
+            "name": "osdisk",
+            "vhd": {
+              "uri": "http://sios-0-SA.blob.core.windows.net/vhds/sios-0-osdisk.vhd"
+            },
+            "caching": "ReadWrite",
+            "createOption": "FromImage"
+          }
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId(resourceGroup().name,'Microsoft.Network/networkInterfaces/sios-0-NIC')]"
+            }
+          ]
+        }
+      }
+    },
+		{
+			"type": "Microsoft.Compute/virtualMachines/extensions",
+			"name": "sios-0/configureSiosVM')]",
+			"apiVersion": "2015-06-15",
+			"location": "[variables('location')]",
+			"dependsOn": [
+					"Microsoft.Compute/virtualMachines/sios-0"
+			],
+			"properties": {
+				"publisher": "Microsoft.Compute",
+				"type": "CustomScriptExtension",
+				"typeHandlerVersion": "1.4",
+				"autoUpgradeMinorVersion": true,
+				"settings": {
+						"fileUris": [
+							"https://raw.githubusercontent.com/carrollh/siosDataKeeper-demo/master/test/test.ps1"
+						],
+						"commandToExecute": "[concat('powershell.exe -ExecutionPolicy Unrestricted -File test.ps1 -Username ', variables('Username'), ' -Base64Password \"', variables('base64Password'), '\"', ' -TempLicense \"', variables('base64TempLicense'), '\"')]"
+				}
+			}
+		}
+  ]
+}
