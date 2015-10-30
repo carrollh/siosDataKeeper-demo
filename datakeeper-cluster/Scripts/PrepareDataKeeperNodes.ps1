@@ -10,10 +10,7 @@ param
     [String] $AdminBase64Password,
 		
 		[Parameter(Mandatory=$true)]
-    [String] $TempLicense,
-		
-		[Parameter(Mandatory=$true)]
-    [int] $NodeIndex	
+    [String] $TempLicense
 )
 
 function TraceInfo($log)
@@ -77,51 +74,6 @@ Import-Module FailoverClusters
 # TODO: add node to cluster 
 TraceInfo "Finished Configuring WSFC"
 
-TraceInfo "Verifying ExtMirr Service is Running"
-while(-Not $(Test-Path $env:windir\SysWOW64\LKLicense\extmirrsvc.lic)) {
-		Start-Sleep -Seconds 5
-}
-Restart-Service extmirrsvc
-Start-Sleep -Seconds 10
-if(-Not $(Get-Service extmirrsvc).Status -eq "Running") {
-	TraceInfo "ExtMirr Service failed to start. Mirror not created."
-	return 1
-}
-
-TraceInfo "Enabling remote script execution between nodes."
-Enable-PSRemoting -force
-winrm s winrm/config/client '@{TrustedHosts="sios-0,sios-1"}'
-
-Restart-Service winrm
-Start-Sleep -Seconds 10
-
-if(-Not $(Get-Service extmirrsvc).Status -eq "Running") {
-	TraceInfo "Remote Windows Management failed to start."
-	return 1
-}
-
-if($NodeIndex -eq 0) {	
-	TraceInfo "Waiting on sios-1 to start extmirrsvc"
-	while($true) {
-		if($(Get-Service extmirrsvc -ComputerName "sios-1").Status -eq "Running") {
-			break
-		} else {
-			Start-Sleep 10
-		}
-	}
-
-	TraceInfo "Creating mirror on volume F"
-	New-DataKeeperJob "Volume F" "Initial Mirror" "sios-0" "10.0.0.5" "F" "sios-1" "10.0.0.6" "F" "Async"
-	New-DataKeeperMirror "10.0.0.5" "F" "10.0.0.6" "F" "Async"
 	
-	# TODO: register mirror with cluster
-	
-	TraceInfo "Finished creating mirror. Restarting remote node (sios-1)."
-	Restart-Computer sios-1 -force
-	
-	TraceInfo "Restarting this node (sios-0) after 30 seconds"
-	Start-Process -FilePath "cmd.exe" -ArgumentList "/c shutdown /r /t 30"
-
-} else {
-	TraceInfo "Completed provisioning sios-1, waiting on sios-0 to restart this node."
-}
+TraceInfo "Restarting this node (sios-0) after 30 seconds"
+Start-Process -FilePath "cmd.exe" -ArgumentList "/c shutdown /r /t 30"

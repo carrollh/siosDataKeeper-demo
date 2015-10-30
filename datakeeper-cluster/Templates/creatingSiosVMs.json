@@ -127,7 +127,7 @@
 						"fileUris": [
 							"[parameters('prepareDataKeeperNodesModuleURL')]"
 						],
-						"commandToExecute": "[concat(parameters('prepareDataKeeperNodesCommandStrPrefix'), ' -NodeIndex ', copyIndex())]"
+						"commandToExecute": "[parameters('prepareDataKeeperNodesCommandStrPrefix')]"
 				}
 			}
 		}
