@@ -18,7 +18,7 @@
     "resources": [
         {
             "type": "Microsoft.Storage/storageAccounts",
-            "name": "sios-0-SA",
+            "name": "sios0sa",
             "apiVersion": "2015-06-15",
             "location": "[variables('location')]",
             "properties": {
@@ -81,7 +81,7 @@
             "name": "sios-0",
             "location": "[variables('location')]",
             "dependsOn": [
-                "sios-0-SA",
+                "sios0sa",
                 "sios-0-NIC"
             ],
             "plan": {
@@ -108,7 +108,7 @@
                     "osDisk": {
                         "name": "osdisk",
                         "vhd": {
-                            "uri": "http://sios-0-SA.blob.core.windows.net/vhds/sios-0-osdisk.vhd"
+                            "uri": "http://sios0sa.blob.core.windows.net/vhds/sios-0-osdisk.vhd"
                         },
                         "caching": "ReadWrite",
                         "createOption": "FromImage"
