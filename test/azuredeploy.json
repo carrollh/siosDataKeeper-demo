@@ -54,8 +54,8 @@
             "location": "[variables('location')]",
             "apiVersion": "2015-06-15",
             "dependsOn": [
-                "Microsoft.Network/publicIPAddresses/sios-0-RDP",
-                "Microsoft.Network/virtualNetworks/sios-0-VNET"
+                "sios-0-RDP",
+                "sios-0-VNET"
             ],
             "properties": {
                 "ipConfigurations": [
@@ -81,8 +81,8 @@
             "name": "sios-0",
             "location": "[variables('location')]",
             "dependsOn": [
-                "Microsoft.Storage/storageAccounts/sios-0-SA",
-                "Microsoft.Network/networkInterfaces/sios-0-NIC"
+                "sios-0-SA",
+                "sios-0-NIC"
             ],
             "plan": {
                 "name": "bring_your_own_license",
@@ -129,7 +129,7 @@
             "apiVersion": "2015-06-15",
             "location": "[variables('location')]",
             "dependsOn": [
-                "Microsoft.Compute/virtualMachines/sios-0"
+                "sios-0"
             ],
             "properties": {
                 "publisher": "Microsoft.Compute",
