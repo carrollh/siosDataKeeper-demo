@@ -12,7 +12,7 @@
 	"variables": {
 		"location": "[resourceGroup().location]",
 		"username": "admin",
-		"base64Password": "[base64('password')]"
+		"base64Password": "[base64('password')]",
 		"base64TempLicense": "[base64(replace(parameters('temporaryLicenseKey'),'X','SUCCESS'))]"
 	},
   "resources": [
@@ -24,7 +24,7 @@
 			"properties": {
 			"accountType": "Premium_LRS"
 			}
-		}
+		},
     {
       "apiVersion": "2015-06-15",
       "type": "Microsoft.Network/publicIPAddresses",
@@ -93,15 +93,6 @@
         "hardwareProfile": {
           "vmSize": "Standard_DS1"
         },
-				{
-					"type": "Microsoft.Storage/storageAccounts",
-					"name": "frustraationSA",
-					"apiVersion": "2015-06-15",
-					"location": "[variables('location')]",
-					"properties": {
-					"accountType": "Premium_LRS"
-					}
-				},
         "osProfile": {
           "computerName": "sios-0",
           "adminUsername": "[variables('username')]",
