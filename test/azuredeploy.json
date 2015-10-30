@@ -31,7 +31,10 @@
             "name": "sios-0-RDP",
             "location": "[variables('location')]",
             "properties": {
-                "publicIPAllocationMethod": "dynamic"
+                "publicIPAllocationMethod": "dynamic",
+								"dnsSettings" : {
+									"domainNameLabel": "datakeepertest"
+								}
             }
         },
         {
@@ -44,8 +47,7 @@
                     "addressPrefixes": [
                         "10.0.0.0/24"
                     ]
-                },
-                "subnets": "sios-0-SUBNET"
+                }
             }
         },
         {
@@ -117,7 +119,7 @@
                 "networkProfile": {
                     "networkInterfaces": [
                         {
-                            "id": "[resourceId(resourceGroup().name,'Microsoft.Network/networkInterfaces','/sios-0-NIC')]"
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces','/sios-0-NIC')]"
                         }
                     ]
                 }
