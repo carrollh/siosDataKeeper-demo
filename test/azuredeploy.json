@@ -10,9 +10,10 @@
         }
     },
     "variables": {
+				"password": 'Pa$$w0rd',
         "location": "[resourceGroup().location]",
         "username": "siosadmin",
-        "base64Password": "[base64('pa$$w0rd')]",
+        "base64Password": "[base64(variables('password'))]",
         "base64TempLicense": "[base64(replace(parameters('temporaryLicenseKey'),'X','SUCCESS'))]"
     },
     "resources": [
