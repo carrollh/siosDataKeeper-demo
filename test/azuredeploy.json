@@ -11,8 +11,8 @@
     },
     "variables": {
         "location": "[resourceGroup().location]",
-        "username": "admin",
-        "base64Password": "[base64('password')]",
+        "username": "siosadmin",
+        "base64Password": "[base64('pa$$w0rd')]",
         "base64TempLicense": "[base64(replace(parameters('temporaryLicenseKey'),'X','SUCCESS'))]"
     },
     "resources": [
