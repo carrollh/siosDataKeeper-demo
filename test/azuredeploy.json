@@ -127,7 +127,7 @@
                 "networkProfile": {
                     "networkInterfaces": [
                         {
-                            "id": "[resourceId('Microsoft.Network/networkInterfaces','/sios-0-NIC')]"
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces','sios-0-NIC')]"
                         }
                     ]
                 }
