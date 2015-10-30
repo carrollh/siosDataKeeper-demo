@@ -48,7 +48,15 @@
                         "10.0.0.0/24"
                     ]
                 }
-            }
+            },
+						"subnets": [
+								{
+										"name": "sios-0-SUBNET",
+										"properties": {
+												"addressPrefix": "10.0.0.0/24"
+										}
+								}
+						]
         },
         {
             "name": "sios-0-NIC",
@@ -68,7 +76,10 @@
                             "privateIPAddress": "10.0.0.5",
                             "publicIPAddress": {
                                 "id": "[resourceId('Microsoft.Network/publicIPAddresses','sios-0-RDP')]"
-                            }
+                            },
+														"subnet": {
+															"id": "[concat(resourceId('Microsoft.Network/virtualNetworks', 'sios-0-VNET'),'/subnets/','sios-0-SUBNET')]"
+														}
                         }
                     }
                 ]
