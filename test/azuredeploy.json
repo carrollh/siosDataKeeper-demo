@@ -65,7 +65,7 @@
                             "privateIPAllocationMethod": "Static",
                             "privateIPAddress": "10.0.0.5",
                             "publicIPAddress": {
-                                "id": "[resourceId(resourceGroup().name,'Microsoft.Network/publicIPAddresses/sios-0-RDP')]"
+                                "id": "[resourceId('Microsoft.Network/publicIPAddresses','sios-0-RDP')]"
                             },
                             "subnet": {
                                 "id": "sios-0-SUBNET"
@@ -117,7 +117,7 @@
                 "networkProfile": {
                     "networkInterfaces": [
                         {
-                            "id": "[resourceId(resourceGroup().name,'Microsoft.Network/networkInterfaces/sios-0-NIC')]"
+                            "id": "[resourceId(resourceGroup().name,'Microsoft.Network/networkInterfaces','/sios-0-NIC')]"
                         }
                     ]
                 }
