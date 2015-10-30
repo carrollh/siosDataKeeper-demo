@@ -10,7 +10,7 @@
         }
     },
     "variables": {
-				"password": 'Pa$$w0rd',
+				"password": "Pa$$w0rd",
         "location": "[resourceGroup().location]",
         "username": "siosadmin",
         "base64Password": "[base64(variables('password'))]",
@@ -136,7 +136,7 @@
         },
         {
             "type": "Microsoft.Compute/virtualMachines/extensions",
-            "name": "sios-0/configureSiosVM')]",
+            "name": "sios-0/configureSiosVM",
             "apiVersion": "2015-06-15",
             "location": "[variables('location')]",
             "dependsOn": [
