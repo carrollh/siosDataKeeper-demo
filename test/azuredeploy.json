@@ -47,16 +47,16 @@
                     "addressPrefixes": [
                         "10.0.0.0/24"
                     ]
-                }
-            },
-						"subnets": [
-								{
-										"name": "sios-0-SUBNET",
-										"properties": {
-												"addressPrefix": "10.0.0.0/24"
-										}
-								}
-						]
+                },
+								"subnets": [
+								    {
+										    "name": "sios-0-SUBNET",
+										    "properties": {
+										        "addressPrefix": "10.0.0.0/24"
+												}
+								    }
+						    ]
+            }
         },
         {
             "name": "sios-0-NIC",
