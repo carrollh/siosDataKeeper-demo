@@ -70,4 +70,4 @@ if($NodeIndex -eq 0) {
 }
 	
 TraceInfo "Restarting this node after 30 seconds"
-Start-Process -FilePath "cmd.exe" -ArgumentList "/c shutdown /r /t 30"
+#Start-Process -FilePath "cmd.exe" -ArgumentList "/c shutdown /r /t 30"
