@@ -34,13 +34,13 @@ $licFile = ""
 # this also works if the user navigated to the link first and pasted in the full file path url 
 if($LicenseKeyFtpURL.EndsWith(".lic")) {
 	$licFile = $LicenseKeyFtpURL.Substring($LicenseKeyFtpURL.LastIndexOf("/"))
-	Invoke-WebRequest $LicenseKeyFtpURL -OutFile ($licFolder+licFile)
+	Invoke-WebRequest $LicenseKeyFtpURL -OutFile ($licFolder+$licFile)
 } else { # otherwise use the standard file name
 	$licFile = "/DK-W-Cluster.lic"
 	Invoke-WebRequest ($LicenseKeyFtpURL+$licFile) -OutFile ($licFolder+$licFile)
 }
 
-if($(Test-Path ($licFolder+$licFile)) {
+if($(Test-Path ($licFolder+$licFile))) {
 	TraceInfo "License file downloaded successfully."
 	Restart-Service extmirrsvc
 	Add-InitialMirror
