@@ -35,22 +35,7 @@ $licfile = "$env:windir\SysWOW64\LKLicense\extmirrsvc.lic"
 Add-Content $licfile $license
 TraceInfo "Finished installing DataKeeper license"
 
-TraceInfo "Enabling and Configuring WSFC"
-Install-WindowsFeature -Name Failover-Clustering -IncludeManagementTools
-Import-Module FailoverClusters
-# TODO: add node to cluster 
-TraceInfo "Finished Configuring WSFC"
 
-TraceInfo "Verifying ExtMirr Service is Running"
-while(-Not $(Test-Path $env:windir\SysWOW64\LKLicense\extmirrsvc.lic)) {
-		Start-Sleep -Seconds 5
-}
-Restart-Service extmirrsvc
-Start-Sleep -Seconds 10
-if(-Not $(Get-Service extmirrsvc).Status -eq "Running") {
-	TraceInfo "ExtMirr Service failed to start. Mirror not created."
-	return 1
-}
 
 	
 TraceInfo "Restarting this node after 30 seconds"
