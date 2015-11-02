@@ -14,7 +14,7 @@ param
 )
 
 $logFile = "$env:windir\Temp\PrepareDataKeeperNode_log-$datetimestr.txt"
-$licFile = "$env:windir\SysWOW64\LKLicense\extmirrsvc.lic"
+$licFolder = "$env:windir\SysWOW64\LKLicense"
 
 function TraceInfo($log)
 {
@@ -29,9 +29,18 @@ Set-StrictMode -Version 3
 $datetimestr = (Get-Date).ToString("yyyyMMddHHmmssfff")        
 
 TraceInfo "Downloading license file."
-Invoke-WebRequest $LicenseKeyFtpURL -OutFile $licFile
+$licFile = ""
+# check to see if the user pasted in a different license file, and preserve it's name / use it
+# this also works if the user navigated to the link first and pasted in the full file path url 
+if($LicenseKeyFtpURL.EndsWith(".lic")) {
+	$licFile = $LicenseKeyFtpURL.Substring($LicenseKeyFtpURL.LastIndexOf("/"))
+	Invoke-WebRequest $LicenseKeyFtpURL -OutFile ($licFolder+licFile)
+} else { # otherwise use the standard file name
+	$licFile = "/DK-W-Cluster.lic"
+	Invoke-WebRequest ($LicenseKeyFtpURL+$licFile) -OutFile ($licFolder+$licFile)
+}
 
-if($(Test-Path $licFile)) {
+if($(Test-Path ($licFolder+$licFile)) {
 	TraceInfo "License file downloaded successfully."
 	Restart-Service extmirrsvc
 	Add-InitialMirror
