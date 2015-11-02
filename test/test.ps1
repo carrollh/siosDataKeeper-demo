@@ -7,7 +7,10 @@ param
     [String] $Base64Password,
 		
 		[Parameter(Mandatory=$true)]
-    [String] $LicenseKeyFtpURL
+    [String] $LicenseKeyFtpURL,
+		
+		[Parameter(Mandatory=$true)]
+    [int] $NodeIndex 
 )
 
 $logFile = "$env:windir\Temp\PrepareDataKeeperNode_log-$datetimestr.txt"
@@ -39,6 +42,23 @@ if($(Test-Path $licFile)) {
 TraceInfo "Start to set initialize data disk(s)"
 Get-Disk | Where partitionstyle -eq 'raw' | Initialize-Disk -PartitionStyle MBR -PassThru |	New-Partition -AssignDriveLetter -UseMaximumSize | Format-Volume -FileSystem NTFS -Confirm:$false
 TraceInfo "Finished formatting data disk(s)"
+
+TraceInfo "Enabling and Configuring WSFC"
+Install-WindowsFeature -Name Failover-Clustering -IncludeManagementTools
+Import-Module FailoverClusters
+# TODO: add node to cluster 
+TraceInfo "Finished Configuring WSFC"
+
+if(-Not $(Get-Service extmirrsvc).Status -eq "Running") {
+	TraceInfo "ExtMirr Service failed to start. Mirror not created."
+	return 1
+}
+
+if($NodeIndex -eq 0) {	
+	TraceInfo "NodeIndex passed SUCCESSFULLY"
+} else {
+	TraceInfo "NodeIndex FAILURE"
+}
 	
 TraceInfo "Restarting this node after 30 seconds"
 Start-Process -FilePath "cmd.exe" -ArgumentList "/c shutdown /r /t 30"
