@@ -231,7 +231,7 @@ if($(Test-Path ($licFolder+$licFile))) {
 		}
 		
 		TraceInfo "Creating cluster on 10.0.0.7"
-		Create-Cluster DKCLUSTER sios-0,sios-1 -Force
+		Create-Cluster DKCLUSTER sios-0,sios-1 
 
 		Add-InitialMirror
 		
