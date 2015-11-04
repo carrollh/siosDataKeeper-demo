@@ -25,7 +25,9 @@ function TraceInfo($log)
 }
 
 function Add-InitialMirror {
-	TraceInfo "MIRROR CREATED!!!"
+	TraceInfo "Creating initial DataKeeper mirror on volume F"
+	New-DataKeeperJob "Volume F" "initial mirror" sios-0 10.0.0.5 F sios-1 10.0.0.6 F Async
+	New-DataKeeperMirror 10.0.0.5 F 10.0.0.6 F Async
 }
 
 Set-StrictMode -Version 3
@@ -78,10 +80,32 @@ if($LicenseKeyFtpURL.EndsWith(".lic")) {
 	Invoke-WebRequest ($LicenseKeyFtpURL+$licFile) -OutFile ($licFolder+$licFile)
 }
 
+TraceInfo "Enabling WSFC Feature"
+Install-WindowsFeature -Name Failover-Clustering -IncludeManagementTools
+TraceInfo "Failover Cluster Installed"
+
 if($(Test-Path ($licFolder+$licFile))) {
 	TraceInfo "License file downloaded successfully."
 	Restart-Service extmirrsvc
-	Add-InitialMirror
+	
+	if($NodeIndex -eq 0) {
+		while($(get-service -ComputerName sios-1 extmirrsvc).Status -ne "Running") {
+			Start-Sleep 10
+		}
+		Add-InitialMirror
+		
+		# verify mirror exists and retry once if not, incase timing issues prevented it from creating
+		if($(get-datakeepervolumeinfo . F) -eq $NUL) {
+			TraceInfo "Mirror failed to create, trying again..."
+			Add-InitialMirror
+		}
+	}
+	
+	if($(get-datakeepervolumeinfo . F) -ne $NUL) {
+		TraceInfo "Mirror creation SUCCESS."
+	} else {
+		TraceInfo "Mirror Creation FAILED."
+	}
 } else {
 	TraceInfo "Download FAILED, license not obtained."
 }
