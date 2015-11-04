@@ -26,8 +26,142 @@ function TraceInfo($log)
 
 function Add-InitialMirror {
 	TraceInfo "Creating initial DataKeeper mirror on volume F"
-	New-DataKeeperJob "Volume F" "initial mirror" sios-0 10.0.0.5 F sios-1 10.0.0.6 F Async
+	New-DataKeeperJob "Volume F" "initial mirror" sios-0.$DomainFQDN 10.0.0.5 F sios-1.$DomainFQDN 10.0.0.6 F Async
 	New-DataKeeperMirror 10.0.0.5 F 10.0.0.6 F Async
+	& "$env:extmirrbase\emcmd.exe" . REGISTERCLUSTERVOLUME F
+}
+
+# the following function was adapted from the script provided my Microsoft here:
+# https://gallery.technet.microsoft.com/scriptcenter/Create-WSFC-Cluster-for-7c207d3a
+function CreateCluster {
+	param(
+		[Parameter(Mandatory=$true)]
+		$ClusterName,
+		[Parameter(Mandatory=$true)]
+		$ClusterNodes,
+		[Parameter(Mandatory=$false)]
+		[Switch]$Force
+	)
+	$ClusterFeature = Get-WindowsFeature "Failover-Clustering"
+  $ClusterPowerShellTools = Get-WindowsFeature "RSAT-Clustering-PowerShell"
+  $ClusterCmdTools = Get-WindowsFeature "RSAT-Clustering-CmdInterface"
+
+  if ($ClusterFeature.Installed -eq $false -or $ClusterPowerShellTools.Installed -eq $false -or $ClusterCmdTools.Installed -eq $false)
+  {
+    TraceInfo "Needed cluster features were not found on the machine. Please run the following command to install them:"
+    TraceInfo "Add-WindowsFeature 'Failover-Clustering', 'RSAT-Clustering-PowerShell', 'RSAT-Clustering-CmdInterface'"
+    exit 1
+  }
+	
+	Import-Module FailoverClusters
+
+	$LocalMachineName = $env:computername
+	$LocalNodePresent = $false
+
+	# The below line will make sure that the script is running on one of the specified cluster nodes
+	# The Spplit(".") is needed, because user might specify machines using their fully qualified domain name, but we only care about the machine name in the below verification
+	@($ClusterNodes) | Foreach-Object { 
+												 if ([string]::Compare(($_).Split(".")[0], $LocalMachineName, $true) -eq 0) { 
+															 $LocalNodePresent = $true } }
+
+
+	if ($LocalNodePresent -eq $false)
+	{
+		TraceInfo "Local machine where this script is running, must be one of the cluster nodes"
+		exit 1
+	}
+
+	if ($Force)
+	{
+		TraceInfo "Forcing cleanup of the specified nodes"
+
+		@($ClusterNodes) | Foreach-Object { Clear-ClusterNode "$_" -Force } 
+
+	}
+	else
+	{
+
+		TraceInfo "Making sure that there is no cluster currently running on the current node"
+
+		$CurrentCluster = $null
+		# In case there is no cluster presetn, we don't want to show an ugly error message, so we eat it out by redirecting
+		# the error output to null
+		$CurrentCluster = Get-Cluster 2> $null
+
+
+		if ($CurrentCluster -ne $null)
+		{
+			TraceInfo "There is an existing cluster on this machine. Please remove any existing cluster settings from the current machine before running this script"
+			exit 1
+		}
+
+	}
+
+
+	TraceInfo "Trying to create a one node cluster on the current machine"
+
+	Sleep 5
+
+	New-Cluster -Name $ClusterName -NoStorage -Node $LocalMachineName
+
+	TraceInfo "Verify that cluster is present after creation"
+
+	$CurrentCluster = $null
+	$CurrentCluster = Get-Cluster
+
+	if ($CurrentCluster -eq $null)
+	{
+		TraceInfo "Cluster does not exist"
+		exit 1
+	}
+
+	TraceInfo "Bring offline the cluster name resource"
+	Sleep 5
+	Stop-ClusterResource "Cluster Name"
+
+	TraceInfo "Get all IP addresses associated with cluster group"
+	$AllClusterGroupIPs = Get-Cluster | Get-ClusterGroup | Get-ClusterResource | Where-Object {$_.ResourceType.Name -eq "IP Address" -or $_.ResourceType.Name -eq "IPv6 Tunnel Address" -or $_.ResourceType.Name -eq "IPv6 Address"}
+
+	$NumberOfIPs = @($AllClusterGroupIPs).Count
+	TraceInfo "Found $NumberOfIPs IP addresses"
+
+	TraceInfo "Bringing all IPs offline"
+	Sleep 5
+	$AllClusterGroupIPs | Stop-ClusterResource
+
+	TraceInfo "Get the first IPv4 resource"
+	$AllIPv4Resources = Get-Cluster | Get-ClusterGroup | Get-ClusterResource | Where-Object {$_.ResourceType.Name -eq "IP Address"}
+	$FirstIPv4Resource = @($AllIPv4Resources)[0];
+
+	TraceInfo "Removing all IPs except one IPv4 resource"
+	Sleep 5
+	$AllClusterGroupIPs | Where-Object {$_.Name -ne $FirstIPv4Resource.Name} | Remove-ClusterResource -Force
+
+	$NameOfIPv4Resource = $FirstIPv4Resource.Name
+
+	TraceInfo "Setting the cluster IP address to a link local address"
+	Sleep 5
+	cluster res $NameOfIPv4Resource /priv enabledhcp=0 overrideaddressmatch=1 address=169.254.1.1 subnetmask=255.255.0.0
+
+	$ClusterNameResource = Get-ClusterResource "Cluster Name"
+
+	$ClusterNameResource | Start-ClusterResource -Wait 60
+
+	if ((Get-ClusterResource "Cluster Name").State -ne "Online")
+	{
+		TraceInfo "There was an error onlining the cluster name resource"
+		exit 1
+	}
+
+
+	TraceInfo "Adding other nodes to the cluster" 
+	@($ClusterNodes) | Foreach-Object { 
+												 if ([string]::Compare(($_).Split(".")[0],$LocalMachineName, $true) -ne 0) { 
+															 Add-ClusterNode "$_" } }
+
+	TraceInfo "Cluster creation finished !"
+	exit 0 
+
 }
 
 Set-StrictMode -Version 3
@@ -82,7 +216,7 @@ if($LicenseKeyFtpURL.EndsWith(".lic")) {
 
 TraceInfo "Enabling WSFC Feature"
 Install-WindowsFeature -Name Failover-Clustering -IncludeManagementTools
-TraceInfo "Failover Cluster Installed"
+Add-WindowsFeature Failover-Clustering,RSAT-Clustering-PowerShell,RSAT-Clustering-CmdInterface
 
 if($(Test-Path ($licFolder+$licFile))) {
 	TraceInfo "License file downloaded successfully."
@@ -92,6 +226,10 @@ if($(Test-Path ($licFolder+$licFile))) {
 		while($(get-service -ComputerName sios-1 extmirrsvc).Status -ne "Running") {
 			Start-Sleep 10
 		}
+		
+		TraceInfo "Creating cluster on 10.0.0.7"
+		Create-Cluster DKCLUSTER sios-0,sios-1 -Force
+
 		Add-InitialMirror
 		
 		# verify mirror exists and retry once if not, incase timing issues prevented it from creating
