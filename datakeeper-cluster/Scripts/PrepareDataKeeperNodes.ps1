@@ -26,14 +26,17 @@ function TraceInfo($log)
 
 function Add-InitialMirror {
 	TraceInfo "Creating initial DataKeeper mirror on volume F"
-	New-DataKeeperJob "Volume F" "initial mirror" sios-0.$DomainFQDN 10.0.0.5 F sios-1.$DomainFQDN 10.0.0.6 F Async
-	New-DataKeeperMirror 10.0.0.5 F 10.0.0.6 F Async
+	$jobInfo = New-DataKeeperJob "Volume F" "initial mirror" sios-0.$DomainFQDN 10.0.0.5 F sios-1.$DomainFQDN 10.0.0.6 F Async
+	TraceInfo "Job Info: $jobInfo"
+	$mirrorStatus = New-DataKeeperMirror 10.0.0.5 F 10.0.0.6 F Async
+	TraceInfo "Mirror Status: $mirrorStatus"
+	
 	& "$env:extmirrbase\emcmd.exe" . REGISTERCLUSTERVOLUME F
 }
 
 # the following function was adapted from the script provided my Microsoft here:
 # https://gallery.technet.microsoft.com/scriptcenter/Create-WSFC-Cluster-for-7c207d3a
-function CreateCluster {
+function Create-Cluster {
 	param(
 		[Parameter(Mandatory=$true)]
 		$ClusterName,
