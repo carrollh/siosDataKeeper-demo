@@ -98,7 +98,6 @@
             "name": "CreatingStorageAccounts",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2015-01-01",
-            "location": "variables('location')",
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
@@ -122,7 +121,6 @@
             "name": "SettingUpRdp",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2015-01-01",
-            "location": "variables('location')",
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
@@ -146,7 +144,6 @@
             "name": "CreatingAvailabilitySets",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2015-01-01",
-            "location": "variables('location')",
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
@@ -167,7 +164,6 @@
             "name": "CreatingVirtualNetwork",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2015-01-01",
-            "location": "variables('location')",
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
@@ -194,7 +190,6 @@
             "name": "CreatingNetworkInterfaces",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2015-01-01",
-            "location": "variables('location')",
             "dependsOn": [
                 "Microsoft.Resources/deployments/CreatingVirtualNetwork",
                 "Microsoft.Resources/deployments/SettingUpRdp"
@@ -234,7 +229,6 @@
             "name": "ProvisioningPrimaryADDomainController",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2015-01-01",
-            "location": "variables('location')",
             "dependsOn": [
                 "Microsoft.Resources/deployments/CreatingStorageAccounts",
                 "Microsoft.Resources/deployments/CreatingNetworkInterfaces",
@@ -300,7 +294,6 @@
             "name": "UpdatingDNStoPrimaryADVM",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2015-01-01",
-            "location": "variables('location')",
             "dependsOn": [
                 "ProvisioningPrimaryADDomainController"
             ],
@@ -335,7 +328,6 @@
             "name": "CreatingSiosVirtualMachines",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2015-01-01",
-            "location": "variables('location')",
             "dependsOn": [
                 "Microsoft.Resources/deployments/CreatingStorageAccounts",
                 "Microsoft.Resources/deployments/CreatingNetworkInterfaces",
