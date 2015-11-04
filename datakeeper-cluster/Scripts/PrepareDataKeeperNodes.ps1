@@ -48,7 +48,7 @@ if($domainRole -ne 3)
         try
         {
             Add-Computer -DomainName $DomainFQDN -Credential $domainUserCred -ErrorAction Stop
-            TraceInfo "Joined to the domain $DomainFQDN."
+            TraceInfo "Joined to the domain $DomainFQDN"
             break
         }
         catch
@@ -86,22 +86,5 @@ if($(Test-Path ($licFolder+$licFile))) {
 	TraceInfo "Download FAILED, license not obtained."
 }
 
-TraceInfo "Downloading license file."
-$licFile = ""
-# check to see if the user pasted in a different license file, and preserve it's name / use it
-# this also works if the user navigated to the link first and pasted in the full file path url 
-if($LicenseKeyFtpURL.EndsWith(".lic")) {
-	$licFile = $LicenseKeyFtpURL.Substring($LicenseKeyFtpURL.LastIndexOf("/"))
-	Invoke-WebRequest $LicenseKeyFtpURL -OutFile ($licFolder+$licFile)
-} else { # otherwise use the standard file name
-	$licFile = "/DK-W-Cluster.lic"
-	Invoke-WebRequest ($LicenseKeyFtpURL+$licFile) -OutFile ($licFolder+$licFile)
-}
-
-if($(Test-Path ($licFolder+$licFile))) {
-	TraceInfo "License file downloaded successfully."
-	Restart-Service extmirrsvc
-	Add-InitialMirror
-} else {
-	TraceInfo "Download FAILED, license not obtained."
-}
+TraceInfo "Restart after 30 seconds"
+Start-Process -FilePath "cmd.exe" -ArgumentList "/c shutdown /r /t 30"
