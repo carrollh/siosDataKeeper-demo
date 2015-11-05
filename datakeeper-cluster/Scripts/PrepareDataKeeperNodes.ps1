@@ -46,8 +46,8 @@ function Create-Cluster {
 		[Switch]$Force
 	)
 	$ClusterFeature = Get-WindowsFeature "Failover-Clustering"
-  $ClusterPowerShellTools = Get-WindowsFeature "RSAT-Clustering-PowerShell"
-  $ClusterCmdTools = Get-WindowsFeature "RSAT-Clustering-CmdInterface"
+	$ClusterPowerShellTools = Get-WindowsFeature "RSAT-Clustering-PowerShell"
+	$ClusterCmdTools = Get-WindowsFeature "RSAT-Clustering-CmdInterface"
 
   if ($ClusterFeature.Installed -eq $false -or $ClusterPowerShellTools.Installed -eq $false -or $ClusterCmdTools.Installed -eq $false)
   {
@@ -59,63 +59,30 @@ function Create-Cluster {
 	Import-Module FailoverClusters
 
 	$LocalMachineName = $env:computername
-	$LocalNodePresent = $false
-
-	# The below line will make sure that the script is running on one of the specified cluster nodes
-	# The Spplit(".") is needed, because user might specify machines using their fully qualified domain name, but we only care about the machine name in the below verification
-	@($ClusterNodes) | Foreach-Object { 
-												 if ([string]::Compare(($_).Split(".")[0], $LocalMachineName, $true) -eq 0) { 
-															 $LocalNodePresent = $true } }
-
-
-	if ($LocalNodePresent -eq $false)
-	{
-		TraceInfo "Local machine where this script is running, must be one of the cluster nodes"
-		exit 1
-	}
-
-	if ($Force)
-	{
-		TraceInfo "Forcing cleanup of the specified nodes"
-
-		@($ClusterNodes) | Foreach-Object { Clear-ClusterNode "$_" -Force } 
-
-	}
-	else
-	{
-
-		TraceInfo "Making sure that there is no cluster currently running on the current node"
-
-		$CurrentCluster = $null
-		# In case there is no cluster presetn, we don't want to show an ugly error message, so we eat it out by redirecting
-		# the error output to null
-		$CurrentCluster = Get-Cluster 2> $null
-
-
-		if ($CurrentCluster -ne $null)
-		{
-			TraceInfo "There is an existing cluster on this machine. Please remove any existing cluster settings from the current machine before running this script"
-			exit 1
-		}
-
-	}
-
 
 	TraceInfo "Trying to create a one node cluster on the current machine"
 
-	Sleep 5
+	Start-Sleep 10
+	$attempt = 0
+	while($currentCluster -eq $null -AND $attempt -lt 10) {
+		TraceInfo "Calling 'New-Cluster' using $ClusterName and $LocalMachineName"
+		New-Cluster -Name $ClusterName -Node $LocalMachineName
 
-	TraceInfo "Calling 'New-Cluster' using $ClusterName and $LocalMachineName"
-	New-Cluster -Name $ClusterName -Node $LocalMachineName
+		TraceInfo "Verify that cluster is present after creation"
 
-	TraceInfo "Verify that cluster is present after creation"
+		$CurrentCluster = $null
+		$CurrentCluster = Get-Cluster
 
-	$CurrentCluster = $null
-	$CurrentCluster = Get-Cluster
-
-	if ($CurrentCluster -eq $null)
-	{
-		TraceInfo "Cluster does not exist"
+		if ($CurrentCluster -eq $null -AND $attempt -lt 10)
+		{
+			TraceInfo "Cluster does not exist"
+			Start-Sleep 60
+			$attempt++
+		}
+	}
+	
+	if ($CurrentCluster -eq $null) {
+		TraceInfo "Cluster creation completely failed, exiting"
 		exit 1
 	}
 
