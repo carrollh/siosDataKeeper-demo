@@ -82,7 +82,7 @@ function Create-Cluster {
 	}
 	
 	if ($CurrentCluster -eq $null) {
-		TraceInfo "Cluster creation completely failed, exiting"
+		TraceInfo "Cluster creation failed completely, exiting"
 		exit 1
 	}
 
@@ -131,8 +131,6 @@ function Create-Cluster {
 															 Add-ClusterNode "$_" } }
 
 	TraceInfo "Cluster creation finished !"
-	exit 0 
-
 }
 
 Set-StrictMode -Version 3
@@ -192,6 +190,12 @@ Add-WindowsFeature Failover-Clustering,RSAT-Clustering-PowerShell,RSAT-Clusterin
 if($(Test-Path ($licFolder+$licFile))) {
 	TraceInfo "License file downloaded successfully."
 	Restart-Service extmirrsvc
+	
+	Start-Sleep 5
+	if($(Get-Service extmirrsvc).Status -ne "Running") {
+			TraceInfo "DataKeeper Service (ExtMirrSvc) failed to start! Exiting."
+			exit 1
+	}
 	
 	if($NodeIndex -eq 0) {
 		while($(get-service -ComputerName sios-1 extmirrsvc).Status -ne "Running") {
