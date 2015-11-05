@@ -105,7 +105,8 @@ function Create-Cluster {
 
 	Sleep 5
 
-	New-Cluster -Name $ClusterName -NoStorage -Node $LocalMachineName
+	TraceInfo "Calling 'New-Cluster' using $ClusterName and $LocalMachineName"
+	New-Cluster -Name $ClusterName -Node $LocalMachineName
 
 	TraceInfo "Verify that cluster is present after creation"
 
