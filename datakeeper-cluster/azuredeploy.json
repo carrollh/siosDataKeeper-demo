@@ -33,10 +33,10 @@
     "variables": {
         "location": "[resourceGroup().location]",
         "adminBase64Password": "[base64(parameters('adminPassword'))]",
-        "adVMSize": "Standard_DS1",
-        "siosVMSize": "Standard_DS1",
+        "adVMSize": "Standard_A1",
+        "siosVMSize": "Standard_A1",
         "domainName": "[concat(parameters('newStorageAccountNamePrefix'), '.local')]",
-        "storageAccountType": "Premium_LRS",
+        "storageAccountType": "Standard_LRS",
         "pdcRdpIPAddressName": "pdcRdpIP",
         "siosVMRdpIPAddressNamePrefix": "sios",
         "virtualNetworkAddressRange": "10.0.0.0/16",
