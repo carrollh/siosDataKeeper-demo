@@ -21,7 +21,34 @@ $licFolder = "$env:windir\SysWOW64\LKLicense"
 
 function TraceInfo($log)
 {
-     "$(Get-Date -format 'MM/dd/yyyy HH:mm:ss') $log" | Add-Content -Confirm:$false $logFile 
+    "$(Get-Date -format 'MM/dd/yyyy HH:mm:ss') $log" | Add-Content -Confirm:$false $logFile 
+}
+
+function Write-ConfigurationReport {
+		$ji = $(& "$env:extmirrbase\emcmd" . getjobinfoforvol f)
+		if($ji -eq $NULL) {
+			TraceInfo "Job NOT created"
+		} else {
+			TraceInfo "Job CREATED"
+		}
+		
+		$vi = $(Get-DataKeeperVolumeInfo . F)
+		if($vi -eq $NULL) {
+				TraceInfo "Mirror NOT created"
+		} else {
+			if($vi.MirrorRole -ne "None") {
+				TraceInfo "Mirror CREATED"
+			} else {
+				TraceInfo "Mirror NOT created"
+			}
+		}
+		
+		$clus = $(Get-Cluster)
+		if($clus -eq $NULL) {
+				TraceInfo "Cluster NOT created"
+		} else {
+				TraceInfo "$clus.Name CREATED"
+		}
 }
 
 function Add-InitialMirror {
@@ -136,6 +163,27 @@ function Create-Cluster {
 	TraceInfo "Cluster-ClusterNode: $(Get-ClusterNode)"
 }
 
+function Test-Configuration {
+	if($(Get-Cluster).Name -ne "DKCLUSTER") {
+	TraceInfo "'Re'-Creating cluster because the first time didn't actually work..."
+	$cluster = $(New-Cluster -Name DKCLUSTER -Node sios-0,sios-1 -StaticAddress 10.0.0.7 -NoStorage)
+	TraceInfo "Cluster logs generated."
+	Get-ClusterLog
+	TraceInfo "$(Get-Cluster).Name created?"
+	
+	$vi = $(Get-DataKeeperVolumeInfo . F)
+	if($vi -ne $NULL) {
+		# see if the mirror exists , and create it if not
+		if($vi.MirrorRole -eq "None") {
+			New-DataKeeperMirror "Volume F" "initial mirror" sios-0 10.0.0.5 F sios-1 10.0.0.6 F Async
+			& "$env:extmirrbase\emcmd.exe" . REGISTERCLUSTERVOLUME F			
+		} 
+	} else {
+		Add-InitialMirror
+	}
+}
+}
+
 Set-StrictMode -Version 3
 $datetimestr = (Get-Date).ToString("yyyyMMddHHmmssfff")        
 
@@ -211,13 +259,13 @@ if($(Test-Path ($licFolder+$licFile))) {
 		Add-InitialMirror
 		
 		# verify mirror exists and retry once if not, incase timing issues prevented it from creating
-		if($(get-datakeepervolumeinfo . F) -eq $NUL) {
+		if($(get-datakeepervolumeinfo . F) -eq $NULL) {
 			TraceInfo "Mirror failed to create, trying again..."
 			Add-InitialMirror
 		}
 	}
 	
-	if($(get-datakeepervolumeinfo . F) -ne $NUL) {
+	if($(get-datakeepervolumeinfo . F) -ne $NULL) {
 		TraceInfo "Mirror creation SUCCESS."
 	} else {
 		TraceInfo "Mirror Creation FAILED."
@@ -226,9 +274,9 @@ if($(Test-Path ($licFolder+$licFile))) {
 	TraceInfo "Download FAILED, license not obtained."
 }
 
-TraceInfo "Cluster logs generated."
-Get-ClusterLog
-TraceInfo "$(Get-ClusterNode)"
+Test-Configuration
+
+Write-ConfigurationReport
 
 TraceInfo "Restart after 30 seconds"
 Start-Process -FilePath "cmd.exe" -ArgumentList "/c shutdown /r /t 30"
