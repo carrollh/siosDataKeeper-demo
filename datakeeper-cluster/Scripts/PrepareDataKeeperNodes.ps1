@@ -66,7 +66,7 @@ function Create-Cluster {
 	$attempt = 0
 	while($currentCluster -eq $null -AND $attempt -lt 10) {
 		TraceInfo "Calling 'New-Cluster' using $ClusterName and $LocalMachineName"
-		New-Cluster -Name $ClusterName -Node $LocalMachineName
+		New-Cluster -Name $ClusterName -Node $LocalMachineName -NoStorage
 
 		TraceInfo "Verify that cluster is present after creation"
 
@@ -130,7 +130,10 @@ function Create-Cluster {
 												 if ([string]::Compare(($_).Split(".")[0],$LocalMachineName, $true) -ne 0) { 
 															 Add-ClusterNode "$_" } }
 
-	TraceInfo "Cluster creation finished !"
+	TraceInfo "Cluster creation finished! Cluster logs can be found in $env:windir\Cluster\Reports."
+	Get-ClusterLog
+	Get-ClusterLog -Node sios-1
+	TraceInfo "Cluster-ClusterNode: $(Get-ClusterNode)"
 }
 
 Set-StrictMode -Version 3
@@ -222,6 +225,10 @@ if($(Test-Path ($licFolder+$licFile))) {
 } else {
 	TraceInfo "Download FAILED, license not obtained."
 }
+
+TraceInfo "Cluster logs generated."
+Get-ClusterLog
+TraceInfo "$(Get-ClusterNode)"
 
 TraceInfo "Restart after 30 seconds"
 Start-Process -FilePath "cmd.exe" -ArgumentList "/c shutdown /r /t 30"
