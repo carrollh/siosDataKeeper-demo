@@ -46,6 +46,7 @@ function Write-ConfigurationReport {
 		$clus = $(Get-Cluster)
 		if($clus -eq $NULL) {
 				TraceInfo "Cluster NOT created"
+
 		} else {
 				TraceInfo "$clus.Name CREATED"
 		}
@@ -164,24 +165,24 @@ function Create-Cluster {
 }
 
 function Test-Configuration {
-	if($(Get-Cluster).Name -ne "DKCLUSTER") {
-	TraceInfo "'Re'-Creating cluster because the first time didn't actually work..."
-	$cluster = $(New-Cluster -Name DKCLUSTER -Node sios-0,sios-1 -StaticAddress 10.0.0.7 -NoStorage)
-	TraceInfo "Cluster logs generated."
-	Get-ClusterLog
-	TraceInfo "$(Get-Cluster).Name created?"
-	
-	$vi = $(Get-DataKeeperVolumeInfo . F)
-	if($vi -ne $NULL) {
-		# see if the mirror exists , and create it if not
-		if($vi.MirrorRole -eq "None") {
-			New-DataKeeperMirror "Volume F" "initial mirror" sios-0 10.0.0.5 F sios-1 10.0.0.6 F Async
-			& "$env:extmirrbase\emcmd.exe" . REGISTERCLUSTERVOLUME F			
-		} 
-	} else {
-		Add-InitialMirror
+	if($(Get-Cluster) -eq $NULL) {
+		TraceInfo "'Re'-Creating cluster because the first time didn't actually work..."
+		$cluster = $(New-Cluster -Name DKCLUSTER -Node sios-0,sios-1 -StaticAddress 10.0.0.7 -NoStorage)
+		TraceInfo "Cluster logs generated."
+		Get-ClusterLog
+		TraceInfo "$(Get-Cluster).Name created?"
+		
+		$vi = $(Get-DataKeeperVolumeInfo . F)
+		if($vi -ne $NULL) {
+			# see if the mirror exists , and create it if not
+			if($vi.MirrorRole -eq "None") {
+				New-DataKeeperMirror "Volume F" "initial mirror" sios-0 10.0.0.5 F sios-1 10.0.0.6 F Async
+				& "$env:extmirrbase\emcmd.exe" . REGISTERCLUSTERVOLUME F			
+			} 
+		} else {
+			Add-InitialMirror
+		}
 	}
-}
 }
 
 Set-StrictMode -Version 3
