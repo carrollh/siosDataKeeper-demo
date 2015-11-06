@@ -169,6 +169,8 @@ Join-Domain
 
 Initialize-DataDisks
 
+Install-License
+
 if($NodeIndex -eq 0) {
 	# create the job + mirror with this node as source
 	Add-InitialMirror	

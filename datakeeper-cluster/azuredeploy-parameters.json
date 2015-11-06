@@ -2,7 +2,7 @@
 	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
 	"contentVersion": "1.0.0.0",
 	"parameters": {
-		"newStorageAccountNamePrefix": { "value": "datakeeper" },
+		"newStorageAccountNamePrefix": { "value": "datakeeper2" },
 		"adminUsername":{ "value":"siosadmin" },
 		"adminPassword":{ "value":"SIOS!5105" },
 		"licenseKeyFtpURL": { "value": "http://ftp.us.sios.com/pickup/EVAL_JOE_GUY_STCEngineering_2015-11-02_DKCE" }
