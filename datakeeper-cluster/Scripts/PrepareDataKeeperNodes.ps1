@@ -9,10 +9,10 @@ param
     [Parameter(Mandatory=$true)]
     [String] $AdminBase64Password,
 		
-		[Parameter(Mandatory=$true)]
+	[Parameter(Mandatory=$true)]
     [String] $LicenseKeyFtpURL,
 		
-		[Parameter(Mandatory=$true)]
+	[Parameter(Mandatory=$true)]
     [int] $NodeIndex	
 )
 
@@ -24,34 +24,6 @@ function TraceInfo($log)
     "$(Get-Date -format 'MM/dd/yyyy HH:mm:ss') $log" | Add-Content -Confirm:$false $logFile 
 }
 
-function Write-ConfigurationReport {
-		$ji = $(& "$env:extmirrbase\emcmd" . getjobinfoforvol f)
-		if($ji -eq $NULL) {
-			TraceInfo "Job NOT created"
-		} else {
-			TraceInfo "Job CREATED"
-		}
-		
-		$vi = $(Get-DataKeeperVolumeInfo . F)
-		if($vi -eq $NULL) {
-				TraceInfo "Mirror NOT created"
-		} else {
-			if($vi.MirrorRole -ne "None") {
-				TraceInfo "Mirror CREATED"
-			} else {
-				TraceInfo "Mirror NOT created"
-			}
-		}
-		
-		$clus = $(Get-Cluster)
-		if($clus -eq $NULL) {
-				TraceInfo "Cluster NOT created"
-
-		} else {
-				TraceInfo "$clus.Name CREATED"
-		}
-}
-
 function Add-InitialMirror {
 	TraceInfo "Creating initial DataKeeper mirror on volume F"
 	$jobInfo = New-DataKeeperJob "Volume F" "initial mirror" sios-0.$DomainFQDN 10.0.0.5 F sios-1.$DomainFQDN 10.0.0.6 F Async
@@ -60,129 +32,6 @@ function Add-InitialMirror {
 	TraceInfo "Mirror Status: $mirrorStatus"
 	
 	& "$env:extmirrbase\emcmd.exe" . REGISTERCLUSTERVOLUME F
-}
-
-# the following function was adapted from the script provided my Microsoft here:
-# https://gallery.technet.microsoft.com/scriptcenter/Create-WSFC-Cluster-for-7c207d3a
-function Create-Cluster {
-	param(
-		[Parameter(Mandatory=$true)]
-		$ClusterName,
-		[Parameter(Mandatory=$true)]
-		$ClusterNodes,
-		[Parameter(Mandatory=$false)]
-		[Switch]$Force
-	)
-	$ClusterFeature = Get-WindowsFeature "Failover-Clustering"
-	$ClusterPowerShellTools = Get-WindowsFeature "RSAT-Clustering-PowerShell"
-	$ClusterCmdTools = Get-WindowsFeature "RSAT-Clustering-CmdInterface"
-
-  if ($ClusterFeature.Installed -eq $false -or $ClusterPowerShellTools.Installed -eq $false -or $ClusterCmdTools.Installed -eq $false)
-  {
-    TraceInfo "Needed cluster features were not found on the machine. Please run the following command to install them:"
-    TraceInfo "Add-WindowsFeature 'Failover-Clustering', 'RSAT-Clustering-PowerShell', 'RSAT-Clustering-CmdInterface'"
-    exit 1
-  }
-	
-	Import-Module FailoverClusters
-
-	$LocalMachineName = $env:computername
-
-	TraceInfo "Trying to create a one node cluster on the current machine"
-
-	Start-Sleep 10
-	$attempt = 0
-	while($currentCluster -eq $null -AND $attempt -lt 10) {
-		TraceInfo "Calling 'New-Cluster' using $ClusterName and $LocalMachineName"
-		New-Cluster -Name $ClusterName -Node $LocalMachineName -NoStorage
-
-		TraceInfo "Verify that cluster is present after creation"
-
-		$CurrentCluster = $null
-		$CurrentCluster = Get-Cluster
-
-		if ($CurrentCluster -eq $null -AND $attempt -lt 10)
-		{
-			TraceInfo "Cluster does not exist"
-			Start-Sleep 60
-			$attempt++
-		}
-	}
-	
-	if ($CurrentCluster -eq $null) {
-		TraceInfo "Cluster creation failed completely, exiting"
-		exit 1
-	}
-
-	TraceInfo "Bring offline the cluster name resource"
-	Sleep 5
-	Stop-ClusterResource "Cluster Name"
-
-	TraceInfo "Get all IP addresses associated with cluster group"
-	$AllClusterGroupIPs = Get-Cluster | Get-ClusterGroup | Get-ClusterResource | Where-Object {$_.ResourceType.Name -eq "IP Address" -or $_.ResourceType.Name -eq "IPv6 Tunnel Address" -or $_.ResourceType.Name -eq "IPv6 Address"}
-
-	$NumberOfIPs = @($AllClusterGroupIPs).Count
-	TraceInfo "Found $NumberOfIPs IP addresses"
-
-	TraceInfo "Bringing all IPs offline"
-	Sleep 5
-	$AllClusterGroupIPs | Stop-ClusterResource
-
-	TraceInfo "Get the first IPv4 resource"
-	$AllIPv4Resources = Get-Cluster | Get-ClusterGroup | Get-ClusterResource | Where-Object {$_.ResourceType.Name -eq "IP Address"}
-	$FirstIPv4Resource = @($AllIPv4Resources)[0];
-
-	TraceInfo "Removing all IPs except one IPv4 resource"
-	Sleep 5
-	$AllClusterGroupIPs | Where-Object {$_.Name -ne $FirstIPv4Resource.Name} | Remove-ClusterResource -Force
-
-	$NameOfIPv4Resource = $FirstIPv4Resource.Name
-
-	TraceInfo "Setting the cluster IP address to a link local address"
-	Sleep 5
-	cluster res $NameOfIPv4Resource /priv enabledhcp=0 overrideaddressmatch=1 address=169.254.1.1 subnetmask=255.255.0.0
-
-	$ClusterNameResource = Get-ClusterResource "Cluster Name"
-
-	$ClusterNameResource | Start-ClusterResource -Wait 60
-
-	if ((Get-ClusterResource "Cluster Name").State -ne "Online")
-	{
-		TraceInfo "There was an error onlining the cluster name resource"
-		exit 1
-	}
-
-
-	TraceInfo "Adding other nodes to the cluster" 
-	@($ClusterNodes) | Foreach-Object { 
-												 if ([string]::Compare(($_).Split(".")[0],$LocalMachineName, $true) -ne 0) { 
-															 Add-ClusterNode "$_" } }
-
-	TraceInfo "Cluster creation finished! Cluster logs can be found in $env:windir\Cluster\Reports."
-	Get-ClusterLog
-	Get-ClusterLog -Node sios-1
-	TraceInfo "Cluster-ClusterNode: $(Get-ClusterNode)"
-}
-
-function Test-Configuration {
-	if($(Get-Cluster) -eq $NULL) {
-		TraceInfo "'Re'-Creating cluster because the first time didn't actually work..."
-		$cluster = $(New-Cluster -Name DKCLUSTER -Node sios-0,sios-1 -StaticAddress 10.0.0.7 -NoStorage)
-		TraceInfo "Cluster logs generated."
-		Get-ClusterLog
-		TraceInfo "$(Get-Cluster).Name created?"
-		
-		$vi = $(Get-DataKeeperVolumeInfo . F)
-		if($vi -ne $NULL) {
-			# see if the mirror exists , and create it if not
-			if($vi.MirrorRole -eq "None") {
-				New-DataKeeperMirror "Volume F" "initial mirror" sios-0 10.0.0.5 F sios-1 10.0.0.6 F Async
-				& "$env:extmirrbase\emcmd.exe" . REGISTERCLUSTERVOLUME F			
-			} 
-		} else {
-			Add-InitialMirror
-		}
-	}
 }
 
 Set-StrictMode -Version 3
@@ -245,7 +94,7 @@ if($(Test-Path ($licFolder+$licFile))) {
 	
 	Start-Sleep 5
 	if($(Get-Service extmirrsvc).Status -ne "Running") {
-			TraceInfo "DataKeeper Service (ExtMirrSvc) failed to start! Exiting."
+			TraceInfo "DataKeeper Service (ExtMirrSvc) failed to start! License may not be valid. Exiting."
 			exit 1
 	}
 	
@@ -254,18 +103,16 @@ if($(Test-Path ($licFolder+$licFile))) {
 			Start-Sleep 10
 		}
 		
-		TraceInfo "Creating cluster on 10.0.0.7"
-		Create-Cluster DKCLUSTER sios-0,sios-1 
-
 		Add-InitialMirror
 		
 		# verify mirror exists and retry once if not, incase timing issues prevented it from creating
 		if($(get-datakeepervolumeinfo . F) -eq $NULL) {
 			TraceInfo "Mirror failed to create, trying again..."
 			Add-InitialMirror
-		}
+		} 
 	}
 	
+	# check if the job + mirror created successfully or not
 	if($(get-datakeepervolumeinfo . F) -ne $NULL) {
 		TraceInfo "Mirror creation SUCCESS."
 	} else {
@@ -274,10 +121,6 @@ if($(Test-Path ($licFolder+$licFile))) {
 } else {
 	TraceInfo "Download FAILED, license not obtained."
 }
-
-Test-Configuration
-
-Write-ConfigurationReport
 
 TraceInfo "Restart after 30 seconds"
 Start-Process -FilePath "cmd.exe" -ArgumentList "/c shutdown /r /t 30"
