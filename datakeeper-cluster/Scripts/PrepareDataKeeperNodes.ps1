@@ -16,6 +16,8 @@ param
     [int] $NodeIndex	
 )
 
+Set-StrictMode -Version 3
+$datetimestr = (Get-Date).ToString("yyyyMMddHHmmssfff")        
 $logFile = "$env:windir\Temp\PrepareDataKeeperNode_log-$datetimestr.txt"
 $licFolder = "$env:windir\SysWOW64\LKLicense"
 
@@ -25,9 +27,6 @@ function TraceInfo($log)
 }
 
 function Join-Domain {
-	Set-StrictMode -Version 3
-	$datetimestr = (Get-Date).ToString("yyyyMMddHHmmssfff")        
-
 	$AdminPassword = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($AdminBase64Password))
 	$domainNetBios = $DomainFQDN.Split(".")[0].ToUpper()
 	$domainUserCred = New-Object -TypeName System.Management.Automation.PSCredential `
@@ -105,6 +104,8 @@ function Add-InitialMirror {
 	$svc = $(get-service -ComputerName sios-1 extmirrsvc)
 	while($svc.Status -ne "Running" -AND $attempt -lt 10) {
 		$svc = $(get-service -ComputerName sios-1 extmirrsvc)
+		TraceInfo "ExtMirrSvc not running. Checking again in 30 seconds."
+		TraceInfo "$svc"
 		$attempt++
 		Start-Sleep 30
 	}
