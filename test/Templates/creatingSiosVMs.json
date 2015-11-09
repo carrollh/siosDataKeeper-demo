@@ -1,0 +1,136 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "siosVMName": {
+      "type": "string"
+    },
+    "location": {
+      "type": "string"
+    },
+    "newStorageAccountNamePrefix": {
+      "type": "string"
+    },
+    "availabilitySet": {
+      "type": "string"
+    },
+    "siosVMSize": {
+      "type": "string"
+    },
+		"domainName": {
+			"type": "string"
+		},
+    "adminUsername": {
+      "type": "string"
+    },
+    "adminPassword": {
+      "type": "securestring"
+    },
+    "vmContainerName": {
+      "type": "string"
+    },
+    "prepareDataKeeperNodesModuleURL": {
+      "type": "string"
+    },
+    "prepareDataKeeperNodesCommandStrPrefix": {
+      "type": "string"
+    }
+  },
+  "resources": [
+    {
+      "apiVersion": "2015-06-15",
+      "type": "Microsoft.Compute/virtualMachines",
+      "name": "[concat(parameters('siosVMName'), copyIndex())]",
+      "location": "[parameters('location')]",
+      "copy": {
+        "name": "siosVirtualMachineLoop",
+        "count": 2
+      },
+      "plan": {
+        "name": "bring_your_own_license",
+        "publisher": "sios_datakeeper",
+        "product": "sios-datakeeper-8"
+      },
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "[parameters('siosVMSize')]"
+        },
+        "availabilitySet": {
+          "id": "[parameters('availabilitySet')]"
+        },
+        "osProfile": {
+          "computerName": "[concat(parameters('siosVMName'), copyIndex())]",
+          "adminUsername": "[parameters('adminUsername')]",
+          "adminPassword": "[parameters('adminPassword')]"
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "sios_datakeeper",
+            "offer": "sios-datakeeper-8",
+            "sku": "bring_your_own_license",
+            "version": "latest"
+          },
+          "osDisk": {
+            "name": "osdisk",
+            "vhd": {
+              "uri": "[concat('http://',parameters('newStorageAccountNamePrefix'),'1.blob.core.windows.net/',parameters('vmContainerName'),'/',parameters('siosVMName'), copyIndex(), '-osdisk.vhd')]"
+            },
+            "caching": "ReadWrite",
+            "createOption": "FromImage"
+          },
+          "dataDisks": [
+            {
+              "vhd": {
+                "uri": "[concat('http://',parameters('newStorageAccountNamePrefix'),'1.blob.core.windows.net/',parameters('vmContainerName'),'/', parameters('siosVMName'), copyIndex(), '-datadisk.vhd')]"
+              },
+              "name": "[concat(parameters('siosVMName'), copyIndex(),'-datadisk')]",
+              "caching": "None",
+              "createOption": "empty",
+              "diskSizeGB": 100,
+              "lun": 0
+            }
+          ]
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId(resourceGroup().name,'Microsoft.Network/networkInterfaces',concat(parameters('siosVMName'), copyIndex(),'-nic'))]"
+            }
+          ]
+        },
+        "diagnosticsProfile": {
+          "bootDiagnostics": {
+            "enabled": "true",
+            "storageUri": "[concat('http://',parameters('newStorageAccountNamePrefix'),'diag.blob.core.windows.net')]"
+          }
+        }
+      }
+    },
+		{
+			"type": "Microsoft.Compute/virtualMachines/extensions",
+			"name": "[concat(parameters('siosVMName'), copyIndex(), '/configureSiosVM')]",
+			"apiVersion": "2015-06-15",
+			"location": "[parameters('location')]",
+			"dependsOn": [
+					"[concat('Microsoft.Compute/virtualMachines/', parameters('siosVMName'), copyIndex())]"
+			],
+			"copy": {
+				"name": "SiosVMDiskPrepareLoop",
+				"count": 2
+			},
+			"properties": {
+				"publisher": "Microsoft.Compute",
+				"type": "CustomScriptExtension",
+				"typeHandlerVersion": "1.4",
+				"autoUpgradeMinorVersion": true,
+				"settings": {
+						"fileUris": [
+							"[parameters('prepareDataKeeperNodesModuleURL')]"
+						],
+						"commandToExecute": "[concat(parameters('prepareDataKeeperNodesCommandStrPrefix'), ' -NodeIndex ', copyIndex())]"
+				}
+			}
+		}
+  ],
+	"outputs": { }
+}

@@ -1,0 +1,7 @@
+@{
+	AllNodes = @{
+		@{
+			NodeName = $env:COMPUTERNAME;
+		}
+	};
+}

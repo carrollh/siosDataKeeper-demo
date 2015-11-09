@@ -1,0 +1,10 @@
+{
+  "itemDisplayName": "SIOS DataKeeper 1x1 Demo",
+  "description": "Four Windows Server 2012R2 nodes connected via a private vNet, and reachable via RDP. Two nodes host the SIOS DataKeeper high-availability / data replication solution. The other two are configured as primary and backup domain controllers.",
+  "summary": "Creates a 2 node DataKeeper replication network, provisioned with additional primary and backup domain controllers.",
+  "githubUsername": "carrollh",
+  "dateUpdated": "2015-10-01",
+    "licenseKeyFtpURL": {
+        "value": "http://ftp.us.sios.com/pickup/EVAL_JOE_GUY_STCEngineering_2015-11-02_DKCE"
+    }
+}
