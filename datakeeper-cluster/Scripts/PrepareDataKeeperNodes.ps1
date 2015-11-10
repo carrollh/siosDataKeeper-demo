@@ -131,26 +131,13 @@ function Add-InitialMirror {
 	TraceInfo "Creating initial DataKeeper job on volume F"
 	$job = $Null
 	$attempt = 0
-	while($job -eq $NULL -AND $attempt -lt 10) {	
+	while($job -eq $NULL) {	
 		$job = New-DataKeeperJob "Volume F" "initial mirror" sios-0 10.0.0.5 F sios-1 10.0.0.6 F Async	
 		$attempt++
 		Start-Sleep 30
-		TraceInfo "..."
-	}
-	if($job -eq $NULL -AND $attempt -eq 10) {
-		TraceInfo "Job creation failed. Trying with emcmd..."
-		$job = (& "$env:extmirrbase\emcmd.exe" . CREATEJOB "Volume F" "Initial mirror" sios-0 F 10.0.0.5 sios-1 F 10.0.0.6 A)		
-	
-		TraceInfo "Attempted to run CREATEJOB to sios-0.$DomainFQDN"
-		TraceInfo "emcmd returned $job"
-		TraceInfo "with exitcode $lastexitcode"
-	}
-	if($job.Contains("Status")) {
-		TraceInfo "Job creation failed. Exiting."
-		exit 1
 	}
 	
-	TraceInfo "Job Info: $job"
+	TraceInfo "Job Info after $attempt tries: $job"
 	
 	TraceInfo "Creating initial mirror on volume F"
 	$mirrorStatus = $NULL
