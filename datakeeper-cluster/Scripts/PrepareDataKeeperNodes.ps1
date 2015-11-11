@@ -176,11 +176,6 @@ Initialize-DataDisks
 Install-License
 
 if($NodeIndex -eq 0) {
-	# wait for me to put file in place to trigger this to continue on the source node
-	while(-Not Test-Path C:\Windows\Temp\GO.txt) {
-		Start-Sleep 5
-	}
-
 	# create the job + mirror with this node as source
 	Add-InitialMirror	
 }
