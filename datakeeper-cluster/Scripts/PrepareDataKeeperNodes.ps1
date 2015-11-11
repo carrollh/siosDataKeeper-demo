@@ -132,7 +132,7 @@ function Add-InitialMirror {
 	$job = $Null
 	$attempt = 0
 	while($job -eq $NULL) {	
-		$job = New-DataKeeperJob "Volume F" "initial mirror" sios-0 10.0.0.5 F sios-1 10.0.0.6 F Async	
+		$job = New-DataKeeperJob "Volume F" "initial mirror" sios-0.$DomainFQDN 10.0.0.5 F sios-1.$DomainFQDN 10.0.0.6 F Async	
 		$attempt++
 		Start-Sleep 30
 	}
