@@ -160,11 +160,13 @@ function Add-InitialMirror {
 	TraceInfo "Mirror Status: $mirrorStatus"	
 }
 
-function Create-Cluster {
+function Enable-WSFC {
 	TraceInfo "Enabling WSFC Feature"
 	Install-WindowsFeature -Name Failover-Clustering -IncludeManagementTools
 	Add-WindowsFeature Failover-Clustering,RSAT-Clustering-PowerShell,RSAT-Clustering-CmdInterface
-	
+}
+
+function Create-Cluster {
 	TraceInfo "Creating DKCLUSTER on 10.0.0.7"
 	$attempt = 0
 	$cluster = $NULL
@@ -189,12 +191,13 @@ Initialize-DataDisks
 
 Install-License
 
+Enable-WSFC 
+
 if($NodeIndex -eq 0) {
 	# create the job + mirror with this node as source
 	Add-InitialMirror	
+	Create-Cluster
 }
-
-Create-Cluster
 
 TraceInfo "Restart after 30 seconds"
 Start-Process -FilePath "cmd.exe" -ArgumentList "/c shutdown /r /t 30"
