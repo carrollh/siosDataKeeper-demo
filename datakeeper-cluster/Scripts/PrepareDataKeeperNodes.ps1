@@ -160,10 +160,24 @@ function Add-InitialMirror {
 	TraceInfo "Mirror Status: $mirrorStatus"	
 }
 
-function Enable-WSFC {
+function Create-Cluster {
 	TraceInfo "Enabling WSFC Feature"
 	Install-WindowsFeature -Name Failover-Clustering -IncludeManagementTools
 	Add-WindowsFeature Failover-Clustering,RSAT-Clustering-PowerShell,RSAT-Clustering-CmdInterface
+	
+	TraceInfo "Creating DKCLUSTER on 10.0.0.7"
+	$attempt = 0
+	$cluster = $NULL
+	$cluster = New-Cluster -Name "DKCLUSTER" -Node sios-0,sios-1 -NoStorage -StaticAddress 10.0.0.7
+	while($cluster -eq $NULL) {
+		TraceInfo "..."
+		$cluster = New-Cluster -Name "DKCLUSTER" -Node sios-0,sios-1 -NoStorage -StaticAddress 10.0.0.7
+		$attempt++
+		Start-Sleep 30
+	}
+	TraceRoute "DKCLUSTER created after $attempt tries"
+	
+	& "$env:extmirrbase\emcmd" . REGISTERCLUSTERVOLUME F
 }
 
 #############################################################################
@@ -180,7 +194,7 @@ if($NodeIndex -eq 0) {
 	Add-InitialMirror	
 }
 
-Enable-WSFC
+Create-Cluster
 
 TraceInfo "Restart after 30 seconds"
 Start-Process -FilePath "cmd.exe" -ArgumentList "/c shutdown /r /t 30"
