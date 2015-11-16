@@ -190,6 +190,11 @@ function Create-Cluster {
 		TraceInfo "..."
 		Invoke-Command -Session $session { New-Cluster -Name "DKCLUSTER" -Node sios-0,sios-1 -NoStorage -StaticAddress 10.0.0.7 }
 		$cluster = Get-Cluster
+		TraceInfo "$LastExitCode"
+		if($cluster -eq $NULL) {
+			$cluster = New-Cluster -Name "DKCLUSTER" -Node sios-0,sios-1 -NoStorage -StaticAddress 10.0.0.7
+		}
+		TraceInfo "$LastExitCode"
 		$attempt++
 		Start-Sleep 30
 	}
