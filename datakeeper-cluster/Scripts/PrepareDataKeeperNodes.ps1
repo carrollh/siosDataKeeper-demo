@@ -164,6 +164,10 @@ function Enable-WSFC {
 	TraceInfo "Enabling WSFC Feature"
 	Install-WindowsFeature -Name Failover-Clustering -IncludeManagementTools
 	Add-WindowsFeature Failover-Clustering,RSAT-Clustering-PowerShell,RSAT-Clustering-CmdInterface
+
+	winrm quickconfig -Force
+	Enable-PSRemoting
+	winrm s winrm/config/client '@{TrustedHosts="sios-0,sios-1"}'
 }
 
 function Create-Cluster {
@@ -173,7 +177,7 @@ function Create-Cluster {
 	$creds = New-Object -TypeName System.Management.Automation.PSCredential `
 					-ArgumentList @("$domainNetBios\$AdminUserName", (ConvertTo-SecureString -String $AdminPassword -AsPlainText -Force))
 	
-	winrm quickconfig -Force
+	
 	
 	$session = New-PSSession -ComputerName localhost -Credential $creds
 	
