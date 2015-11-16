@@ -235,7 +235,7 @@ function Create-Cluster2 {
 		$CurrentCluster = $null
 		$CurrentCluster = Get-Cluster
 
-		if ($CurrentCluster -eq $null -AND $attempt -lt 10)
+		if (($CurrentCluster -eq $null -OR $CurrentCluster.Name -eq $NULL -OR $CurrentCluster.Name -eq "") -AND $attempt -lt 10)
 		{
 			TraceInfo "Cluster does not exist"
 			Start-Sleep 60
@@ -272,9 +272,9 @@ function Create-Cluster2 {
 
 	$NameOfIPv4Resource = $FirstIPv4Resource.Name
 
-	TraceInfo "Setting the cluster IP address to a link local address"
+	TraceInfo "Setting the cluster IP address to 10.0.0.7"
 	Sleep 5
-	cluster res $NameOfIPv4Resource /priv enabledhcp=0 overrideaddressmatch=1 address=169.254.1.1 subnetmask=255.255.0.0
+	cluster res $NameOfIPv4Resource /priv enabledhcp=0 overrideaddressmatch=1 address=10.0.0.7 subnetmask=255.255.255.0
 
 	$ClusterNameResource = Get-ClusterResource "Cluster Name"
 
@@ -294,7 +294,7 @@ function Create-Cluster2 {
 	TraceInfo "Cluster creation finished! Cluster logs can be found in $env:windir\Cluster\Reports."
 	Get-ClusterLog
 	Get-ClusterLog -Node sios-1
-	TraceInfo "Cluster-ClusterNode: $(Get-ClusterNode)"
+	TraceInfo "Get-ClusterNode: $(Get-ClusterNode)"
 }
 
 
@@ -312,7 +312,7 @@ Enable-WSFC
 if($NodeIndex -eq 0) {
 	# create the job + mirror with this node as source
 	Add-InitialMirror	
-	Create-Cluster2 "DKCLUSTER" sios-0,sios-1 
+	Create-Cluster2 -ClusterName "DKCLUSTER" -ClusterNodes "sios-0", "sios-1" 
 }
 
 TraceInfo "Restart after 30 seconds"
