@@ -169,11 +169,21 @@ function Enable-WSFC {
 function Create-Cluster {
 	TraceInfo "Creating DKCLUSTER on 10.0.0.7"
 	$attempt = 0
+	
+	$creds = New-Object -TypeName System.Management.Automation.PSCredential `
+					-ArgumentList @("$domainNetBios\$AdminUserName", (ConvertTo-SecureString -String $AdminPassword -AsPlainText -Force))
+	
+	$session = New-PSSession -ComputerName "$domainNetBios\$AdminUserName" -Credential $creds
+	
+	Invoke-Command -Session $session { New-Cluster -Name "DKCLUSTER" -Node sios-0,sios-1 -NoStorage -StaticAddress 10.0.0.7 }
+
 	$cluster = $NULL
-	$cluster = New-Cluster -Name "DKCLUSTER" -Node sios-0,sios-1 -NoStorage -StaticAddress 10.0.0.7
+	$cluster = Get-Cluster
+	
 	while($cluster -eq $NULL) {
 		TraceInfo "..."
-		$cluster = New-Cluster -Name "DKCLUSTER" -Node sios-0,sios-1 -NoStorage -StaticAddress 10.0.0.7
+		Invoke-Command -Session $session { New-Cluster -Name "DKCLUSTER" -Node sios-0,sios-1 -NoStorage -StaticAddress 10.0.0.7 }
+		$cluster = Get-Cluster
 		$attempt++
 		Start-Sleep 30
 	}
