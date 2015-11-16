@@ -173,7 +173,9 @@ function Create-Cluster {
 	$creds = New-Object -TypeName System.Management.Automation.PSCredential `
 					-ArgumentList @("$domainNetBios\$AdminUserName", (ConvertTo-SecureString -String $AdminPassword -AsPlainText -Force))
 	
-	$session = New-PSSession -ComputerName "$domainNetBios\$AdminUserName" -Credential $creds
+	winrm quickconfig -Force
+	
+	$session = New-PSSession -ComputerName localhost -Credential $creds
 	
 	Invoke-Command -Session $session { New-Cluster -Name "DKCLUSTER" -Node sios-0,sios-1 -NoStorage -StaticAddress 10.0.0.7 }
 
