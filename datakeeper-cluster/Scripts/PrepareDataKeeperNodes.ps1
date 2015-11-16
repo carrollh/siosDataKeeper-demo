@@ -172,9 +172,9 @@ function Create-Cluster1 {
 	$attempt = 0
 	
 	$creds = New-Object -TypeName System.Management.Automation.PSCredential `
-					-ArgumentList @("$domainNetBios\$AdminUserName", (ConvertTo-SecureString -String $AdminPassword -AsPlainText -Force))
+					-ArgumentList @("$DomainFQDN\$AdminUserName", (ConvertTo-SecureString -String $AdminPassword -AsPlainText -Force))
 	
-	$session = New-PSSession -ComputerName localhost -Credential $creds
+	$session = New-PSSession -ComputerName localhost -Credential $creds 
 	
 	Invoke-Command -Session $session { New-Cluster -Name "DKCLUSTER" -Node sios-0,sios-1 -NoStorage -StaticAddress 10.0.0.7 }
 
@@ -297,6 +297,14 @@ function Create-Cluster2 {
 	TraceInfo "Get-ClusterNode: $(Get-ClusterNode)"
 }
 
+function Enable-Remoting {
+	TraceInfo "Enabling remoting"
+
+	Enable-PSRemoting -Force
+	winrm s winrm/config/client '@{TrustedHosts="sios-0,sios-1"}'
+
+	TraceInfo "$LastExitCode"
+}
 
 #############################################################################
 # Entry Point 
@@ -310,9 +318,16 @@ Install-License
 Enable-WSFC 
 
 if($NodeIndex -eq 0) {
+
+	Enable-Remoting
+
 	# create the job + mirror with this node as source
 	Add-InitialMirror	
-	Create-Cluster2 -ClusterName "DKCLUSTER" -ClusterNodes "sios-0", "sios-1" 
+	Create-Mirror 
+	Create-Cluster1
+	#Create-Cluster2 -ClusterName "DKCLUSTER" -ClusterNodes "sios-0", "sios-1" 
+} else {
+	winrm quickconfig
 }
 
 TraceInfo "Restart after 30 seconds"
