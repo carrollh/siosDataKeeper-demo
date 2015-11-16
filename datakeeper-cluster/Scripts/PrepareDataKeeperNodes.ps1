@@ -164,20 +164,15 @@ function Enable-WSFC {
 	TraceInfo "Enabling WSFC Feature"
 	Install-WindowsFeature -Name Failover-Clustering -IncludeManagementTools
 	Add-WindowsFeature Failover-Clustering,RSAT-Clustering-PowerShell,RSAT-Clustering-CmdInterface
-
-	winrm quickconfig -Force
-	Enable-PSRemoting
-	winrm s winrm/config/client '@{TrustedHosts="sios-0,sios-1"}'
 }
 
-function Create-Cluster {
+function Create-Cluster1 {
 	TraceInfo "Creating DKCLUSTER on 10.0.0.7"
+
 	$attempt = 0
 	
 	$creds = New-Object -TypeName System.Management.Automation.PSCredential `
 					-ArgumentList @("$domainNetBios\$AdminUserName", (ConvertTo-SecureString -String $AdminPassword -AsPlainText -Force))
-	
-	
 	
 	$session = New-PSSession -ComputerName localhost -Credential $creds
 	
@@ -203,6 +198,106 @@ function Create-Cluster {
 	& "$env:extmirrbase\emcmd" . REGISTERCLUSTERVOLUME F
 }
 
+# the following function was adapted from the script provided my Microsoft here:
+# https://gallery.technet.microsoft.com/scriptcenter/Create-WSFC-Cluster-for-7c207d3a
+function Create-Cluster2 {
+	param(
+		[Parameter(Mandatory=$true)]
+		$ClusterName,
+		[Parameter(Mandatory=$true)]
+		$ClusterNodes
+	)
+	$ClusterFeature = Get-WindowsFeature "Failover-Clustering"
+	$ClusterPowerShellTools = Get-WindowsFeature "RSAT-Clustering-PowerShell"
+	$ClusterCmdTools = Get-WindowsFeature "RSAT-Clustering-CmdInterface"
+
+  if ($ClusterFeature.Installed -eq $false -or $ClusterPowerShellTools.Installed -eq $false -or $ClusterCmdTools.Installed -eq $false)
+  {
+    TraceInfo "Needed cluster features were not found on the machine. Please run the following command to install them:"
+    TraceInfo "Add-WindowsFeature 'Failover-Clustering', 'RSAT-Clustering-PowerShell', 'RSAT-Clustering-CmdInterface'"
+    exit 1
+  }
+	
+	Import-Module FailoverClusters
+
+	$LocalMachineName = $env:computername
+
+	TraceInfo "Trying to create a one node cluster on the current machine"
+
+	Start-Sleep 10
+	$attempt = 0
+	while($currentCluster -eq $null -AND $attempt -lt 10) {
+		TraceInfo "Calling 'New-Cluster' using $ClusterName and $LocalMachineName"
+		New-Cluster -Name $ClusterName -Node $LocalMachineName -NoStorage
+
+		TraceInfo "Verify that cluster is present after creation"
+
+		$CurrentCluster = $null
+		$CurrentCluster = Get-Cluster
+
+		if ($CurrentCluster -eq $null -AND $attempt -lt 10)
+		{
+			TraceInfo "Cluster does not exist"
+			Start-Sleep 60
+			$attempt++
+		}
+	}
+	
+	if ($CurrentCluster -eq $null) {
+		TraceInfo "Cluster creation failed completely, exiting"
+		exit 1
+	}
+
+	TraceInfo "Bring offline the cluster name resource"
+	Sleep 5
+	Stop-ClusterResource "Cluster Name"
+
+	TraceInfo "Get all IP addresses associated with cluster group"
+	$AllClusterGroupIPs = Get-Cluster | Get-ClusterGroup | Get-ClusterResource | Where-Object {$_.ResourceType.Name -eq "IP Address" -or $_.ResourceType.Name -eq "IPv6 Tunnel Address" -or $_.ResourceType.Name -eq "IPv6 Address"}
+
+	$NumberOfIPs = @($AllClusterGroupIPs).Count
+	TraceInfo "Found $NumberOfIPs IP addresses"
+
+	TraceInfo "Bringing all IPs offline"
+	Sleep 5
+	$AllClusterGroupIPs | Stop-ClusterResource
+
+	TraceInfo "Get the first IPv4 resource"
+	$AllIPv4Resources = Get-Cluster | Get-ClusterGroup | Get-ClusterResource | Where-Object {$_.ResourceType.Name -eq "IP Address"}
+	$FirstIPv4Resource = @($AllIPv4Resources)[0];
+
+	TraceInfo "Removing all IPs except one IPv4 resource"
+	Sleep 5
+	$AllClusterGroupIPs | Where-Object {$_.Name -ne $FirstIPv4Resource.Name} | Remove-ClusterResource -Force
+
+	$NameOfIPv4Resource = $FirstIPv4Resource.Name
+
+	TraceInfo "Setting the cluster IP address to a link local address"
+	Sleep 5
+	cluster res $NameOfIPv4Resource /priv enabledhcp=0 overrideaddressmatch=1 address=169.254.1.1 subnetmask=255.255.0.0
+
+	$ClusterNameResource = Get-ClusterResource "Cluster Name"
+
+	$ClusterNameResource | Start-ClusterResource -Wait 60
+
+	if ((Get-ClusterResource "Cluster Name").State -ne "Online")
+	{
+		TraceInfo "There was an error onlining the cluster name resource"
+		exit 1
+	}
+
+	TraceInfo "Adding other nodes to the cluster" 
+	@($ClusterNodes) | Foreach-Object { 
+												 if ([string]::Compare(($_).Split(".")[0],$LocalMachineName, $true) -ne 0) { 
+															 Add-ClusterNode "$_" } }
+
+	TraceInfo "Cluster creation finished! Cluster logs can be found in $env:windir\Cluster\Reports."
+	Get-ClusterLog
+	Get-ClusterLog -Node sios-1
+	TraceInfo "Cluster-ClusterNode: $(Get-ClusterNode)"
+}
+
+
 #############################################################################
 # Entry Point 
 #############################################################################
@@ -217,7 +312,7 @@ Enable-WSFC
 if($NodeIndex -eq 0) {
 	# create the job + mirror with this node as source
 	Add-InitialMirror	
-	Create-Cluster
+	Create-Cluster2 "DKCLUSTER" sios-0,sios-1 
 }
 
 TraceInfo "Restart after 30 seconds"
