@@ -89,8 +89,8 @@
             "creatingSiosVMsURL": "[concat(variables('baseUrl'),'/Templates/creatingSiosVMs.json')]",
             "vnetSetupURL": "[concat(variables('baseUrl'),'/Templates/creatingNewVNet.json')]",
             "creatingNicsUrl": "[concat(variables('baseUrl'),'/Templates/creatingNICs.json')]",
-            "prepareDataKeeperNodesModuleURL": "[concat(variables('baseUrl'),'/Scripts/PrepareDataKeeperNodes.ps1')]",
-            "prepareDataKeeperNodesCommandStrPrefix": "[concat('powershell.exe -ExecutionPolicy Unrestricted -File PrepareDataKeeperNodes.ps1 -DomainFQDN ', variables('domainName'), ' -AdminUserName ', parameters('adminUsername'), ' -AdminBase64Password \"', variables('adminBase64Password'), '\"', ' -LicenseKeyFtpURL ', parameters('licenseKeyFtpURL'))]"
+            "prepareDataKeeperNodesModuleURL": "[concat(variables('baseUrl'),'/DSC/PrepareDataKeeperNodes.ps1.zip')]",
+            "prepareDataKeeperNodesCommandStrPrefix": "ConfigureSiosVM.ps1\\ConfigureSiosVM"
         }
     },
     "resources": [
@@ -290,36 +290,89 @@
                 }
             }
         },
-        {
-            "name": "UpdatingDNStoPrimaryADVM",
+      {
+        "name": "UpdatingDNStoPrimaryADVM",
+        "type": "Microsoft.Resources/deployments",
+        "apiVersion": "2015-01-01",
+        "dependsOn": [
+          "ProvisioningPrimaryADDomainController"
+        ],
+        "properties": {
+          "mode": "Incremental",
+          "templateLink": {
+            "uri": "[variables('configuration').vnetwithDNSTemplateURL]",
+            "contentVersion": "1.0.0.0"
+          },
+          "parameters": {
+            "location": {
+              "value": "[variables('location')]"
+            },
+            "virtualNetworkName": {
+              "value": "[variables('virtualNetworkName')]"
+            },
+            "virtualNetworkAddressRange": {
+              "value": "[variables('virtualNetworkAddressRange')]"
+            },
+            "subnets": {
+              "value": "[variables('subnets')]"
+            },
+            "DNSServerAddress": {
+              "value": [
+                "[variables('adPDCNICIPAddress')]"
+              ]
+            }
+          }
+        }
+      },
+      {
+            "name": "CreatingSiosVirtualMachines",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2015-01-01",
             "dependsOn": [
-                "ProvisioningPrimaryADDomainController"
+                "Microsoft.Resources/deployments/CreatingStorageAccounts",
+                "Microsoft.Resources/deployments/CreatingNetworkInterfaces",
+                "Microsoft.Resources/deployments/CreatingAvailabilitySets",
+                "Microsoft.Resources/deployments/UpdatingDNStoPrimaryADVM"
             ],
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "[variables('configuration').vnetwithDNSTemplateURL]",
+                    "uri": "[variables('configuration').creatingSiosVMsURL]",
                     "contentVersion": "1.0.0.0"
                 },
                 "parameters": {
+                    "siosVMName": {
+                        "value": "[variables('vmSettings').siosVMName]"
+                    },
                     "location": {
                         "value": "[variables('location')]"
                     },
-                    "virtualNetworkName": {
-                        "value": "[variables('virtualNetworkName')]"
+                    "newStorageAccountNamePrefix": {
+                        "value": "[parameters('newStorageAccountNamePrefix')]"
                     },
-                    "virtualNetworkAddressRange": {
-                        "value": "[variables('virtualNetworkAddressRange')]"
+                    "availabilitySet": {
+                        "value": "[reference('CreatingAvailabilitySets').outputs.siosAvailabilitySetName.value]"
                     },
-                    "subnets": {
-                        "value": "[variables('subnets')]"
+                    "siosVMSize": {
+                        "value": "[variables('siosVMSize')]"
                     },
-                    "DNSServerAddress": {
-                        "value": [
-                            "[variables('adPDCNICIPAddress')]"
-                        ]
+                    "domainName": {
+                        "value": "[variables('domainName')]"
+                    },
+                    "adminUsername": {
+                        "value": "[parameters('adminUsername')]"
+                    },
+                    "adminPassword": {
+                        "value": "[parameters('adminPassword')]"
+                    },
+                    "vmContainerName": {
+                        "value": "[variables('vmSettings').vmContainerName]"
+                    },
+                    "prepareDataKeeperNodesModuleURL": {
+                        "value": "[variables('configuration').prepareDataKeeperNodesModuleURL]"
+                    },
+                    "prepareDataKeeperNodesCommandStrPrefix": {
+                        "value": "[variables('configuration').prepareDataKeeperNodesCommandStrPrefix]"
                     }
                 }
             }

@@ -106,31 +106,41 @@
         }
       }
     },
-		{
-			"type": "Microsoft.Compute/virtualMachines/extensions",
-			"name": "[concat(parameters('siosVMName'), copyIndex(), '/configureSiosVM')]",
-			"apiVersion": "2015-06-15",
-			"location": "[parameters('location')]",
-			"dependsOn": [
-					"[concat('Microsoft.Compute/virtualMachines/', parameters('siosVMName'), copyIndex())]"
-			],
-			"copy": {
-				"name": "SiosVMDiskPrepareLoop",
-				"count": 2
-			},
-			"properties": {
-				"publisher": "Microsoft.Compute",
-				"type": "CustomScriptExtension",
-				"typeHandlerVersion": "1.4",
-				"autoUpgradeMinorVersion": true,
-				"settings": {
-						"fileUris": [
-							"[parameters('prepareDataKeeperNodesModuleURL')]"
-						],
-						"commandToExecute": "[concat(parameters('prepareDataKeeperNodesCommandStrPrefix'), ' -NodeIndex ', copyIndex())]"
-				}
-			}
-		}
+    {
+      "type": "Microsoft.Compute/virtualMachines/extensions",
+      "name": "[concat(parameters('siosVMName'), copyIndex(), '/configureSiosVM')]",
+      "apiVersion": "2015-06-15",
+      "location": "[parameters('location')]",
+      "dependsOn":[
+        "[concat('Microsoft.Compute/virtualMachines/', parameters('siosVMName'), copyIndex())]"
+      ],
+      "copy": {
+        "name": "SiosVMDiskPrepareLoop",
+        "count": 2
+      },
+      "properties": {
+        "publisher": "Microsoft.Powershell",
+        "type": "DSC",
+        "typeHandlerVersion": "2.6",
+        "autoUpgradeMinorVersion": true,
+        "settings": {
+          "modulesURL": "[parameters('prepareDataKeeperNodesModuleURL')]",
+          "configurationFunction": "[parameters('prepareDataKeeperNodesCommandStrPrefix')]",
+          "properties": {
+            "domainName": "[parameters('domainName')]",
+            "adminCreds":{
+              "userName": "[parameters('adminUserName')]",
+              "password": "PrivateSettingsRef:adminPassword"
+            }
+          }
+        },
+        "protectedSettings": {
+          "items": {
+            "adminPassword": "[parameters('adminPassword')]"
+          }
+        }
+      }
+    }
   ],
 	"outputs": { }
 }
