@@ -89,7 +89,7 @@
             "creatingSiosVMsURL": "[concat(variables('baseUrl'),'/Templates/creatingSiosVMs.json')]",
             "vnetSetupURL": "[concat(variables('baseUrl'),'/Templates/creatingNewVNet.json')]",
             "creatingNicsUrl": "[concat(variables('baseUrl'),'/Templates/creatingNICs.json')]",
-            "prepareDataKeeperNodesModuleURL": "[concat(variables('baseUrl'),'/DSC/PrepareDataKeeperNodes.ps1.zip')]",
+            "prepareDataKeeperNodesModuleURL": "[concat(variables('baseUrl'),'/DSC/ConfigureSiosVM.ps1.zip')]",
             "prepareDataKeeperNodesCommandStrPrefix": "ConfigureSiosVM.ps1\\ConfigureSiosVM"
         }
     },
