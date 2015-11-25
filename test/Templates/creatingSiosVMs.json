@@ -1,53 +1,56 @@
 {
-    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-    "contentVersion": "1.0.0.0",
-    "parameters": {
-        "siosVMName": {
-            "type": "string"
-        },
-        "location": {
-            "type": "string"
-        },
-        "newStorageAccountNamePrefix": {
-            "type": "string"
-        },
-        "availabilitySet": {
-            "type": "string"
-        },
-        "siosVMSize": {
-            "type": "string"
-        },
-        "domainName": {
-            "type": "string"
-        },
-        "adminUsername": {
-            "type": "string"
-        },
-        "adminPassword": {
-            "type": "securestring"
-        },
-        "vmContainerName": {
-            "type": "string"
-        },
-        "clusterName": {
-            "type": "string"
-        },
-        "sharePath": {
-            "type": "string"
-        },
-        "prepareDataKeeperHeadNodeModuleURL": {
-            "type": "string"
-        },
-        "prepareDataKeeperHeadNodeCommandStr": {
-            "type": "string"
-        },
-        "prepareDataKeeperNodesModuleURL": {
-            "type": "string"
-        },
-        "prepareDataKeeperNodesCommandStr": {
-            "type": "string"
-        }
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "siosVMName": {
+      "type": "string"
     },
+    "location": {
+      "type": "string"
+    },
+    "newStorageAccountNamePrefix": {
+      "type": "string"
+    },
+    "availabilitySet": {
+      "type": "string"
+    },
+    "siosVMSize": {
+      "type": "string"
+    },
+    "domainName": {
+      "type": "string"
+    },
+    "adminUsername": {
+      "type": "string"
+    },
+    "adminPassword": {
+      "type": "securestring"
+    },
+    "vmContainerName": {
+      "type": "string"
+    },
+    "licenseKeyFtpURL": {
+      "type": "string"
+    },
+    "clusterName": {
+      "type": "string"
+    },
+    "sharePath": {
+      "type": "string"
+    },
+    "prepareDataKeeperHeadNodeModuleURL": {
+      "type": "string"
+    },
+    "prepareDataKeeperHeadNodeCommandStr": {
+      "type": "string"
+    },
+    "prepareDataKeeperNodesModuleURL": {
+      "type": "string"
+    },
+    "prepareDataKeeperNodesCommandStr": {
+      "type": "string"
+    }
+  },
     "resources": [
         {
             "apiVersion": "2015-06-15",
@@ -133,9 +136,10 @@
                     "properties": {
                         "domainName": "[parameters('domainName')]",
                         "adminCreds": {
-                            "userName": "[parameters('adminUserName')]",
-                            "password": "PrivateSettingsRef:adminPassword"
+                          "userName": "[parameters('adminUserName')]",
+                          "password": "PrivateSettingsRef:adminPassword"
                         },
+                        "licenseKeyFtpURL": "parameters('licenseKeyFtp')]",
                         "clusterName": "[parameters('clusterName')]",
                         "sharePath":"[concat('\\\\ad-pdc\\', parameters('sharePath'))]",
                         "nodes":["sios-0","sios-1"]
@@ -232,9 +236,10 @@
                     "properties": {
                         "domainName": "[parameters('domainName')]",
                         "adminCreds": {
-                            "userName": "[parameters('adminUserName')]",
-                            "password": "PrivateSettingsRef:adminPassword"
-                        }
+                          "userName": "[parameters('adminUserName')]",
+                          "password": "PrivateSettingsRef:adminPassword"
+                        },
+                        "licenseKeyFtpURL": "parameters('licenseKeyFtp')]"
                     }
                 },
                 "protectedSettings": {
