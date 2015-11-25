@@ -137,8 +137,8 @@
                             "password": "PrivateSettingsRef:adminPassword"
                         },
                         "clusterName": "[parameters('clusterName')]",
-                        "sharePath": "[parameters('sharePath')]",
-                        "nodes": "sios-0,sios-1"
+                        "sharePath":"[concat('\\\\ad-pdc\\', parameters('sharePath'))]",
+                        "nodes":["sios-0","sios-1"]
                     }
                 },
                 "protectedSettings": {
