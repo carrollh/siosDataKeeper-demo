@@ -375,7 +375,7 @@
             "value": "[variables('vmSettings').vmContainerName]"
           },
           "licenseKeyFtpURL": {
-            "value": "parameters('licenseKeyFtpURL')]"
+            "value": "[parameters('licenseKeyFtpURL')]"
           },
           "clusterName": {
             "value": "[variables('clusterName')]"

@@ -51,6 +51,9 @@
       "type": "string"
     }
   },
+  "variables": {
+    "sharePathPrefix": "\\\\ad-pdc\\"
+  },
     "resources": [
         {
             "apiVersion": "2015-06-15",
@@ -141,7 +144,7 @@
                         },
                         "licenseKeyFtpURL": "[parameters('licenseKeyFtpURL')]",
                         "clusterName": "[parameters('clusterName')]",
-                        "sharePath":"[concat('\\\\ad-pdc\\', parameters('sharePath'))]",
+                        "sharePath":"[concat(variables('sharePathPrefix'), parameters('sharePath'))]",
                         "nodes":["sios-0","sios-1"]
                     }
                 },
