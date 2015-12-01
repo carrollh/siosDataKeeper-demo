@@ -242,7 +242,7 @@
                           "userName": "[parameters('adminUserName')]",
                           "password": "PrivateSettingsRef:adminPassword"
                         },
-                        "licenseKeyFtpURL": "parameters('licenseKeyFtp')]"
+                        "licenseKeyFtpURL": "[parameters('licenseKeyFtpURL')]"
                     }
                 },
                 "protectedSettings": {
