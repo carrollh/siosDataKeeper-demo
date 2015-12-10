@@ -105,7 +105,7 @@
       "prepareDataKeeperNodesModuleURL": "[concat(variables('baseUrl'),'/DSC/ConfigureSiosVM.ps1.zip')]",
       "prepareDataKeeperNodesCommandStr": "ConfigureSiosVM.ps1\\ConfigureSiosVM",
       "prepareClientVMModuleURL": "[concat(variables('baseUrl'),'/DSC/ConfigureSiosClientVM.ps1.zip')]",
-      "prepareClientCommandStr": "ConfigureSiosClientVM.ps1\\ConfigureSiosClientVM"
+      "prepareClientVMCommandStr": "ConfigureSiosClientVM.ps1\\ConfigureSiosClientVM"
     }
   },
   "resources": [
