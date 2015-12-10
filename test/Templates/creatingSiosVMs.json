@@ -49,6 +49,12 @@
     },
     "prepareDataKeeperNodesCommandStr": {
       "type": "string"
+    },
+    "prepareClientVMModuleURL": {
+      "type": "string"
+    },
+    "prepareClientVMCommandStr": {
+      "type": "string"
     }
   },
   "variables": {
@@ -255,7 +261,7 @@
     {
       "apiVersion": "2015-06-15",
       "type": "Microsoft.Compute/virtualMachines",
-      "name": "sios-client",
+      "name": "[concat(parameters('siosVMName'), 'client')]",
       "location": "[parameters('location')]",
       "properties": {
         "hardwareProfile": {
@@ -297,6 +303,37 @@
           "bootDiagnostics": {
             "enabled": "true",
             "storageUri": "[concat('http://',parameters('newStorageAccountNamePrefix'),'diag.blob.core.windows.net')]"
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Compute/virtualMachines/extensions",
+      "name": "[concat(parameters('siosVMName'), 'client', '/configureSiosVM')]",
+      "apiVersion": "2015-06-15",
+      "location": "[parameters('location')]",
+      "dependsOn": [
+        "[concat('Microsoft.Compute/virtualMachines/', parameters('siosVMName'), 'client')]"
+      ],
+      "properties": {
+        "publisher": "Microsoft.Powershell",
+        "type": "DSC",
+        "typeHandlerVersion": "2.6",
+        "autoUpgradeMinorVersion": true,
+        "settings": {
+          "modulesURL": "[parameters('prepareClientVMModuleURL')]",
+          "configurationFunction": "[parameters('prepareClientVMCommandStr')]",
+          "properties": {
+            "domainName": "[parameters('domainName')]",
+            "adminCreds": {
+              "userName": "[parameters('adminUserName')]",
+              "password": "PrivateSettingsRef:adminPassword"
+            }
+          }
+        },
+        "protectedSettings": {
+          "items": {
+            "adminPassword": "[parameters('adminPassword')]"
           }
         }
       }
