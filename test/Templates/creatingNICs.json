@@ -22,6 +22,9 @@
     },
     "siosVMRdpIPAddressNamePrefix": {
       "type": "string"
+    },
+    "ilbBEAddressPoolID": {
+      "type": "string"
     }
   },
   "resources": [
@@ -42,7 +45,12 @@
               },
               "subnet": {
                 "id": "[parameters('staticSubnetRef')]"
-              }
+              },
+              "loadBalancerBackendAddressPools": [
+                {
+                  "id":"[parameters('ilbBEAddressPoolID')]"
+                }
+              ]
             }
           }
         ]
@@ -65,7 +73,12 @@
               },
               "subnet": {
                 "id": "[parameters('staticSubnetRef')]"
-              }
+              },
+              "loadBalancerBackendAddressPools": [
+                {
+                  "id":"[parameters('ilbBEAddressPoolID')]"
+                }
+              ]
             }
           }
         ]
@@ -88,7 +101,12 @@
               },
               "subnet": {
                 "id": "[parameters('staticSubnetRef')]"
-              }
+              },
+              "loadBalancerBackendAddressPools": [
+                {
+                  "id":"[parameters('ilbBEAddressPoolID')]"
+                }
+              ]
             }
           }
         ]
