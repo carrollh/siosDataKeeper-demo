@@ -11,44 +11,41 @@
     "newStorageAccountNamePrefix": {
       "type": "string"
     },
-    "availabilitySet": {
-      "type": "string"
+    "availabilitySet" : {
+      "type" : "string"
     },
-    "adVMSize": {
-      "type": "string"
+    "adVMSize" : {
+      "type" : "string"
     },
-    "adminUsername": {
-      "type": "string"
+    "adminUsername" : {
+      "type" : "string"
     },
-    "adminPassword": {
-      "type": "securestring"
+    "adminPassword" : {
+      "type" : "securestring"
     },
-    "windowsImagePublisher": {
-      "type": "string"
+    "windowsImagePublisher" : {
+      "type" : "string"
     },
-    "windowsImageOffer": {
-      "type": "string"
+    "windowsImageOffer" : {
+      "type" : "string"
     },
-    "windowsImageSKU": {
-      "type": "string"
+    "windowsImageSKU" : {
+      "type" : "string"
     },
-    "vmContainerName": {
-      "type": "string"
+    "vmContainerName" : {
+      "type" : "string"
     },
-    "adPDCNicName": {
-      "type": "string"
+    "adPDCNicName" : {
+      "type" : "string"
     },
-    "domainName": {
-      "type": "string"
+    "domainName" : {
+      "type" : "string"
     },
-    "sharePath": {
-      "type": "string"
+    "adPDCConfigurationFunction" : {
+      "type" : "string"
     },
-    "adPDCConfigurationFunction": {
-      "type": "string"
-    },
-    "adPDCModulesURL": {
-      "type": "string"
+    "adPDCModulesURL" : {
+      "type" : "string"
     }
   },
   "resources": [
@@ -130,11 +127,10 @@
             "configurationFunction": "[parameters('adPDCConfigurationFunction')]",
             "properties": {
               "domainName": "[parameters('domainName')]",
-              "adminCreds": {
+              "adminCreds":{
                 "userName": "[parameters('adminUserName')]",
                 "password": "PrivateSettingsRef:adminPassword"
-              },
-              "sharePath": "[parameters('sharePath')]"
+              }
             }
           },
           "protectedSettings": {
