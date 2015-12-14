@@ -124,12 +124,7 @@
               },
               "subnet": {
                 "id": "[parameters('staticSubnetRef')]"
-              },
-              "loadBalancerBackendAddressPools": [
-                {
-                  "id":"[parameters('ilbBEAddressPoolID')]"
-                }
-              ]
+              }
             }
           }
         ]
