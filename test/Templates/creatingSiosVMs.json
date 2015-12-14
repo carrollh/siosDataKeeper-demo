@@ -172,9 +172,9 @@
         "product": "sios-datakeeper-8"
       },
       "plan": {
-        "name": "bring_your_own_license_dkce_and_sql",
+        "name": "bring_your_own_license",
         "publisher": "sios_datakeeper",
-        "product": "bring_your_own_license_dkce_and_sql"
+        "product": "sios-datakeeper-8"
       },
       "properties": {
         "hardwareProfile": {
