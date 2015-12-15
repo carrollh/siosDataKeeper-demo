@@ -263,6 +263,11 @@
       "type": "Microsoft.Compute/virtualMachines",
       "name": "[concat(parameters('siosVMName'), 'client')]",
       "location": "[parameters('location')]",
+	  "plan": {
+        "name": "bring_your_own_license_dkce_and_sql",
+        "publisher": "sios_datakeeper",
+        "product": "bring_your_own_license_dkce_and_sql"
+      },
       "properties": {
         "hardwareProfile": {
           "vmSize": "[parameters('siosVMSize')]"
@@ -277,9 +282,9 @@
         },
         "storageProfile": {
           "imageReference": {
-            "publisher": "MicrosoftWindowsServer",
-            "offer": "WindowsServer",
-            "sku": "2012-R2-DataCenter",
+            "publisher": "sios_datakeeper",
+            "offer": "bring_your_own_license_dkce_and_sql",
+            "sku": "bring_your_own_license_dkce_and_sql",
             "version": "latest"
           },
           "osDisk": {
