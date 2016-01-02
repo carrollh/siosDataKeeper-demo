@@ -23,9 +23,6 @@
 		"ilbFEConfigID" : {
 		  "type" : "string"
 		},
-		"ilbBEAddressPoolID" : {
-		  "type" : "string"
-		},
 		"ilbProbeID" : {
 		  "type" : "string"
 		},
@@ -63,9 +60,6 @@
 						"properties": {
 						"frontendIPConfiguration": {
 							"id": "[parameters('ilbFEConfigID')]"
-						},
-						"backendAddressPool": {
-							"id": "[parameters('ilbBEAddressPoolID')]"
 						},
 						"probe": {
 							"id": "[parameters('ilbProbeID')]"
