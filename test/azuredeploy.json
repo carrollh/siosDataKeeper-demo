@@ -234,9 +234,9 @@
           "ilbBE": {
             "value": "[variables('ilbBE')]"
           },
-		  "ilbBEAddressPoolID": {
-		    "value": "[variables('ilbBEAddressPoolID')]"
-		  },
+          "ilbBEAddressPoolID": {
+            "value": "[variables('ilbBEAddressPoolID')]"
+          },
           "ilbFEConfigID": {
             "value": "[variables('ilbFEConfigID')]"
           },

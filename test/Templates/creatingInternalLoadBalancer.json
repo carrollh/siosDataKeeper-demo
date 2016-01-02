@@ -1,38 +1,38 @@
 {
 	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
 	"contentVersion": "1.0.0.0",
-	"parameters": {
-		"location": {
-			"type": "string"
-		},
-		"ilbName": {
-		  "type": "string"
-		},
-		"ilbFE" : {
-		  "type" : "string"
-		},
-		"ilbIPAddress" : {
-		  "type" : "string"
-		},
-		"staticSubnetRef" : {
-		  "type" : "string"
-		},
-		"ilbBE" : {
-		  "type" : "string"
-		},
-		"ilbBEAddressPoolID": {
-		    "type": "string"
-		  },
-		"ilbFEConfigID" : {
-		  "type" : "string"
-		},
-		"ilbProbeID" : {
-		  "type" : "string"
-		},
-		"ilbAOProbe" : {
-		  "type" : "string"
-		}
-	},
+  "parameters": {
+    "location": {
+      "type": "string"
+    },
+    "ilbName": {
+      "type": "string"
+    },
+    "ilbFE": {
+      "type": "string"
+    },
+    "ilbIPAddress": {
+      "type": "string"
+    },
+    "staticSubnetRef": {
+      "type": "string"
+    },
+    "ilbBE": {
+      "type": "string"
+    },
+    "ilbBEAddressPoolID": {
+      "type": "string"
+    },
+    "ilbFEConfigID": {
+      "type": "string"
+    },
+    "ilbProbeID": {
+      "type": "string"
+    },
+    "ilbAOProbe": {
+      "type": "string"
+    }
+  },
     "resources": [
 		{
 			"apiVersion": "2015-06-15",
@@ -64,9 +64,9 @@
 						"frontendIPConfiguration": {
 							"id": "[parameters('ilbFEConfigID')]"
 						},
-						"backendAddressPool": { 
-							"id": "[parameters('ilbBEAddressPoolID')]" 
-						}, 
+              "backendAddressPool": {
+                "id": "[parameters('ilbBEAddressPoolID')]"
+              }, 
 						"probe": {
 							"id": "[parameters('ilbProbeID')]"
 						},
