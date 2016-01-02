@@ -42,7 +42,7 @@
     "virtualNetworkAddressRange": "10.0.0.0/16",
     "staticSubnet": "10.0.0.0/24",
     "adPDCNICIPAddress": "10.0.0.4",
-    "baseUrl": "https://raw.githubusercontent.com/carrollh/siosDataKeeper-demo/master/datakeeper-sql-cluster",
+    "baseUrl": "https://raw.githubusercontent.com/carrollh/siosDataKeeper-demo/master/test",
     "subnetNames": {
       "staticSubnetName": "staticSubnet"
     },
