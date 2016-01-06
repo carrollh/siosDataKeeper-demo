@@ -2,6 +2,7 @@
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
+
     "newStorageAccountNamePrefix": {
       "type": "string",
       "defaultValue": "datakeeper",
@@ -9,14 +10,24 @@
         "description": "The prefix of the new storage account created to store the VMs disks, different storage accounts will be created for AD and DataKeeper VMs. This value must be composed of all lowercase letters or numbers and be a maximum of 20 characters long and globally unique within all of Azure."
       }
     },
-    "adminUsername": {
+    "storageAccountType": {
+      "type": "string",
+      "defaultValue": "Premium_LRS",
+      "allowedValues": [
+        "Premium_LRS"
+      ],
+      "metadata": {
+        "description": "Type of storage account to create"
+      }
+    },
+    "domainAdminUsername": {
       "type": "string",
       "defaultValue": "siosadmin",
       "metadata": {
         "description": "The name of the Administrator of the new VMs and Domain"
       }
     },
-    "adminPassword": {
+    "domainAdminPassword": {
       "type": "securestring",
       "defaultValue": "SIOS!5105",
       "metadata": {
@@ -28,15 +39,58 @@
       "metadata": {
         "description": "Temporary license key FTP address. Please contact SIOS Support for a valid link."
       }
+    },
+    "vMNamePrefix": {
+      "type": "string",
+      "defaultValue": "sios-",
+      "metadata": {
+        "description": "Name prefix for all of the virtual machines."
+      }
+    },
+    "aDVMSize": {
+      "type": "string",
+      "defaultValue": "Standard_DS1",
+      "allowedValues": [
+        "Standard_DS1"
+      ]
+    },
+    "sQLVMSize": {
+      "type": "string",
+      "defaultValue": "Standard_DS1",
+      "allowedValues": [
+        "Standard_DS1"
+      ]
+    },
+    "sQLServiceAccountUser": {
+      "type": "string",
+      "defaultValue": "sa",
+      "metadata": {
+        "description": "The name for the SQL service account"
+      }
+    },
+    "sQLServiceAccountPassword": {
+      "type": "securestring",
+      "metadata": {
+        "description": "The password for the SQL service account"
+      }
+    },
+    "sQLAdminUser": {
+      "type": "string",
+      "defaultValue": "sa",
+      "metadata": {
+        "description": "The name for the SQL administrator account"
+      }
+    },
+    "sQLAdminPassword": {
+      "type": "securestring",
+      "metadata": {
+        "description": "The password for the SQL administrator account"
+      }
     }
   },
   "variables": {
     "location": "[resourceGroup().location]",
-    "adminBase64Password": "[base64(parameters('adminPassword'))]",
-    "adVMSize": "Standard_DS1",
-    "siosVMSize": "Standard_DS1",
     "domainName": "[concat(parameters('newStorageAccountNamePrefix'), '.local')]",
-    "storageAccountType": "Premium_LRS",
     "pdcRdpIPAddressName": "pdcRdpIP",
     "siosVMRdpIPAddressNamePrefix": "sios",
     "virtualNetworkAddressRange": "10.0.0.0/16",
@@ -127,7 +181,7 @@
             "value": "[parameters('newStorageAccountNamePrefix')]"
           },
           "storageAccountType": {
-            "value": "[variables('storageAccountType')]"
+            "value": "[parameters('storageAccountType')]"
           }
         }
       }
@@ -322,13 +376,13 @@
             "value": "[reference('CreatingAvailabilitySets').outputs.siosAvailabilitySetName.value]"
           },
           "adVMSize": {
-            "value": "[variables('adVMSize')]"
+            "value": "[parameters('adVMSize')]"
           },
           "adminUsername": {
-            "value": "[parameters('adminUsername')]"
+            "value": "[parameters('domainAdminUsername')]"
           },
           "adminPassword": {
-            "value": "[parameters('adminPassword')]"
+            "value": "[parameters('domainAdminPassword')]"
           },
           "windowsImagePublisher": {
             "value": "[variables('vmSettings').windowsImagePublisher]"
@@ -424,16 +478,16 @@
             "value": "[reference('CreatingAvailabilitySets').outputs.siosAvailabilitySetName.value]"
           },
           "siosVMSize": {
-            "value": "[variables('siosVMSize')]"
+            "value": "[parameters('sQLVMSize')]"
           },
           "domainName": {
             "value": "[variables('domainName')]"
           },
           "adminUsername": {
-            "value": "[parameters('adminUsername')]"
+            "value": "[parameters('domainAdminUsername')]"
           },
           "adminPassword": {
-            "value": "[parameters('adminPassword')]"
+            "value": "[parameters('domainAdminPassword')]"
           },
           "vmContainerName": {
             "value": "[variables('vmSettings').vmContainerName]"
