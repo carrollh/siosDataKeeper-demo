@@ -26,6 +26,18 @@
     "adminPassword": {
       "type": "securestring"
     },
+    "sQLServiceAccountUser": {
+      "type": "string"
+    },
+    "sQLServiceAccountPassword": {
+      "type": "securestring"
+    },
+    "sQLAdminUser": {
+      "type": "string"
+    },
+    "sQLAdminPassword": {
+      "type": "securestring"
+    },
     "vmContainerName": {
       "type": "string"
     },
@@ -148,6 +160,14 @@
               "userName": "[parameters('adminUserName')]",
               "password": "PrivateSettingsRef:adminPassword"
             },
+            "sQLServiceAccountCreds": {
+              "userName": "[parameters('sQLServiceAccountUser')]",
+              "password": "PrivateSettingsRef:sQLServiceAccountPassword"
+            },
+            "sQLAdminCreds": {
+              "userName": "[parameters('sQLAdminUser')]",
+              "password": "PrivateSettingsRef:sQLAdminPassword"
+            },
             "licenseKeyFtpURL": "[parameters('licenseKeyFtpURL')]",
             "clusterName": "[parameters('clusterName')]",
             "sharePath": "[concat(variables('sharePathPrefix'), parameters('sharePath'))]",
@@ -156,7 +176,9 @@
         },
         "protectedSettings": {
           "items": {
-            "adminPassword": "[parameters('adminPassword')]"
+            "adminPassword": "[parameters('adminPassword')]",
+            "sQLServiceAccountPassword": "[parameters('sQLServiceAccountPassword')]",
+            "sQLAdminPassword": "[parameters('sQLAdminPassword')]"
           }
         }
       }
@@ -166,7 +188,7 @@
       "type": "Microsoft.Compute/virtualMachines",
       "name": "[concat(parameters('siosVMName'), '1')]",
       "location": "[parameters('location')]",
-	  "plan": {
+      "plan": {
         "name": "bring_your_own_license_dkce_and_sql",
         "publisher": "sios_datakeeper",
         "product": "bring_your_own_license_dkce_and_sql"
@@ -248,12 +270,17 @@
               "userName": "[parameters('adminUserName')]",
               "password": "PrivateSettingsRef:adminPassword"
             },
+            "sQLServiceAccountCreds": {
+              "userName": "[parameters('sQLServiceAccountUser')]",
+              "password": "PrivateSettingsRef:sQLServiceAccountPassword"
+            },
             "licenseKeyFtpURL": "[parameters('licenseKeyFtpURL')]"
           }
         },
         "protectedSettings": {
           "items": {
-            "adminPassword": "[parameters('adminPassword')]"
+            "adminPassword": "[parameters('adminPassword')]",
+            "sQLServiceAccountPassword": "[parameters('sQLServiceAccountPassword')]"
           }
         }
       }
@@ -263,7 +290,7 @@
       "type": "Microsoft.Compute/virtualMachines",
       "name": "[concat(parameters('siosVMName'), 'client')]",
       "location": "[parameters('location')]",
-	  "plan": {
+      "plan": {
         "name": "bring_your_own_license_dkce_and_sql",
         "publisher": "sios_datakeeper",
         "product": "bring_your_own_license_dkce_and_sql"
@@ -295,7 +322,7 @@
             "caching": "ReadWrite",
             "createOption": "FromImage"
           },
-          "dataDisks": []
+          "dataDisks": [ ]
         },
         "networkProfile": {
           "networkInterfaces": [
@@ -344,5 +371,5 @@
       }
     }
   ],
-    "outputs": {}
+  "outputs": { }
 }

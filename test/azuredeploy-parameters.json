@@ -3,6 +3,7 @@
 	"contentVersion": "1.0.0.0",
   "parameters": {
     "newStorageAccountNamePrefix": { "value": "datakeeper" },
+    "storageAccountType": { "value": "Premium_LRS" },
     "domainAdminUsername": { "value": "siosadmin" },
     "domainAdminPassword": { "value": "SIOS!5105" },
     "licenseKeyFtpURL": { },

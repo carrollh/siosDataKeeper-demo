@@ -410,6 +410,12 @@
           },
           "adPDCModulesURL": {
             "value": "[variables('configuration').adPDCModulesURL]"
+          },
+          "sQLAdminUser": {
+            "value": "[parameters('sQLAdminUser')]"
+          },
+          "sQLAdminPassword": {
+            "value": "[parameters('sQLAdminPassword')]"
           }
         }
       }
@@ -488,6 +494,18 @@
           },
           "adminPassword": {
             "value": "[parameters('domainAdminPassword')]"
+          },
+          "sQLServiceAccountUser": {
+            "value": "[parameters('sQLServiceAccountUser')]"
+          },
+          "sQLServiceAccountPassword": {
+            "value": "[parameters('sQLServiceAccountPassword')]"
+          },
+          "sQLAdminUser": {
+            "value": "[parameters('sQLAdminUser')]"
+          },
+          "sQLAdminPassword": {
+            "value": "[parameters('sQLAdminPassword')]"
           },
           "vmContainerName": {
             "value": "[variables('vmSettings').vmContainerName]"
