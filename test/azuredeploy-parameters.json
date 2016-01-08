@@ -10,9 +10,9 @@
     "vMNamePrefix": { "value": "sios-0" },
     "aDVMSize": { "value": "Standard_DS1" },
     "sQLVMSize": { "value": "Standard_DS1" },
-    "sQLServiceAccountUser": { "value": "sa" },
-    "sQLServiceAccountPassword": { },
-    "sQLAdminUser": { },
-    "sQLAdminPassword": { }
+    "sQLServiceAccountUser": { "value": "siosadmin" },
+    "sQLServiceAccountPassword": { "value": "SIOS!5105" },
+    "sQLAdminUser": { "value": "siosadmin" },
+    "sQLAdminPassword": { "value": "SIOS!5105" }
   }
 }

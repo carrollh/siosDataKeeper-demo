@@ -63,26 +63,28 @@
     },
     "sQLServiceAccountUser": {
       "type": "string",
-      "defaultValue": "sa",
+      "defaultValue": "siosadmin",
       "metadata": {
         "description": "The name for the SQL service account"
       }
     },
     "sQLServiceAccountPassword": {
       "type": "securestring",
+      "defaultValue": "SIOS!5105",
       "metadata": {
         "description": "The password for the SQL service account"
       }
     },
     "sQLAdminUser": {
       "type": "string",
-      "defaultValue": "sa",
+      "defaultValue": "siosadmin",
       "metadata": {
         "description": "The name for the SQL administrator account"
       }
     },
     "sQLAdminPassword": {
       "type": "securestring",
+      "defaultValue": "SIOS!5105",
       "metadata": {
         "description": "The password for the SQL administrator account"
       }
@@ -108,7 +110,7 @@
     "ilbAOProbe": "ilbAlwaysOnEndPointProbe",
     "ilbFEConfigID": "[concat(variables('ilbID'),'/frontendIPConfigurations/',variables('ilbFE'))]",
     "ilbProbeID": "[concat(variables('ilbID'),'/probes/',variables('ilbAOProbe'))]",
-    "ilbBEAddressPoolID":"[concat(variables('ilbID'),'/backendAddressPools/',variables('ilbBE'))]",
+    "ilbBEAddressPoolID": "[concat(variables('ilbID'),'/backendAddressPools/',variables('ilbBE'))]",
     "vmSettings": {
       "availabilitySets": {
         "siosAvailabilitySetName": "siosAvailabilitySet"
@@ -462,7 +464,7 @@
         "Microsoft.Resources/deployments/CreatingStorageAccounts",
         "Microsoft.Resources/deployments/CreatingNetworkInterfaces",
         "Microsoft.Resources/deployments/CreatingAvailabilitySets",
-		"Microsoft.Resources/deployments/UpdatingDNStoPrimaryADVM"
+        "Microsoft.Resources/deployments/UpdatingDNStoPrimaryADVM"
       ],
       "properties": {
         "mode": "Incremental",
