@@ -63,7 +63,7 @@
     },
     "sQLServiceAccountUser": {
       "type": "string",
-      "defaultValue": "siosadmin",
+      "defaultValue": "sqlsvcaccount",
       "metadata": {
         "description": "The name for the SQL service account"
       }
@@ -77,7 +77,7 @@
     },
     "sQLAdminUser": {
       "type": "string",
-      "defaultValue": "siosadmin",
+      "defaultValue": "sqladmin",
       "metadata": {
         "description": "The name for the SQL administrator account"
       }
