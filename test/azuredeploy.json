@@ -413,6 +413,12 @@
           "adPDCModulesURL": {
             "value": "[variables('configuration').adPDCModulesURL]"
           },
+          "sQLServiceAccountUser": {
+            "value": "[parameters('sQLServiceAccountUser')]"
+          },
+          "sQLServiceAccountPassword": {
+            "value": "[parameters('sQLServiceAccountPassword')]"
+          },
           "sQLAdminUser": {
             "value": "[parameters('sQLAdminUser')]"
           },
