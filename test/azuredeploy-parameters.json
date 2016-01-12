@@ -4,6 +4,7 @@
   "parameters": {
     "newStorageAccountNamePrefix": { "value": "datakeeper" },
     "storageAccountType": { "value": "Premium_LRS" },
+	"domainName": { "value": "datakeeper.local" },
     "domainAdminUsername": { "value": "siosadmin" },
     "domainAdminPassword": { "value": "SIOS!5105" },
     "licenseKeyFtpURL": { },
