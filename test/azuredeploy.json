@@ -14,10 +14,20 @@
       "type": "string",
       "defaultValue": "Premium_LRS",
       "allowedValues": [
+        "Standard_LRS",
+        "Standard_GRS",
+        "Standard_RAGRS",
         "Premium_LRS"
       ],
       "metadata": {
         "description": "Type of storage account to create"
+      }
+    },
+    "domainName": {
+      "type": "string",
+      "defaultValue": "datakeeper.local",
+      "metadata": {
+        "description": "The domain name"
       }
     },
     "domainAdminUsername": {
@@ -51,14 +61,44 @@
       "type": "string",
       "defaultValue": "Standard_DS1",
       "allowedValues": [
-        "Standard_DS1"
+        "Standard_D1",
+        "Standard_DS1",
+        "Standard_D2",
+        "Standard_DS2",
+        "Standard_D3",
+        "Standard_DS3",
+        "Standard_D4",
+        "Standard_DS4",
+        "Standard_D11",
+        "Standard_DS11",
+        "Standard_D12",
+        "Standard_DS12",
+        "Standard_D13",
+        "Standard_DS13",
+        "Standard_D14",
+        "Standard_DS14"
       ]
     },
     "sQLVMSize": {
       "type": "string",
       "defaultValue": "Standard_DS1",
       "allowedValues": [
-        "Standard_DS1"
+        "Standard_D1",
+        "Standard_DS1",
+        "Standard_D2",
+        "Standard_DS2",
+        "Standard_D3",
+        "Standard_DS3",
+        "Standard_D4",
+        "Standard_DS4",
+        "Standard_D11",
+        "Standard_DS11",
+        "Standard_D12",
+        "Standard_DS12",
+        "Standard_D13",
+        "Standard_DS13",
+        "Standard_D14",
+        "Standard_DS14"
       ]
     },
     "sQLServiceAccountUser": {
@@ -92,7 +132,6 @@
   },
   "variables": {
     "location": "[resourceGroup().location]",
-    "domainName": "[concat(parameters('newStorageAccountNamePrefix'), '.local')]",
     "pdcRdpIPAddressName": "pdcRdpIP",
     "siosVMRdpIPAddressNamePrefix": "sios",
     "virtualNetworkAddressRange": "10.0.0.0/16",
@@ -402,7 +441,7 @@
             "value": "[variables('adPDCNicName')]"
           },
           "domainName": {
-            "value": "[variables('domainName')]"
+            "value": "[parameters('domainName')]"
           },
           "sharePath": {
             "value": "[variables('sharePath')]"
@@ -495,7 +534,7 @@
             "value": "[parameters('sQLVMSize')]"
           },
           "domainName": {
-            "value": "[variables('domainName')]"
+            "value": "[parameters('domainName')]"
           },
           "adminUsername": {
             "value": "[parameters('domainAdminUsername')]"
