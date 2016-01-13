@@ -2,7 +2,12 @@
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-
+    "licenseKeyFtpURL": {
+      "type": "string",
+      "metadata": {
+        "description": "Temporary license key FTP address. Please contact SIOS Support for a valid link."
+      }
+    },
     "newStorageAccountNamePrefix": {
       "type": "string",
       "defaultValue": "datakeeper",
@@ -20,21 +25,21 @@
         "Premium_LRS"
       ],
       "metadata": {
-        "description": "Type of storage account to create"
+        "description": "Type of storage account to create. This must be set to Premium if DS size VMs are being created."
       }
     },
     "domainName": {
       "type": "string",
       "defaultValue": "datakeeper.local",
       "metadata": {
-        "description": "The domain name"
+        "description": "The domain name in FQDN form."
       }
     },
     "domainAdminUsername": {
       "type": "string",
       "defaultValue": "siosadmin",
       "metadata": {
-        "description": "The name of the Administrator of the new VMs and Domain"
+        "description": "The username for the Administrator of the new VMs and Domain"
       }
     },
     "domainAdminPassword": {
@@ -44,17 +49,11 @@
         "description": "The password for the Administrator account of the new VMs and Domain"
       }
     },
-    "licenseKeyFtpURL": {
-      "type": "string",
-      "metadata": {
-        "description": "Temporary license key FTP address. Please contact SIOS Support for a valid link."
-      }
-    },
     "vMNamePrefix": {
       "type": "string",
-      "defaultValue": "sios-",
+      "defaultValue": "sios",
       "metadata": {
-        "description": "Name prefix for all of the virtual machines."
+        "description": "Name prefix for all of the DataKeeper / SQL VMs."
       }
     },
     "aDVMSize": {
@@ -77,7 +76,10 @@
         "Standard_DS13",
         "Standard_D14",
         "Standard_DS14"
-      ]
+      ],
+      "metadata": {
+        "description": "The size of the primary domain controller VM. If a DS size is selected, the StorageAccountType parameter must have a Premium type selected."
+      }
     },
     "sQLVMSize": {
       "type": "string",
@@ -99,7 +101,10 @@
         "Standard_DS13",
         "Standard_D14",
         "Standard_DS14"
-      ]
+      ],
+      "metadata": {
+        "description": "The size of the DataKeeper / SQL VMs. If a DS size is selected, the StorageAccountType parameter must have a Premium type selected."
+      }
     },
     "sQLServiceAccountUser": {
       "type": "string",
@@ -152,11 +157,11 @@
     "ilbBEAddressPoolID": "[concat(variables('ilbID'),'/backendAddressPools/',variables('ilbBE'))]",
     "vmSettings": {
       "availabilitySets": {
-        "siosAvailabilitySetName": "siosAvailabilitySet"
+        "siosAvailabilitySetName": "siosAvailabilitySet",
+        "clientAvailabilitySetName": "clientAvailabilitySet"
       },
       "vmContainerName": "vhds",
       "adPDCVMName": "ad-pdc",
-      "siosVMName": "sios-",
       "windowsImagePublisher": "MicrosoftWindowsServer",
       "windowsImageOffer": "WindowsServer",
       "windowsImageSKU": "2012-R2-Datacenter",
@@ -164,7 +169,7 @@
     },
     "virtualNetworkName": "[concat(parameters('newStorageAccountNamePrefix'), 'VNET')]",
     "sharepath": "[concat(parameters('newStorageAccountNamePrefix'), '-fsw')]",
-    "clusterName": "[concat(parameters('newStorageAccountNamePrefix'),'-fc')]",
+    "clusterName": "[concat(parameters('vMNamePrefix'),'-fc')]",
     "adPDCNicName": "[concat(variables('vmSettings').adPDCVMName,'-nic')]",
     "VnetID": "[resourceId('Microsoft.Network/virtualNetworks', variables('virtualNetworkName'))]",
     "staticSubnetRef": "[concat(variables('VnetID'),'/subnets/',variables('subnetNames').staticSubnetName)]",
@@ -266,6 +271,9 @@
           },
           "siosAvailabilitySetName": {
             "value": "[variables('vmSettings').availabilitySets.siosAvailabilitySetName]"
+          },
+          "clientAvailabilitySetName": {
+            "value": "[variables('vmSettings').availabilitySets.clientAvailabilitySetName]"
           }
         }
       }
@@ -414,7 +422,7 @@
             "value": "[parameters('newStorageAccountNamePrefix')]"
           },
           "availabilitySet": {
-            "value": "[reference('CreatingAvailabilitySets').outputs.siosAvailabilitySetName.value]"
+            "value": "[reference('CreatingAvailabilitySets').outputs.siosAvailabilitySet.value]"
           },
           "adVMSize": {
             "value": "[parameters('adVMSize')]"
@@ -518,8 +526,8 @@
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
-          "siosVMName": {
-            "value": "[variables('vmSettings').siosVMName]"
+          "siosVMNamePrefix": {
+            "value": "[parameters('vMNamePrefix')]"
           },
           "location": {
             "value": "[variables('location')]"
@@ -527,8 +535,11 @@
           "newStorageAccountNamePrefix": {
             "value": "[parameters('newStorageAccountNamePrefix')]"
           },
-          "availabilitySet": {
-            "value": "[reference('CreatingAvailabilitySets').outputs.siosAvailabilitySetName.value]"
+          "siosAvailabilitySet": {
+            "value": "[reference('CreatingAvailabilitySets').outputs.siosAvailabilitySet.value]"
+          },
+          "clientAvailabilitySet": {
+            "value": "[reference('CreatingAvailabilitySets').outputs.clientAvailabilitySet.value]"
           },
           "siosVMSize": {
             "value": "[parameters('sQLVMSize')]"
