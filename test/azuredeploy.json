@@ -380,8 +380,8 @@
           "staticSubnetRef": {
             "value": "[variables('staticSubnetRef')]"
           },
-          "siosVMName": {
-            "value": "[variables('vmSettings').siosVMName]"
+          "siosVMNamePrefix": {
+            "value": "[parameters('vMNamePrefix')]"
           },
           "pdcRdpIPAddressName": {
             "value": "[variables('pdcRdpIPAddressName')]"
