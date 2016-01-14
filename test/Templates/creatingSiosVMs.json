@@ -266,7 +266,7 @@
             "sQLAdminCreds": {
               "userName": "[parameters('sQLAdminUser')]",
               "password": "PrivateSettingsRef:sQLAdminPassword"
-            }
+            },
             "licenseKeyFtpURL": "[parameters('licenseKeyFtpURL')]"
           }
         },
