@@ -50,12 +50,6 @@
     "adPDCModulesURL": {
       "type": "string"
     },
-    "sQLServiceAccountUser": {
-      "type": "string"
-    },
-    "sQLServiceAccountPassword": {
-      "type": "securestring"
-    },
     "sQLAdminUser": {
       "type": "string"
     },
@@ -146,10 +140,6 @@
                 "userName": "[parameters('adminUserName')]",
                 "password": "PrivateSettingsRef:adminPassword"
               },
-              "sQLServiceAccountCreds": {
-                "userName": "[parameters('sQLServiceAccountUser')]",
-                "password": "PrivateSettingsRef:sQLServiceAccountPassword"
-              },
               "sQLAdminCreds": {
                 "userName": "[parameters('sQLAdminUser')]",
                 "password": "PrivateSettingsRef:sQLAdminPassword"
@@ -160,7 +150,6 @@
           "protectedSettings": {
             "items": {
               "adminPassword": "[parameters('adminPassword')]",
-              "sQLServiceAccountPassword": "[parameters('sQLServiceAccountPassword')]",
               "sQLAdminPassword": "[parameters('sQLAdminPassword')]"
             }
           }

@@ -105,20 +105,6 @@
         "description": "The size of the DataKeeper / SQL VMs. If a DS size is selected, the StorageAccountType parameter must have a Premium type selected."
       }
     },
-    "sQLServiceAccountUser": {
-      "type": "string",
-      "defaultValue": "sqlsvcaccount",
-      "metadata": {
-        "description": "The name for the SQL service account"
-      }
-    },
-    "sQLServiceAccountPassword": {
-      "type": "securestring",
-      "defaultValue": "SIOS!5105",
-      "metadata": {
-        "description": "The password for the SQL service account"
-      }
-    },
     "sQLAdminUser": {
       "type": "string",
       "defaultValue": "sqladmin",
@@ -459,12 +445,6 @@
           "adPDCModulesURL": {
             "value": "[variables('configuration').adPDCModulesURL]"
           },
-          "sQLServiceAccountUser": {
-            "value": "[parameters('sQLServiceAccountUser')]"
-          },
-          "sQLServiceAccountPassword": {
-            "value": "[parameters('sQLServiceAccountPassword')]"
-          },
           "sQLAdminUser": {
             "value": "[parameters('sQLAdminUser')]"
           },
@@ -551,12 +531,6 @@
           },
           "adminPassword": {
             "value": "[parameters('domainAdminPassword')]"
-          },
-          "sQLServiceAccountUser": {
-            "value": "[parameters('sQLServiceAccountUser')]"
-          },
-          "sQLServiceAccountPassword": {
-            "value": "[parameters('sQLServiceAccountPassword')]"
           },
           "sQLAdminUser": {
             "value": "[parameters('sQLAdminUser')]"
