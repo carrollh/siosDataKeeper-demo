@@ -263,12 +263,17 @@
               "userName": "[parameters('adminUserName')]",
               "password": "PrivateSettingsRef:adminPassword"
             },
+            "sQLAdminCreds": {
+              "userName": "[parameters('sQLAdminUser')]",
+              "password": "PrivateSettingsRef:sQLAdminPassword"
+            }
             "licenseKeyFtpURL": "[parameters('licenseKeyFtpURL')]"
           }
         },
         "protectedSettings": {
           "items": {
-            "adminPassword": "[parameters('adminPassword')]"
+            "adminPassword": "[parameters('adminPassword')]",
+            "sQLAdminPassword": "[parameters('sQLAdminPassword')]"
           }
         }
       }
