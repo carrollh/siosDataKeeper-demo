@@ -164,7 +164,7 @@
             },
             "licenseKeyFtpURL": "[parameters('licenseKeyFtpURL')]",
             "clusterName": "[parameters('clusterName')]",
-            "sharePath": "[concat(variables('sharePathPrefix'), parameters('sharePath'))]",
+            "sharePath": "[toLower(concat(variables('sharePathPrefix'), parameters('sharePath')))]",
             "nodes": [ "sios-0", "sios-1" ]
           }
         },
