@@ -153,7 +153,7 @@
       "windowsDiskSize": 128
     },
     "virtualNetworkName": "[concat(parameters('newStorageAccountNamePrefix'), 'VNET')]",
-    "sharepath": "[concat(parameters('newStorageAccountNamePrefix'), '-fsw')]",
+    "sharepath": "[toLower(concat(parameters('newStorageAccountNamePrefix'), '-fsw'))]",
     "clusterName": "[concat(parameters('vMNamePrefix'),'-fc')]",
     "adPDCNicName": "[concat(variables('vmSettings').adPDCVMName,'-nic')]",
     "VnetID": "[resourceId('Microsoft.Network/virtualNetworks', variables('virtualNetworkName'))]",
