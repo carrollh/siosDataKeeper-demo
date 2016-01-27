@@ -5,7 +5,7 @@
     "licenseKeyFtpURL": {
       "type": "string",
       "metadata": {
-        "description": "Enter the path to your temporary license file. This path appears in the email that you received from SIOS Technology when you requested an evaluation key. Provide the folder name which contains the license in this field (for example - &#13;&#10;[uri('http://ftp.us.sios.com/pickup/EVAL_Some_User_2016-01-26_DKCE')])."
+        "description": "[concat('Enter the path to your temporary license file. This path appears in the email that you received from SIOS Technology when you requested an evaluation key. Provide the folder name which contains the license in this field (for example - &#13;&#10;', uri('http://ftp.us.sios.com/pickup/EVAL_Some_User_2016-01-26_DKCE'), ').')]"
       }
     },
     "newStorageAccountNamePrefix": {
