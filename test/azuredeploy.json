@@ -5,7 +5,7 @@
     "licenseKeyFtpURL": {
       "type": "string",
       "metadata": {
-        "description": "Enter the path to your temporary license file. This path appears in the email that you received from SIOS Technology when you requested an evaluation key. Provide the folder name which contains the license in this field.<br/>Example input - http://ftp.us.sios.com/pickup/EVAL_Some_User_2016-01-26_DKCE<br/><br/><br/>To request a free 14 day trial, visit http://us.sios.com/clustersyourway/cta/14-day-trial"
+        "description": "Enter the path to your temporary license file. This path appears in the email that you received from SIOS Technology Corp. when you requested an evaluation key. Provide the folder name which contains the license in this field.<br/>Example input - http://ftp.us.sios.com/pickup/EVAL_Some_User_2016-01-26_DKCE<br/><br/><br/>To request a free 14 day trial, visit http://us.sios.com/clustersyourway/cta/14-day-trial"
       }
     },
     "newStorageAccountNamePrefix": {
@@ -31,14 +31,14 @@
       "type": "string",
       "defaultValue": "datakeeper.local",
       "metadata": {
-        "description": "The domain name in FQDN form. The domain chosen must not match the domainAdminUsername parameter (for example: using domainName 'datakeeper.local' and domainAdminUsername 'datakeeper' will cause the deployment to fail)."
+        "description": "The domain name in FQDN form. The domain chosen must not match the DOMAINADMINUSERNAME parameter (for example: using DOMAINNAME 'datakeeper.local' and DOMAINADMINUSERNAME 'datakeeper' will cause the deployment to fail)."
       }
     },
     "domainAdminUsername": { 	
       "type": "string",
       "defaultValue": "siosadmin",
       "metadata": {
-        "description": "The username for the Administrator of the new VMs and Domain. The domainAdminUsername chosen must not match the domain specified in the domainName parameter (for example: using domainName 'datakeeper.local' and domainAdminUsername 'datakeeper' will cause the deployment to fail)."
+        "description": "The username for the Administrator of the new VMs and Domain. The DOMAINADMINUSERNAME chosen must not match the domain specified in the DOMAINNAME parameter (for example: using DOMAINNAME 'datakeeper.local' and DOMAINADMINUSERNAME 'datakeeper' will cause the deployment to fail)."
       }
     },
     "domainAdminPassword": {
