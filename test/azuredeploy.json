@@ -5,7 +5,7 @@
     "licenseKeyFtpURL": {
       "type": "string",
       "metadata": {
-        "description": "Temporary license key FTP address. Please contact SIOS Support for a valid link."
+        "description": "Enter the path to your temporary license file. This path appears in the email that you received from SIOS Technology when you requested an evaluation key. Provide the folder name which contains the license in this field (for example - &#13;&#10;[uri('http://ftp.us.sios.com/pickup/EVAL_Some_User_2016-01-26_DKCE')])."
       }
     },
     "newStorageAccountNamePrefix": {
@@ -31,14 +31,14 @@
       "type": "string",
       "defaultValue": "datakeeper.local",
       "metadata": {
-        "description": "The domain name in FQDN form."
+        "description": "The domain name in FQDN form. The domain chosen must not match the domainAdminUsername parameter (for example: using domainName 'datakeeper.local' and domainAdminUsername 'datakeeper' will cause the deployment to fail)."
       }
     },
-    "domainAdminUsername": {
+    "domainAdminUsername": { 	
       "type": "string",
       "defaultValue": "siosadmin",
       "metadata": {
-        "description": "The username for the Administrator of the new VMs and Domain"
+        "description": "The username for the Administrator of the new VMs and Domain. The domainAdminUsername chosen must not match the domain specified in the domainName parameter (for example: using domainName 'datakeeper.local' and domainAdminUsername 'datakeeper' will cause the deployment to fail).""
       }
     },
     "domainAdminPassword": {
