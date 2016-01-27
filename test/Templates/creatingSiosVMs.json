@@ -158,10 +158,6 @@
               "userName": "[parameters('adminUserName')]",
               "password": "PrivateSettingsRef:adminPassword"
             },
-            "sQLAdminCreds": {
-              "userName": "[parameters('sQLAdminUser')]",
-              "password": "PrivateSettingsRef:sQLAdminPassword"
-            },
             "licenseKeyFtpURL": "[parameters('licenseKeyFtpURL')]",
             "clusterName": "[parameters('clusterName')]",
             "sharePath": "[toLower(concat(variables('sharePathPrefix'), parameters('sharePath')))]",
@@ -170,8 +166,7 @@
         },
         "protectedSettings": {
           "items": {
-            "adminPassword": "[parameters('adminPassword')]",
-            "sQLAdminPassword": "[parameters('sQLAdminPassword')]"
+            "adminPassword": "[parameters('adminPassword')]"
           }
         }
       }
@@ -263,17 +258,12 @@
               "userName": "[parameters('adminUserName')]",
               "password": "PrivateSettingsRef:adminPassword"
             },
-            "sQLAdminCreds": {
-              "userName": "[parameters('sQLAdminUser')]",
-              "password": "PrivateSettingsRef:sQLAdminPassword"
-            },
             "licenseKeyFtpURL": "[parameters('licenseKeyFtpURL')]"
           }
         },
         "protectedSettings": {
           "items": {
-            "adminPassword": "[parameters('adminPassword')]",
-            "sQLAdminPassword": "[parameters('sQLAdminPassword')]"
+            "adminPassword": "[parameters('adminPassword')]"
           }
         }
       }

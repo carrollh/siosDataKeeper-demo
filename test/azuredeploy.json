@@ -104,20 +104,6 @@
       "metadata": {
         "description": "The size of the DataKeeper / SQL VMs. If a DS size is selected, the StorageAccountType parameter must have a Premium type selected."
       }
-    },
-    "sQLAdminUser": {
-      "type": "string",
-      "defaultValue": "sqladmin",
-      "metadata": {
-        "description": "The name for the SQL administrator account"
-      }
-    },
-    "sQLAdminPassword": {
-      "type": "securestring",
-      "defaultValue": "SIOS!5105",
-      "metadata": {
-        "description": "The password for the SQL administrator account"
-      }
     }
   },
   "variables": {
@@ -444,12 +430,6 @@
           },
           "adPDCModulesURL": {
             "value": "[variables('configuration').adPDCModulesURL]"
-          },
-          "sQLAdminUser": {
-            "value": "[parameters('sQLAdminUser')]"
-          },
-          "sQLAdminPassword": {
-            "value": "[parameters('sQLAdminPassword')]"
           }
         }
       }
@@ -532,12 +512,6 @@
           "adminPassword": {
             "value": "[parameters('domainAdminPassword')]"
           },
-          "sQLAdminUser": {
-            "value": "[parameters('sQLAdminUser')]"
-          },
-          "sQLAdminPassword": {
-            "value": "[parameters('sQLAdminPassword')]"
-          },
           "vmContainerName": {
             "value": "[variables('vmSettings').vmContainerName]"
           },
@@ -555,7 +529,7 @@
           },
           "prepareDataKeeperHeadNodeCommandStr": {
             "value": "[variables('configuration').prepareDataKeeperHeadNodeCommandStr]"
-          },
+          }, 
           "prepareDataKeeperNodesModuleURL": {
             "value": "[variables('configuration').prepareDataKeeperNodesModuleURL]"
           },

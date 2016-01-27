@@ -49,12 +49,6 @@
     },
     "adPDCModulesURL": {
       "type": "string"
-    },
-    "sQLAdminUser": {
-      "type": "string"
-    },
-    "sQLAdminPassword": {
-      "type": "securestring"
     }
   },
   "resources": [
@@ -140,17 +134,12 @@
                 "userName": "[parameters('adminUserName')]",
                 "password": "PrivateSettingsRef:adminPassword"
               },
-              "sQLAdminCreds": {
-                "userName": "[parameters('sQLAdminUser')]",
-                "password": "PrivateSettingsRef:sQLAdminPassword"
-              },
               "sharePath": "[parameters('sharePath')]"
             }
           },
           "protectedSettings": {
             "items": {
-              "adminPassword": "[parameters('adminPassword')]",
-              "sQLAdminPassword": "[parameters('sQLAdminPassword')]"
+              "adminPassword": "[parameters('adminPassword')]"
             }
           }
         }

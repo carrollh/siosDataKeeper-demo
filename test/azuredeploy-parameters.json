@@ -8,8 +8,6 @@
     "domainAdminPassword": { "value": "SIOS!5105" },
     "vMNamePrefix": { "value": "sios" },
     "aDVMSize": { "value": "Standard_DS1" },
-    "sQLVMSize": { "value": "Standard_DS1" },
-    "sQLAdminUser": { "value": "siosadmin" },
-    "sQLAdminPassword": { "value": "SIOS!5105" }
+    "sQLVMSize": { "value": "Standard_DS1" }
   }
 }
