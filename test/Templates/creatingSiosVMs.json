@@ -29,12 +29,6 @@
     "adminPassword": {
       "type": "securestring"
     },
-    "sQLAdminUser": {
-      "type": "string"
-    },
-    "sQLAdminPassword": {
-      "type": "securestring"
-    },
     "vmContainerName": {
       "type": "string"
     },
