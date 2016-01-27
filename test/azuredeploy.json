@@ -38,7 +38,7 @@
       "type": "string",
       "defaultValue": "siosadmin",
       "metadata": {
-        "description": "The username for the Administrator of the new VMs and Domain. The domainAdminUsername chosen must not match the domain specified in the domainName parameter (for example: using domainName 'datakeeper.local' and domainAdminUsername 'datakeeper' will cause the deployment to fail).""
+        "description": "The username for the Administrator of the new VMs and Domain. The domainAdminUsername chosen must not match the domain specified in the domainName parameter (for example: using domainName 'datakeeper.local' and domainAdminUsername 'datakeeper' will cause the deployment to fail)."
       }
     },
     "domainAdminPassword": {
