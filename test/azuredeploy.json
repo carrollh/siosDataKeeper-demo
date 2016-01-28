@@ -31,7 +31,7 @@
       "type": "string",
       "defaultValue": "datakeeper.local",
       "metadata": {
-        "description": "The domain name in FQDN form. The domain chosen must not match the DOMAINADMINUSERNAME parameter (for example: using DOMAINNAME 'datakeeper.local' and DOMAINADMINUSERNAME 'datakeeper' will cause the deployment to fail)."
+        "description": "The domain name in FQDN form. This value should contain at least two parts, separated by a '.' (for example, datakeeper.local). The first part of the FQDN will be used as the login domain name (for example, login as datakeeper\siosadmin), and must not match the DOMAINADMINUSERNAME. If DOMAINNAME does not contain a '.', the suffix '.local' will be appended."
       }
     },
     "domainAdminUsername": { 	
