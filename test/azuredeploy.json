@@ -31,7 +31,7 @@
       "type": "string",
       "defaultValue": "datakeeper.local",
       "metadata": {
-        "description": "The domain name in FQDN form. This value should contain both a domain and top level domain, separated by a '.' (for example datakeeper.local).<br\>The domain chosen must not match the DOMAINADMINUSERNAME parameter (for example: using DOMAINNAME 'datakeeper.local' and DOMAINADMINUSERNAME 'datakeeper' will cause the deployment to fail)."
+        "description": "The domain name in FQDN form. This value should contain both a domain and top level domain, separated by a '.' (for example datakeeper.local).<br/>The domain chosen must not match the DOMAINADMINUSERNAME parameter (for example: using DOMAINNAME 'datakeeper.local' and DOMAINADMINUSERNAME 'datakeeper' will cause the deployment to fail)."
       }
     },
     "domainAdminUsername": { 	
