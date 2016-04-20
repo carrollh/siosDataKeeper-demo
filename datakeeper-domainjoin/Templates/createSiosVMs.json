@@ -11,10 +11,10 @@
     "location": {
       "type": "string"
     },
-    "diskStorageAccountName": {
+    "existingDiskStorageAccountName": {
       "type": "string"
     },
-    "diagStorageAccountName": {
+    "existingDiagnosticStorageAccountName": {
       "type": "string"
     },
     "availabilitySet": {
@@ -86,7 +86,7 @@
           "osDisk": {
             "name": "osdisk",
             "vhd": {
-              "uri": "[concat('http://',parameters('storageAccountName'),'sios.blob.core.windows.net/',parameters('vmContainerName'),'/',parameters('vmName'), '-osdisk.vhd')]"
+              "uri": "[concat('http://',parameters('existingDiskStorageAccountName'),'sios.blob.core.windows.net/',parameters('vmContainerName'),'/',parameters('vmName'), '-osdisk.vhd')]"
             },
             "caching": "ReadWrite",
             "createOption": "FromImage"
@@ -94,7 +94,7 @@
           "dataDisks": [
             {
               "vhd": {
-                "uri": "[concat('http://',parameters('diskStorageAccountName'),'.blob.core.windows.net/',parameters('vmContainerName'),'/', parameters('vmName'), '-datadisk.vhd')]"
+                "uri": "[concat('http://',parameters('existingDiskStorageAccountName'),'.blob.core.windows.net/',parameters('vmContainerName'),'/', parameters('vmName'), '-datadisk.vhd')]"
               },
               "name": "[concat(parameters('vmName'),'-datadisk')]",
               "caching": "None",
@@ -114,7 +114,7 @@
         "diagnosticsProfile": {
           "bootDiagnostics": {
             "enabled": "true",
-            "storageUri": "[concat('http://',parameters('diagStorageAccountName'),'.blob.core.windows.net')]"
+            "storageUri": "[concat('http://',parameters('existingDiagnosticStorageAccountName'),'.blob.core.windows.net')]"
           }
         }
       }
