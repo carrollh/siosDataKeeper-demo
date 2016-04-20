@@ -36,7 +36,7 @@
             "name": "ipconfig1",
             "properties": {
               "privateIPAllocationMethod": "Static",
-              "privateIPAddress": "[parameters('privateIPAddress')]",
+              "privateIPAddress": "[parameters('newVMPrivateIPAddress')]",
               "publicIPAddress": {
                 "id": "[resourceId('Microsoft.Network/publicIPAddresses',parameters('vmRdpIPAddressName'))]"
               },
