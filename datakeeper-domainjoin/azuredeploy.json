@@ -146,6 +146,7 @@
   "variables": {
     "baseUrl": "https://raw.githubusercontent.com/carrollh/siosDataKeeper-demo/master/datakeeper-domainjoin",
     "location": "[resourceGroup().location]",
+    "availabilitySetID": "[resourceId('Microsoft.Compute/availabilitySets',parameters('existingAvailabilitySet'))]",
     "vmRdpIPAddressName": "[concat(parameters('vmName'),'RdpIP')]",
     "vnetID": "[resourceId('Microsoft.Network/virtualNetworks', parameters('existingVnetName'))]",
     "staticSubnetRef": "[concat(variables('vnetID'),'/subnets/',parameters('existingSubnetName'))]",
@@ -240,7 +241,7 @@
             "value": "[parameters('storageAccountName')]"
           },
           "availabilitySet": {
-            "value": "[parameters('existingAvailabilitySet')]"
+            "value": "[variables('availabilitySetID')]"
           },
           "vmSize": {
             "value": "[parameters('vmSize')]"
