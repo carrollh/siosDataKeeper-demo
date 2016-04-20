@@ -26,7 +26,7 @@
   },
   "resources": [
     {
-      "name": "[concat(variables('vmName'), '0-nic')]",
+      "name": "[concat(variables('vmName'), 'nic')]",
       "type": "Microsoft.Network/networkInterfaces",
       "location": "[parameters('location')]",
       "apiVersion": "2015-06-15",
