@@ -14,7 +14,7 @@
     "vmRdpIPAddressName": {
       "type": "string"
     },
-    "newVMPrivateIPAddress": {
+    "privateIPAddress": {
       "type": "string"
     },
     "ilbBEAddressPoolID": {
@@ -36,7 +36,7 @@
             "name": "ipconfig1",
             "properties": {
               "privateIPAllocationMethod": "Static",
-              "privateIPAddress": "[parameters('newVMPrivateIPAddress')]",
+              "privateIPAddress": "[parameters('privateIPAddress')]",
               "publicIPAddress": {
                 "id": "[resourceId('Microsoft.Network/publicIPAddresses',parameters('vmRdpIPAddressName'))]"
               },

@@ -36,7 +36,7 @@
         "description": "The name of the existing subnet name in the above VNET."
       }
     },
-    "newVMPrivateIPAddress": {
+    "privateIPAddress": {
       "type": "string",
       "defaultValue": "10.0.0.8",
       "metadata": {
@@ -204,8 +204,8 @@
           "vmRdpIPAddressName": {
             "value": "[variables('vmRdpIPAddressName')]"
           },
-          "newVMPrivateIPAddress": {
-            "value": "[parameters('newVMPrivateIPAddress')]"
+          "privateIPAddress": {
+            "value": "[parameters('privateIPAddress')]"
           },
           "ilbBEAddressPoolID": {
             "value": "[variables('ilbBEAddressPoolID')]"

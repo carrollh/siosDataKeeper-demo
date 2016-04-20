@@ -7,7 +7,7 @@
     "existingAvailabilitySet": { },
     "existingVnetName": { },
     "existingSubnetName": { },
-    "newVMPrivateIPAddress": { },
+    "privateIPAddress": { },
     "existingInternalLoadBalancer": { },
     "existingBackendAddressPoolName": { },
     "existingDomainName": { },
