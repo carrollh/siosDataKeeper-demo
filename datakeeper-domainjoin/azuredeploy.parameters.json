@@ -1,6 +1,23 @@
 ﻿{
-    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
-    "contentVersion": "1.0.0.0",
-    "parameters": {
-    }
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "licenseKeyFtpURL": { },
+    "storageAccountName": { },
+    "existingAvailabilitySet": { },
+    "existingVnetName": { },
+    "existingSubnetName": { },
+    "newVMPrivateIPAddress": { },
+    "existingInternalLoadBalancer": { },
+    "existingBackendAddressPoolName": { },
+    "existingDomainName": { },
+    "existingDomainAdminUsername": { },
+    "existingDomainAdminPassword": { },
+    "vmName": { },
+    "vmSize": { },
+    "vmContainerName": { },
+    "clusterName": { },
+    "clusterIPAddress": { },
+    "fileShareWitnessPath": { }
+  }
 }
