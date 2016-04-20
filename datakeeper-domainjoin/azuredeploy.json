@@ -17,7 +17,7 @@
     },
     "existingAvailabilitySet": {
       "type": "string",
-      "defaultValue": "datakeeper",
+      "defaultValue": "siosAvailabilitySet",
       "metadata": {
         "description": "The name of the existing availability set in which to place the nwe VM(s)."
       }
@@ -147,8 +147,8 @@
     "baseUrl": "https://raw.githubusercontent.com/carrollh/siosDataKeeper-demo/master/datakeeper-domainjoin",
     "location": "[resourceGroup().location]",
     "vmRdpIPAddressName": "[concat(parameters('vmName'),'RdpIP')]",
-    "vnetID": "[resourceId('Microsoft.Network/virtualNetworks', parameters('existingVnetName'),'/subnets/')]",
-    "staticSubnetRef": "[concat(variables('vnetID'),parameters('existingSubnetName'))]",
+    "vnetID": "[resourceId('Microsoft.Network/virtualNetworks', parameters('existingVnetName'))]",
+    "staticSubnetRef": "[concat(variables('vnetID'),'/subnets/',parameters('existingSubnetName'))]",
     "ilbBEAddressPoolID": "[resourceId('Microsoft.Network/loadBalancers',parameters('existingInternalLoadBalancer'),'/backendAddressPools/',parameters('existingBackendAddressPoolName'))]",
     "rdpIPAddressSetupURL": "[concat(variables('baseUrl'),'/Templates/createPublicIP-RDP.json')]",
     "createNicsUrl": "[concat(variables('baseUrl'),'/Templates/createNICs.json')]",
