@@ -204,7 +204,7 @@
           "vmRdpIPAddressName": {
             "value": "[variables('vmRdpIPAddressName')]"
           },
-          "newVMPrivateIPAddress": {
+          "privateIPAddress": {
             "value": "[parameters('newVMPrivateIPAddress')]"
           },
           "ilbBEAddressPoolID": {
@@ -245,7 +245,7 @@
           "vmSize": {
             "value": "[parameters('vmSize')]"
           },
-          "existingDomainName": {
+          "domainName": {
             "value": "[parameters('existingDomainName')]"
           },
           "adminUsername": {
