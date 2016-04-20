@@ -14,7 +14,7 @@
     "vmRdpIPAddressName": {
       "type": "string"
     },
-    "privateIPAddress": {
+    "newVMPrivateIPAddress": {
       "type": "string"
     },
     "ilbBEAddressPoolID": {

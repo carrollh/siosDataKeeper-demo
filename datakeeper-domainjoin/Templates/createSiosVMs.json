@@ -20,7 +20,7 @@
     "vmSize": {
       "type": "string"
     },
-    "domainName": {
+    "existingDomainName": {
       "type": "string"
     },
     "adminUsername": {
@@ -133,7 +133,7 @@
           "modulesURL": "[parameters('prepareDataKeeperNodesModuleURL')]",
           "configurationFunction": "[parameters('prepareDataKeeperNodesCommandStr')]",
           "properties": {
-            "domainName": "[parameters('domainName')]",
+            "domainName": "[parameters('existingDomainName')]",
             "adminCreds": {
               "userName": "[parameters('adminUserName')]",
               "password": "PrivateSettingsRef:adminPassword"
