@@ -11,7 +11,10 @@
     "location": {
       "type": "string"
     },
-    "storageAccountName": {
+    "diskStorageAccountName": {
+      "type": "string"
+    },
+    "diagStorageAccountName": {
       "type": "string"
     },
     "availabilitySet": {
@@ -91,7 +94,7 @@
           "dataDisks": [
             {
               "vhd": {
-                "uri": "[concat('http://',parameters('storageAccountName'),'sios.blob.core.windows.net/',parameters('vmContainerName'),'/', parameters('vmName'), '-datadisk.vhd')]"
+                "uri": "[concat('http://',parameters('diskStorageAccountName'),'.blob.core.windows.net/',parameters('vmContainerName'),'/', parameters('vmName'), '-datadisk.vhd')]"
               },
               "name": "[concat(parameters('vmName'),'-datadisk')]",
               "caching": "None",
@@ -111,7 +114,7 @@
         "diagnosticsProfile": {
           "bootDiagnostics": {
             "enabled": "true",
-            "storageUri": "[concat('http://',parameters('storageAccountName'),'diag.blob.core.windows.net')]"
+            "storageUri": "[concat('http://',parameters('diagStorageAccountName'),'.blob.core.windows.net')]"
           }
         }
       }
