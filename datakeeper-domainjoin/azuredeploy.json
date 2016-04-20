@@ -136,15 +136,16 @@
     }
   },
   "variables": {
+    "baseUrl": "https://raw.githubusercontent.com/carrollh/siosDataKeeper-demo/master/datakeeper-domainjoin",
     "location": "[resourceGroup().location]",
-    "rdpIPAddressSetupURL": "",
     "vmRdpIPAddressName": "[concat(parameters('vmName'),'RdpIP')]",
-    "createNicsUrl": "",
     "staticSubnetRef": "[resourceId('Microsoft.Network/virtualNetworks', parameters('existingVnetName'),'/subnets/',parameters('existingSubnetName'))]",
     "ilbBEAddressPoolID": "[resourceId('Microsoft.Network/loadBalancers',parameters('existingInternalLoadBalancer'),'/backendAddressPools/',parameters('existingBackendAddressPoolName'))]",
-    "creatingSiosVMsURL": "",
-    "prepareDataKeeperNodesModuleURL": "",
-    "prepareDataKeeperNodesCommandStr": ""
+    "rdpIPAddressSetupURL": "[concat(variables('baseUrl'),'/Templates/createPublicIP-RDP.json')]",
+    "createNicsUrl": "[concat(variables('baseUrl'),'/Templates/createNICs.json')]",
+    "creatingSiosVMsURL": "[concat(variables('baseUrl'),'/Templates/createSiosVMs.json')]",
+    "prepareDataKeeperNodesModuleURL": "[concat(variables('baseUrl'),'/DSC/ConfigureSiosVMs.ps1.zip')]",
+    "prepareDataKeeperNodesCommandStr": "ConfigureSiosVMs.ps1\\ConfigureSiosVMs"
   },
   "resources": [
     {
