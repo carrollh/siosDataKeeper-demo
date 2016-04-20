@@ -1,0 +1,268 @@
+﻿{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "licenseKeyFtpURL": {
+      "type": "string",
+      "metadata": {
+        "description": "Enter the path to your temporary license file. This path appears in the email that you received from SIOS Technology Corp. when you requested an evaluation key. Provide the folder name which contains the license in this field.<br/>Example input - http://ftp.us.sios.com/pickup/EVAL_Some_User_2016-01-26_DKCE<br/><br/><br/>To request a free 14 day trial, visit http://us.sios.com/clustersyourway/cta/14-day-trial"
+      }
+    },
+    "storageAccountName": {
+      "type": "string",
+      "metadata": {
+        "description": "The prefix of the new storage account created to store the VMs disks, different storage accounts will be created for AD and DataKeeper VMs. This value must be composed of all lowercase letters or numbers and be a maximum of 20 characters long and globally unique within all of Azure."
+      }
+    },
+    "existingVnetName": {
+      "type": "string",
+      "defaultValue": "sios-vnet",
+      "metadata": {
+        "description": "The name of the existing VNET to connect the VM(s) to."
+      }
+    },
+    "existingSubnetName": {
+      "type": "string",
+      "defaultValue": "staticSubnet",
+      "metadata": {
+        "description": "The name of the existing subnet name in the above VNET."
+      }
+    },
+    "newVMPrivateIPAddress": {
+      "type": "string",
+      "defaultValue": "10.0.0.8",
+      "metadata": {
+        "description": "The starting private IP address to use for the new VM(s). Additional VMs will use the next IPs in sequence. For example if you provision 3 new VMs with 10.0.0.8 as the starting IP address, they will be given addresses 10.0.0.8, 10.0.0.9, and 10.0.0.10 respectively."
+      }
+    },
+    "existingInternalLoadBalancer": {
+      "type": "string",
+      "defaultValue": "InternalLoadBalancer",
+      "metadata": {
+        "description": "Name of the exsiting Internal Load Balancer."
+      }
+    },
+    "existingBackendAddressPoolName": {
+      "type": "string",
+      "defaultValue": "ilbBE",
+      "metadata": {
+        "description": "Name of the exsint Internal Load Balancer's existing Backend Address Pool."
+      }
+    },
+    "existingDomainName": {
+      "type": "string",
+      "defaultValue": "datakeeper.local",
+      "metadata": {
+        "description": "The domain name in FQDN form. This value should contain at least two parts, separated by a '.' (for example, datakeeper.local). The first part of the FQDN will be used as the login domain name (for example, login as datakeeper&#92;siosadmin), and must not match the DOMAINADMINUSERNAME. If DOMAINNAME does not contain a '.', the suffix '.local' will be appended."
+      }
+    },
+    "existingDomainAdminUsername": {
+      "type": "string",
+      "defaultValue": "siosadmin",
+      "metadata": {
+        "description": "The username for the Administrator of the new VMs and Domain. The DOMAINADMINUSERNAME chosen must not match the domain specified in the DOMAINNAME parameter (for example: using DOMAINNAME 'datakeeper.local' and DOMAINADMINUSERNAME 'datakeeper' will cause the deployment to fail)."
+      }
+    },
+    "existingDomainAdminPassword": {
+      "type": "securestring",
+      "defaultValue": "SIOS!5105",
+      "metadata": {
+        "description": "The password for the Administrator account of the new VMs and Domain"
+      }
+    },
+    "vmName": {
+      "type": "string",
+      "defaultValue": "sios",
+      "metadata": {
+        "description": "Name for the vm being created."
+      }
+    },
+    "vmSize": {
+      "type": "string",
+      "defaultValue": "Standard_DS1",
+      "allowedValues": [
+        "Standard_D1",
+        "Standard_DS1",
+        "Standard_D2",
+        "Standard_DS2",
+        "Standard_D3",
+        "Standard_DS3",
+        "Standard_D4",
+        "Standard_DS4",
+        "Standard_D11",
+        "Standard_DS11",
+        "Standard_D12",
+        "Standard_DS12",
+        "Standard_D13",
+        "Standard_DS13",
+        "Standard_D14",
+        "Standard_DS14",
+        "Standard_GS1",
+        "Standard_GS2",
+        "Standard_GS3",
+        "Standard_GS4"
+      ],
+      "metadata": {
+        "description": "The size of the primary domain controller VM. If a DS or GS size is selected, the ADSTORAGEACCOUNTTYPE parameter must have a Premium type selected."
+      }
+    },
+    "vmContainerName": {
+      "type": "string",
+      "defaultValue": "vhds",
+      "metadata": {
+        "description": "Blob storage container in which to place new virtual disks."
+      }
+    },
+    "clusterName": {
+      "type": "string",
+      "defaultValue": "sios-fc",
+      "metadata": {
+        "description": "Name of the cluster to join the vm(s) to."
+      }
+    },
+    "clusterIPAddress": {
+      "type": "string",
+      "defaultValue": "10.0.0.200",
+      "metadata": {
+        "description": "IP address for the cluster being joined."
+      }
+    },
+    "fileShareWitnessPath": {
+      "type": "string",
+      "defaultValue": "\\\\ad-pdc\\datakeeper-fsw",
+      "metadata": {
+        "description": "File Share Witness being used for the cluster quorum"
+      }
+    }
+  },
+  "variables": {
+    "location": "[resourceGroup().location]",
+    "rdpIPAddressSetupURL": "",
+    "vmRdpIPAddressName": "[concat(parameters('vmName'),'RdpIP')]",
+    "createNicsUrl": "",
+    "staticSubnetRef": "[resourceId('Microsoft.Network/virtualNetworks', parameters('existingVnetName'),'/subnets/',parameters('existingSubnetName'))]",
+    "ilbBEAddressPoolID": "[resourceId('Microsoft.Network/loadBalancers',parameters('existingInternalLoadBalancer'),'/backendAddressPools/',parameters('existingBackendAddressPoolName'))]",
+    "creatingSiosVMsURL": "",
+    "prepareDataKeeperNodesModuleURL": "",
+    "prepareDataKeeperNodesCommandStr": ""
+  },
+  "resources": [
+    {
+      "name": "SettingUpRdp",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2015-01-01",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('rdpIPAddressSetupURL')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "location": {
+            "value": "[variables('location')]"
+          },
+          "vmRdpIPAddressName": {
+            "value": "[variables('vmRdpIPAddressName')]"
+          }
+        }
+      }
+    },
+    {
+      "name": "CreatingNetworkInterfaces",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2015-01-01",
+      "dependsOn": [
+        "Microsoft.Resources/deployments/SettingUpRdp"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('createNicsUrl')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "location": {
+            "value": "[variables('location')]"
+          },
+          "staticSubnetRef": {
+            "value": "[variables('staticSubnetRef')]"
+          },
+          "vmName": {
+            "value": "[parameters('vmName')]"
+          },
+          "vmRdpIPAddressName": {
+            "value": "[variables('vmRdpIPAddressName')]"
+          },
+          "newVMPrivateIPAddress": {
+            "value": "[parameters('newVMPrivateIPAddress')]"
+          },
+          "ilbBEAddressPoolID": {
+            "value": "[variables('ilbBEAddressPoolID')]"
+          }
+        }
+      }
+    },
+    {
+      "name": "CreatingSiosVirtualMachines",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2015-01-01",
+      "dependsOn": [
+        "Microsoft.Resources/deployments/CreatingNetworkInterfaces"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('creatingSiosVMsURL')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "licenseKeyFtpURL": {
+            "value": "[parameters('licenseKeyFtpURL')]"
+          },
+          "vmName": {
+            "value": "[parameters('vmName')]"
+          },
+          "location": {
+            "value": "[variables('location')]"
+          },
+          "storageAccountName": {
+            "value": "[parameters('storageAccountName')]"
+          },
+          "availabilitySet": {
+            "value": "[reference('CreatingAvailabilitySets').outputs.siosAvailabilitySet.value]"
+          },
+          "vmSize": {
+            "value": "[parameters('vmSize')]"
+          },
+          "existingDomainName": {
+            "value": "[parameters('existingDomainName')]"
+          },
+          "adminUsername": {
+            "value": "[parameters('existingDomainAdminUsername')]"
+          },
+          "adminPassword": {
+            "value": "[parameters('existingDomainAdminPassword')]"
+          },
+          "vmContainerName": {
+            "value": "[parameters('vmContainerName')]"
+          },
+          "clusterName": {
+            "value": "[parameters('clusterName')]"
+          },
+          "clusterIPAddress": {
+            "value": "[parameters('clusterIPAddress')]"
+          },
+          "fileShareWitnessPath": {
+            "value": "[parameters('fileShareWitnessPath')]"
+          },
+          "prepareDataKeeperNodesModuleURL": {
+            "value": "[variables('prepareDataKeeperNodesModuleURL')]"
+          },
+          "prepareDataKeeperNodesCommandStr": {
+            "value": "[variables('prepareDataKeeperNodesCommandStr')]"
+          }
+        }
+      }
+    }
+  ]
+}
