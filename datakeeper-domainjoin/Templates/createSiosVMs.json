@@ -141,7 +141,8 @@
               "userName": "[parameters('adminUserName')]",
               "password": "PrivateSettingsRef:adminPassword"
             },
-            "licenseKeyFtpURL": "[parameters('licenseKeyFtpURL')]"
+            "licenseKeyFtpURL": "[parameters('licenseKeyFtpURL')]",
+            "clusterIPAddress": "[parameters('clusterIPAddress')]"
           }
         },
         "protectedSettings": {
