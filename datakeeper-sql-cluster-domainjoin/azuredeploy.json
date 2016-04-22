@@ -320,8 +320,8 @@
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
-          "siosVMName": {
-            "value": "[variables('vmSettings').siosVMName]"
+          "vmNamePrefix": {
+            "value": "[parameters('vmNamePrefix')]"
           },
           "location": {
             "value": "[variables('location')]"
@@ -329,10 +329,10 @@
           "newStorageAccountNamePrefix": {
             "value": "[parameters('newStorageAccountNamePrefix')]"
           },
-          "availabilitySet": {
+          "existingAvailabilitySet": {
             "value": "[parameters('existingAvailabilitySet')]"
           },
-          "siosVMSize": {
+          "vmSize": {
             "value": "[parameters('vmSize')]"
           },
           "existingDomainName": {
@@ -345,7 +345,7 @@
             "value": "[parameters('existingDomainAdminPassword')]"
           },
           "vmContainerName": {
-            "value": "[variables('vmSettings').vmContainerName]"
+            "value": "vhds"
           },
           "licenseKeyFtpURL": {
             "value": "[parameters('licenseKeyFtpURL')]"
