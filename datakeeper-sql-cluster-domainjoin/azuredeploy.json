@@ -2,83 +2,166 @@
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
+    "licenseKeyFtpURL": {
+      "type": "string",
+      "metadata": {
+        "description": "Enter the path to your temporary license file. This path appears in the email that you received from SIOS Technology Corp. when you requested an evaluation key. Provide the folder name which contains the license in this field.<br/>Example input - http://ftp.us.sios.com/pickup/EVAL_Some_User_2016-01-26_DKCE<br/><br/><br/>To request a free 14 day trial, visit http://us.sios.com/clustersyourway/cta/14-day-trial"
+      }
+    },
     "newStorageAccountNamePrefix": {
       "type": "string",
-      "defaultValue": "datakeeper",
       "metadata": {
         "description": "The prefix of the new storage account created to store the VMs disks, different storage accounts will be created for AD and DataKeeper VMs. This value must be composed of all lowercase letters or numbers and be a maximum of 20 characters long and globally unique within all of Azure."
       }
     },
-    "adminUsername": {
+    "storageAccountType": {
+      "type": "string",
+      "defaultValue": "Premium_LRS",
+      "allowedValues": [
+        "Standard_LRS",
+        "Standard_GRS",
+        "Standard_RAGRS",
+        "Premium_LRS"
+      ],
+      "metadata": {
+        "description": "Type of storage account to create. This must be set to Premium if DS size VMs are being created."
+      }
+    },
+    "existingAvailabilitySet": {
+      "type": "string",
+      "defaultValue": "siosAvailabilitySet",
+      "metadata": {
+        "description": "The name of the existing availability set in which to place the nwe VM(s)."
+      }
+    },
+    "existingVnetName": {
+      "type": "string",
+      "defaultValue": "datakeeperVNET",
+      "metadata": {
+        "description": "The name of the existing VNET to connect the VM(s) to."
+      }
+    },
+    "existingSubnetName": {
+      "type": "string",
+      "defaultValue": "staticSubnet",
+      "metadata": {
+        "description": "The name of the existing subnet name in the above VNET."
+      }
+    },
+    "privateIPAddressForNode0": {
+      "type": "string",
+      "defaultValue": "10.0.0.5",
+      "metadata": {
+        "description": "The starting private IP address to use for the new VM(s). Additional VMs will use the next IPs in sequence. For example if you provision 3 new VMs with 10.0.0.8 as the starting IP address, they will be given addresses 10.0.0.8, 10.0.0.9, and 10.0.0.10 respectively."
+      }
+    },
+    "privateIPAddressForNode1": {
+      "type": "string",
+      "defaultValue": "10.0.0.6",
+      "metadata": {
+        "description": "The starting private IP address to use for the new VM(s). Additional VMs will use the next IPs in sequence. For example if you provision 3 new VMs with 10.0.0.8 as the starting IP address, they will be given addresses 10.0.0.8, 10.0.0.9, and 10.0.0.10 respectively."
+      }
+    },
+    "existingDomainName": {
+      "type": "string",
+      "defaultValue": "datakeeper.local",
+      "metadata": {
+        "description": "The domain name in FQDN form. This value should contain at least two parts, separated by a '.' (for example, datakeeper.local). The first part of the FQDN will be used as the login domain name (for example, login as datakeeper&#92;siosadmin), and must not match the DOMAINADMINUSERNAME. If DOMAINNAME does not contain a '.', the suffix '.local' will be appended."
+      }
+    },
+    "existingDomainAdminUsername": {
       "type": "string",
       "defaultValue": "siosadmin",
       "metadata": {
-        "description": "The name of the Administrator of the new VMs and Domain"
+        "description": "The username for the Administrator of the new VMs and Domain. The DOMAINADMINUSERNAME chosen must not match the domain specified in the DOMAINNAME parameter (for example: using DOMAINNAME 'datakeeper.local' and DOMAINADMINUSERNAME 'datakeeper' will cause the deployment to fail)."
       }
     },
-    "adminPassword": {
+    "existingDomainAdminPassword": {
       "type": "securestring",
       "defaultValue": "SIOS!5105",
       "metadata": {
         "description": "The password for the Administrator account of the new VMs and Domain"
       }
     },
-    "licenseKeyFtpURL": {
+    "vmNamePrefix": {
       "type": "string",
+      "defaultValue": "sios",
       "metadata": {
-        "description": "Temporary license key FTP address. Please contact SIOS Support for a valid link."
+        "description": "Name prefix for all of the DataKeeper / SQL VMs."
+      }
+    },
+    "vmSize": {
+      "type": "string",
+      "defaultValue": "Standard_DS1",
+      "allowedValues": [
+        "Standard_D1",
+        "Standard_DS1",
+        "Standard_D2",
+        "Standard_DS2",
+        "Standard_D3",
+        "Standard_DS3",
+        "Standard_D4",
+        "Standard_DS4",
+        "Standard_D11",
+        "Standard_DS11",
+        "Standard_D12",
+        "Standard_DS12",
+        "Standard_D13",
+        "Standard_DS13",
+        "Standard_D14",
+        "Standard_DS14",
+        "Standard_GS1",
+        "Standard_GS2",
+        "Standard_GS3",
+        "Standard_GS4"
+      ],
+      "metadata": {
+        "description": "The size of the primary domain controller VM. If a DS or GS size is selected, the ADSTORAGEACCOUNTTYPE parameter must have a Premium type selected."
+      }
+    },
+    "clusterName": {
+      "type": "string",
+      "defaultValue": "sios-fc",
+      "metadata": {
+        "description": "Name of the cluster to join the vm(s) to."
+      }
+    },
+    "clusterIPAddress": {
+      "type": "string",
+      "defaultValue": "10.0.0.200",
+      "metadata": {
+        "description": "IP address for the cluster being joined."
+      }
+    },
+    "fileShareWitnessPath": {
+      "type": "string",
+      "defaultValue": "\\\\ad-pdc\\datakeeper-fsw",
+      "metadata": {
+        "description": "File Share Witness being used for the cluster quorum"
       }
     }
   },
   "variables": {
     "location": "[resourceGroup().location]",
-    "adminBase64Password": "[base64(parameters('adminPassword'))]",
-    "adVMSize": "Standard_DS1",
-    "siosVMSize": "Standard_DS1",
-    "domainName": "[concat(parameters('newStorageAccountNamePrefix'), '.local')]",
-    "storageAccountType": "Premium_LRS",
-    "pdcRdpIPAddressName": "pdcRdpIP",
-    "siosVMRdpIPAddressNamePrefix": "sios",
-    "virtualNetworkAddressRange": "10.0.0.0/16",
+    "adminBase64Password": "[base64(parameters('existingDomainAdminPassword'))]",
     "staticSubnet": "10.0.0.0/24",
-    "adPDCNICIPAddress": "10.0.0.4",
-    "baseUrl": "https://raw.githubusercontent.com/carrollh/siosDataKeeper-demo/master/datakeeper-sql-cluster",
+    "baseUrl": "https://raw.githubusercontent.com/carrollh/siosDataKeeper-demo/master/datakeeper-sql-cluster-domainjoin",
     "subnetNames": {
       "staticSubnetName": "staticSubnet"
     },
     "ilbName": "InternalLoadBalancer",
     "ilbID": "[resourceId('Microsoft.Network/loadBalancers',variables('ilbName'))]",
-    "ilbIPAddress": "10.0.0.200",
     "ilbFE": "ilbFE",
     "ilbBE": "ilbBE",
     "ilbAOProbe": "ilbAlwaysOnEndPointProbe",
     "ilbFEConfigID": "[concat(variables('ilbID'),'/frontendIPConfigurations/',variables('ilbFE'))]",
     "ilbProbeID": "[concat(variables('ilbID'),'/probes/',variables('ilbAOProbe'))]",
-    "ilbBEAddressPoolID":"[concat(variables('ilbID'),'/backendAddressPools/',variables('ilbBE'))]",
+    "ilbBEAddressPoolID": "[concat(variables('ilbID'),'/backendAddressPools/',variables('ilbBE'))]",
     "vmSettings": {
-      "availabilitySets": {
-        "siosAvailabilitySetName": "siosAvailabilitySet"
-      },
-      "vmContainerName": "vhds",
-      "adPDCVMName": "ad-pdc",
-      "siosVMName": "sios-",
-      "windowsImagePublisher": "MicrosoftWindowsServer",
-      "windowsImageOffer": "WindowsServer",
-      "windowsImageSKU": "2012-R2-Datacenter",
-      "windowsDiskSize": 128
+      "vmContainerName": "vhds"
     },
-    "virtualNetworkName": "[concat(parameters('newStorageAccountNamePrefix'), 'VNET')]",
-    "sharepath": "[concat(parameters('newStorageAccountNamePrefix'), '-fsw')]",
-    "clusterName": "[concat(parameters('newStorageAccountNamePrefix'),'-fc')]",
-    "adPDCNicName": "[concat(variables('vmSettings').adPDCVMName,'-nic')]",
-    "VnetID": "[resourceId('Microsoft.Network/virtualNetworks', variables('virtualNetworkName'))]",
+    "VnetID": "[resourceId('Microsoft.Network/virtualNetworks', parameters('existingVnetName'))]",
     "staticSubnetRef": "[concat(variables('VnetID'),'/subnets/',variables('subnetNames').staticSubnetName)]",
-    "ids": {
-      "adNicId": "[resourceId('Microsoft.Network/networkInterfaces',variables('adPDCNicName'))]"
-    },
-    "derivedIds": {
-      "adIPConfigID": "[concat(variables('ids').adNicId,'/ipConfigurations/ipconfig1')]"
-    },
     "subnets": [
       {
         "name": "[variables('subnetNames').staticSubnetName]",
@@ -88,13 +171,8 @@
       }
     ],
     "configuration": {
-      "vnetwithDNSTemplateURL": "[concat(variables('baseUrl'),'/Templates/creatingVNetWithDNSServer.json')]",
       "nicTemplateURL": "[concat(variables('baseUrl'),'/Templates/creatingSingleNIC.json')]",
-      "adPDCModulesURL": "[concat(variables('baseUrl'),'/DSC/CreateADPDC.ps1.zip')]",
-      "adPDCConfigurationFunction": "CreateADPDC.ps1\\CreateADPDC",
       "rdpIPAdressSetupURL": "[concat(variables('baseUrl'),'/Templates/creatingPublicIP-RDP.json')]",
-      "availabilitySetSetupURL": "[concat(variables('baseUrl'),'/Templates/creatingAvailabilitySets.json')]",
-      "provisioningPrimaryDCURL": "[concat(variables('baseUrl'),'/Templates/provisioningPrimaryDomainController.json')]",
       "creatingStorageAccounts": "[concat(variables('baseUrl'),'/Templates/creatingStorageAccounts.json')]",
       "creatingSiosVMsURL": "[concat(variables('baseUrl'),'/Templates/creatingSiosVMs.json')]",
       "vnetSetupURL": "[concat(variables('baseUrl'),'/Templates/creatingNewVNet.json')]",
@@ -127,7 +205,7 @@
             "value": "[parameters('newStorageAccountNamePrefix')]"
           },
           "storageAccountType": {
-            "value": "[variables('storageAccountType')]"
+            "value": "[parameters('storageAccountType')]"
           }
         }
       }
@@ -146,57 +224,8 @@
           "location": {
             "value": "[variables('location')]"
           },
-          "pdcRdpIPAddressName": {
-            "value": "[variables('pdcRdpIPAddressName')]"
-          },
           "siosVMRdpIPAddressNamePrefix": {
-            "value": "[variables('siosVMRdpIPAddressNamePrefix')]"
-          }
-        }
-      }
-    },
-    {
-      "name": "CreatingAvailabilitySets",
-      "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2015-01-01",
-      "properties": {
-        "mode": "Incremental",
-        "templateLink": {
-          "uri": "[variables('configuration').availabilitySetSetupURL]",
-          "contentVersion": "1.0.0.0"
-        },
-        "parameters": {
-          "location": {
-            "value": "[variables('location')]"
-          },
-          "siosAvailabilitySetName": {
-            "value": "[variables('vmSettings').availabilitySets.siosAvailabilitySetName]"
-          }
-        }
-      }
-    },
-    {
-      "name": "CreatingVirtualNetwork",
-      "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2015-01-01",
-      "properties": {
-        "mode": "Incremental",
-        "templateLink": {
-          "uri": "[variables('configuration').vnetSetupURL]",
-          "contentVersion": "1.0.0.0"
-        },
-        "parameters": {
-          "location": {
-            "value": "[variables('location')]"
-          },
-          "virtualNetworkName": {
-            "value": "[variables('virtualNetworkName')]"
-          },
-          "virtualNetworkAddressRange": {
-            "value": "[variables('virtualNetworkAddressRange')]"
-          },
-          "subnets": {
-            "value": "[variables('subnets')]"
+            "value": "[parameters('vmNamePrefix')]"
           }
         }
       }
@@ -206,8 +235,7 @@
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2015-01-01",
       "dependsOn": [
-        "Microsoft.Resources/deployments/SettingUpRdp",
-        "Microsoft.Resources/deployments/CreatingVirtualNetwork"
+        "Microsoft.Resources/deployments/SettingUpRdp"
       ],
       "properties": {
         "mode": "Incremental",
@@ -226,7 +254,7 @@
             "value": "[variables('ilbFE')]"
           },
           "ilbIPAddress": {
-            "value": "[variables('ilbIPAddress')]"
+            "value": "[parameters('clusterIPAddress')]"
           },
           "staticSubnetRef": {
             "value": "[variables('staticSubnetRef')]"
@@ -254,7 +282,6 @@
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2015-01-01",
       "dependsOn": [
-        "Microsoft.Resources/deployments/CreatingVirtualNetwork",
         "Microsoft.Resources/deployments/SettingUpRdp",
         "Microsoft.Resources/deployments/SettingUpLoadBalancers"
       ],
@@ -268,128 +295,17 @@
           "location": {
             "value": "[variables('location')]"
           },
-          "adPDCNicName": {
-            "value": "[variables('adPDCNicName')]"
-          },
-          "adPDCNICIPAddress": {
-            "value": "[variables('adPDCNICIPAddress')]"
-          },
           "staticSubnetRef": {
             "value": "[variables('staticSubnetRef')]"
           },
           "siosVMName": {
-            "value": "[variables('vmSettings').siosVMName]"
-          },
-          "pdcRdpIPAddressName": {
-            "value": "[variables('pdcRdpIPAddressName')]"
+            "value": "[parameters('vmNamePrefix')]"
           },
           "siosVMRdpIPAddressNamePrefix": {
-            "value": "[variables('siosVMRdpIPAddressNamePrefix')]"
+            "value": "[parameters('vmNamePrefix')]"
           },
           "ilbBEAddressPoolID": {
             "value": "[variables('ilbBEAddressPoolID')]"
-          }
-        }
-      }
-    },
-    {
-      "name": "ProvisioningPrimaryADDomainController",
-      "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2015-01-01",
-      "dependsOn": [
-        "Microsoft.Resources/deployments/CreatingStorageAccounts",
-        "Microsoft.Resources/deployments/CreatingNetworkInterfaces",
-        "Microsoft.Resources/deployments/CreatingAvailabilitySets",
-        "Microsoft.Resources/deployments/SettingUpRdp"
-      ],
-      "properties": {
-        "mode": "Incremental",
-        "templateLink": {
-          "uri": "[variables('configuration').provisioningPrimaryDCURL]",
-          "contentVersion": "1.0.0.0"
-        },
-        "parameters": {
-          "adPDCVMName": {
-            "value": "[variables('vmSettings').adPDCVMName]"
-          },
-          "location": {
-            "value": "[variables('location')]"
-          },
-          "newStorageAccountNamePrefix": {
-            "value": "[parameters('newStorageAccountNamePrefix')]"
-          },
-          "availabilitySet": {
-            "value": "[reference('CreatingAvailabilitySets').outputs.siosAvailabilitySetName.value]"
-          },
-          "adVMSize": {
-            "value": "[variables('adVMSize')]"
-          },
-          "adminUsername": {
-            "value": "[parameters('adminUsername')]"
-          },
-          "adminPassword": {
-            "value": "[parameters('adminPassword')]"
-          },
-          "windowsImagePublisher": {
-            "value": "[variables('vmSettings').windowsImagePublisher]"
-          },
-          "windowsImageOffer": {
-            "value": "[variables('vmSettings').windowsImageOffer]"
-          },
-          "windowsImageSKU": {
-            "value": "[variables('vmSettings').windowsImageSKU]"
-          },
-          "vmContainerName": {
-            "value": "[variables('vmSettings').vmContainerName]"
-          },
-          "adPDCNicName": {
-            "value": "[variables('adPDCNicName')]"
-          },
-          "domainName": {
-            "value": "[variables('domainName')]"
-          },
-          "sharePath": {
-            "value": "[variables('sharePath')]"
-          },
-          "adPDCConfigurationFunction": {
-            "value": "[variables('configuration').adPDCConfigurationFunction]"
-          },
-          "adPDCModulesURL": {
-            "value": "[variables('configuration').adPDCModulesURL]"
-          }
-        }
-      }
-    },
-    {
-      "name": "UpdatingDNStoPrimaryADVM",
-      "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2015-01-01",
-      "dependsOn": [
-        "ProvisioningPrimaryADDomainController"
-      ],
-      "properties": {
-        "mode": "Incremental",
-        "templateLink": {
-          "uri": "[variables('configuration').vnetwithDNSTemplateURL]",
-          "contentVersion": "1.0.0.0"
-        },
-        "parameters": {
-          "location": {
-            "value": "[variables('location')]"
-          },
-          "virtualNetworkName": {
-            "value": "[variables('virtualNetworkName')]"
-          },
-          "virtualNetworkAddressRange": {
-            "value": "[variables('virtualNetworkAddressRange')]"
-          },
-          "subnets": {
-            "value": "[variables('subnets')]"
-          },
-          "DNSServerAddress": {
-            "value": [
-              "[variables('adPDCNICIPAddress')]"
-            ]
           }
         }
       }
@@ -399,10 +315,7 @@
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2015-01-01",
       "dependsOn": [
-        "Microsoft.Resources/deployments/CreatingStorageAccounts",
-        "Microsoft.Resources/deployments/CreatingNetworkInterfaces",
-        "Microsoft.Resources/deployments/CreatingAvailabilitySets",
-		"Microsoft.Resources/deployments/UpdatingDNStoPrimaryADVM"
+        "Microsoft.Resources/deployments/CreatingNetworkInterfaces"
       ],
       "properties": {
         "mode": "Incremental",
@@ -424,16 +337,16 @@
             "value": "[reference('CreatingAvailabilitySets').outputs.siosAvailabilitySetName.value]"
           },
           "siosVMSize": {
-            "value": "[variables('siosVMSize')]"
+            "value": "[parameters('vmSize')]"
           },
-          "domainName": {
-            "value": "[variables('domainName')]"
+          "existingDomainName": {
+            "value": "[parameters('existingDomainName')]"
           },
-          "adminUsername": {
-            "value": "[parameters('adminUsername')]"
+          "existingDomainAdminUsername": {
+            "value": "[parameters('existingDomainAdminUsername')]"
           },
-          "adminPassword": {
-            "value": "[parameters('adminPassword')]"
+          "existingDomainAdminPassword": {
+            "value": "[parameters('existingDomainAdminPassword')]"
           },
           "vmContainerName": {
             "value": "[variables('vmSettings').vmContainerName]"
@@ -442,10 +355,10 @@
             "value": "[parameters('licenseKeyFtpURL')]"
           },
           "clusterName": {
-            "value": "[variables('clusterName')]"
+            "value": "[parameters('clusterName')]"
           },
-          "sharePath": {
-            "value": "[variables('sharePath')]"
+          "fileShareWitnessPath": {
+            "value": "[parameters('fileShareWitnessPath')]"
           },
           "prepareDataKeeperHeadNodeModuleURL": {
             "value": "[variables('configuration').prepareDataKeeperHeadNodeModuleURL]"
@@ -458,12 +371,6 @@
           },
           "prepareDataKeeperNodesCommandStr": {
             "value": "[variables('configuration').prepareDataKeeperNodesCommandStr]"
-          },
-          "prepareClientVMModuleURL": {
-            "value": "[variables('configuration').prepareClientVMModuleURL]"
-          },
-          "prepareClientVMCommandStr": {
-            "value": "[variables('configuration').prepareClientVMCommandStr]"
           }
         }
       }

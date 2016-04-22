@@ -1,10 +1,22 @@
 {
 	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
 	"contentVersion": "1.0.0.0",
-	"parameters": {
-		"newStorageAccountNamePrefix": { "value": "datakeeper" },
-		"adminUsername":{ "value":"siosadmin" },
-		"adminPassword":{ "value":"SIOS!5105" },
-		"licenseKeyFtpURL": {}
-	}
+  "parameters": {
+    "licenseKeyFtpURL": { },
+    "newStorageAccountNamePrefix": { "value": "datakeeper" },
+    "storageAccountType": { "value": "Premium_LRS" },
+    "existingAvailabilitySet": { "value": "siosAvailabilitySet" },
+    "existingVnetName": { "value": "datakeeperVNET" },
+    "existingSubnetName": { "value": "subnetName" },
+    "privateIPAddressForNode0": { "value": "10.0.0.5" },
+    "privateIPAddressForNode1": { "value": "10.0.0.6" },
+    "existingDomainName": { "value": "datakeeper.local" },
+    "existingDomainAdminUsername": { "value": "siosadmin" },
+    "existingDomainAdminPassword": { "value": "SIOS!5105" },
+    "vmNamePrefix": { "value": "sios" },
+    "vmSize": { "value": "Standard_DS1" },
+    "clusterName": { "value": "sios-fc" },
+    "clusterIPAddress": { "value": "10.0.0.200" },
+    "fileShareWitnessPath": { "value": "\\\\ad-pdc\\datakeeper-fsw" }
+  }
 }

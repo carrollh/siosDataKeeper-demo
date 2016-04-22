@@ -17,13 +17,13 @@
     "siosVMSize": {
       "type": "string"
     },
-    "domainName": {
+    "existingDomainName": {
       "type": "string"
     },
-    "adminUsername": {
+    "existingDomainAdminUsername": {
       "type": "string"
     },
-    "adminPassword": {
+    "existingDomainAdminPassword": {
       "type": "securestring"
     },
     "vmContainerName": {
@@ -35,7 +35,7 @@
     "clusterName": {
       "type": "string"
     },
-    "sharePath": {
+    "fileShareWitnessPath": {
       "type": "string"
     },
     "prepareDataKeeperHeadNodeModuleURL": {
@@ -48,12 +48,6 @@
       "type": "string"
     },
     "prepareDataKeeperNodesCommandStr": {
-      "type": "string"
-    },
-    "prepareClientVMModuleURL": {
-      "type": "string"
-    },
-    "prepareClientVMCommandStr": {
       "type": "string"
     }
   },
@@ -80,8 +74,8 @@
         },
         "osProfile": {
           "computerName": "[concat(parameters('siosVMName'), '0')]",
-          "adminUsername": "[parameters('adminUsername')]",
-          "adminPassword": "[parameters('adminPassword')]"
+          "existingAdminUsername": "[parameters('existingDomainAdminUsername')]",
+          "existingAdminPassword": "[parameters('existingDomainAdminPassword')]"
         },
         "storageProfile": {
           "imageReference": {
@@ -143,20 +137,20 @@
           "modulesURL": "[parameters('prepareDataKeeperHeadNodeModuleURL')]",
           "configurationFunction": "[parameters('prepareDataKeeperHeadNodeCommandStr')]",
           "properties": {
-            "domainName": "[parameters('domainName')]",
+            "existingDomainName": "[parameters('existingDomainName')]",
             "adminCreds": {
-              "userName": "[parameters('adminUserName')]",
-              "password": "PrivateSettingsRef:adminPassword"
+              "userName": "[parameters('existingDomainAdminUsername')]",
+              "password": "PrivateSettingsRef:existingDomainAdminPassword"
             },
             "licenseKeyFtpURL": "[parameters('licenseKeyFtpURL')]",
             "clusterName": "[parameters('clusterName')]",
-            "sharePath": "[concat(variables('sharePathPrefix'), parameters('sharePath'))]",
+            "sharePath": "[parameters('fileShareWitnessPath')]",
             "nodes": [ "sios-0", "sios-1" ]
           }
         },
         "protectedSettings": {
           "items": {
-            "adminPassword": "[parameters('adminPassword')]"
+            "existingAdminPassword": "[parameters('existingDomainAdminPassword')]"
           }
         }
       }
@@ -180,8 +174,8 @@
         },
         "osProfile": {
           "computerName": "[concat(parameters('siosVMName'), '1')]",
-          "adminUsername": "[parameters('adminUsername')]",
-          "adminPassword": "[parameters('adminPassword')]"
+          "existingAdminUsername": "[parameters('existingDomainAdminUsername')]",
+          "existingAdminPassword": "[parameters('existingDomainAdminPassword')]"
         },
         "storageProfile": {
           "imageReference": {
@@ -243,102 +237,17 @@
           "modulesURL": "[parameters('prepareDataKeeperNodesModuleURL')]",
           "configurationFunction": "[parameters('prepareDataKeeperNodesCommandStr')]",
           "properties": {
-            "domainName": "[parameters('domainName')]",
+            "existingDomainName": "[parameters('existingDomainName')]",
             "adminCreds": {
-              "userName": "[parameters('adminUserName')]",
-              "password": "PrivateSettingsRef:adminPassword"
+              "userName": "[parameters('existingDomainAdminUsername')]",
+              "password": "PrivateSettingsRef:existingAdminPassword"
             },
             "licenseKeyFtpURL": "[parameters('licenseKeyFtpURL')]"
           }
         },
         "protectedSettings": {
           "items": {
-            "adminPassword": "[parameters('adminPassword')]"
-          }
-        }
-      }
-    },
-    {
-      "apiVersion": "2015-06-15",
-      "type": "Microsoft.Compute/virtualMachines",
-      "name": "[concat(parameters('siosVMName'), 'client')]",
-      "location": "[parameters('location')]",
-	  "plan": {
-        "name": "bring_your_own_license_dkce_and_sql",
-        "publisher": "sios_datakeeper",
-        "product": "bring_your_own_license_dkce_and_sql"
-      },
-      "properties": {
-        "hardwareProfile": {
-          "vmSize": "[parameters('siosVMSize')]"
-        },
-        "availabilitySet": {
-          "id": "[parameters('availabilitySet')]"
-        },
-        "osProfile": {
-          "computerName": "sios-client",
-          "adminUsername": "[parameters('adminUsername')]",
-          "adminPassword": "[parameters('adminPassword')]"
-        },
-        "storageProfile": {
-          "imageReference": {
-            "publisher": "sios_datakeeper",
-            "offer": "bring_your_own_license_dkce_and_sql",
-            "sku": "bring_your_own_license_dkce_and_sql",
-            "version": "latest"
-          },
-          "osDisk": {
-            "name": "osdisk",
-            "vhd": {
-              "uri": "[concat('http://',parameters('newStorageAccountNamePrefix'),'clnt.blob.core.windows.net/',parameters('vmContainerName'),'/client', '-osdisk.vhd')]"
-            },
-            "caching": "ReadWrite",
-            "createOption": "FromImage"
-          },
-          "dataDisks": []
-        },
-        "networkProfile": {
-          "networkInterfaces": [
-            {
-              "id": "[resourceId(resourceGroup().name,'Microsoft.Network/networkInterfaces','sios-client-nic')]"
-            }
-          ]
-        },
-        "diagnosticsProfile": {
-          "bootDiagnostics": {
-            "enabled": "true",
-            "storageUri": "[concat('http://',parameters('newStorageAccountNamePrefix'),'diag.blob.core.windows.net')]"
-          }
-        }
-      }
-    },
-    {
-      "type": "Microsoft.Compute/virtualMachines/extensions",
-      "name": "[concat(parameters('siosVMName'), 'client', '/configureSiosVM')]",
-      "apiVersion": "2015-06-15",
-      "location": "[parameters('location')]",
-      "dependsOn": [
-        "[concat('Microsoft.Compute/virtualMachines/', parameters('siosVMName'), 'client')]"
-      ],
-      "properties": {
-        "publisher": "Microsoft.Powershell",
-        "type": "DSC",
-        "typeHandlerVersion": "2.6",
-        "autoUpgradeMinorVersion": true,
-        "settings": {
-          "modulesURL": "[parameters('prepareClientVMModuleURL')]",
-          "configurationFunction": "[parameters('prepareClientVMCommandStr')]",
-          "properties": {
-            "domainName": "[parameters('domainName')]",
-            "adminCreds": {
-              "userName": "[parameters('adminUserName')]",
-              "password": "PrivateSettingsRef:adminPassword"
-            }
-          }
-        },
-        "protectedSettings": {
-          "items": {
-            "adminPassword": "[parameters('adminPassword')]"
+            "existingAdminPassword": "[parameters('existingDomainAdminPassword')]"
           }
         }
       }

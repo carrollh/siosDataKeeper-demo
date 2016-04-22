@@ -5,23 +5,11 @@
     "location": {
       "type": "string"
     },
-    "pdcRdpIPAddressName": {
-      "type": "string"
-    },
     "siosVMRdpIPAddressNamePrefix": {
       "type": "string"
     }
   },
   "resources": [
-    {
-      "apiVersion": "2015-06-15",
-      "type": "Microsoft.Network/publicIPAddresses",
-      "name": "[parameters('pdcRdpIPAddressName')]",
-      "location": "[parameters('location')]",
-      "properties": {
-        "publicIPAllocationMethod": "dynamic"
-      }
-    },
     {
       "apiVersion": "2015-06-15",
       "type": "Microsoft.Network/publicIPAddresses",
@@ -39,22 +27,9 @@
       "properties": {
         "publicIPAllocationMethod": "dynamic"
       }
-    },
-    {
-      "apiVersion": "2015-06-15",
-      "type": "Microsoft.Network/publicIPAddresses",
-      "name": "[concat(parameters('siosVMRdpIPAddressNamePrefix'), 'clientRdpIP')]",
-      "location": "[parameters('location')]",
-      "properties": {
-        "publicIPAllocationMethod": "dynamic"
-      }
     }
   ],
   "outputs": {
-    "pdcRdpPublicIP": {
-      "type": "string",
-      "value": "[resourceId('Microsoft.Network/publicIPAddresses',parameters('pdcRdpIPAddressName'))]"
-    },
     "siosVM0RdpPublicIP": {
       "type": "string",
       "value": "[resourceId('Microsoft.Network/publicIPAddresses',concat(parameters('siosVMRdpIPAddressNamePrefix'), '0RdpIP'))]"
@@ -62,10 +37,6 @@
     "siosVM1RdpPublicIP": {
       "type": "string",
       "value": "[resourceId('Microsoft.Network/publicIPAddresses',concat(parameters('siosVMRdpIPAddressNamePrefix'), '1RdpIP'))]"
-    },
-    "clientVMRdpPublicIP": {
-      "type": "string",
-      "value": "[resourceId('Microsoft.Network/publicIPAddresses',concat(parameters('siosVMRdpIPAddressNamePrefix'), 'clientRdpIP'))]"
     }
   }
 }
