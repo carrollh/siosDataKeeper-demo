@@ -330,7 +330,7 @@
             "value": "[parameters('newStorageAccountNamePrefix')]"
           },
           "availabilitySet": {
-            "value": "[reference('CreatingAvailabilitySets').outputs.siosAvailabilitySetName.value]"
+            "value": "[parameters('existingAvailabilitySet')]"
           },
           "siosVMSize": {
             "value": "[parameters('vmSize')]"
