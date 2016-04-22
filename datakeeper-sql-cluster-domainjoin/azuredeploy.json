@@ -143,6 +143,7 @@
   },
   "variables": {
     "location": "[resourceGroup().location]",
+    "availabilitySetID": "[resourceId('Microsoft.Compute/availabilitySets',parameters('existingAvailabilitySet'))]",
     "adminBase64Password": "[base64(parameters('existingDomainAdminPassword'))]",
     "staticSubnet": "10.0.0.0/24",
     "baseUrl": "https://raw.githubusercontent.com/carrollh/siosDataKeeper-demo/master/datakeeper-sql-cluster-domainjoin",
@@ -330,7 +331,7 @@
             "value": "[parameters('newStorageAccountNamePrefix')]"
           },
           "existingAvailabilitySet": {
-            "value": "[parameters('existingAvailabilitySet')]"
+            "value": "[variables('availabilitySetID')]"
           },
           "vmSize": {
             "value": "[parameters('vmSize')]"
