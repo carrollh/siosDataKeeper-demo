@@ -87,7 +87,7 @@
           "osDisk": {
             "name": "osdisk",
             "vhd": {
-              "uri": "[concat('http://',parameters('newStorageAccountNamePrefix'),'1.blob.core.windows.net/',parameters('vmContainerName'),'/',parameters('vmNamePrefix'), '0', '-osdisk.vhd')]"
+              "uri": "[concat('http://',parameters('newStorageAccountNamePrefix'),'2.blob.core.windows.net/',parameters('vmContainerName'),'/',parameters('vmNamePrefix'), '0', '-osdisk.vhd')]"
             },
             "caching": "ReadWrite",
             "createOption": "FromImage"
@@ -95,7 +95,7 @@
           "dataDisks": [
             {
               "vhd": {
-                "uri": "[concat('http://',parameters('newStorageAccountNamePrefix'),'1.blob.core.windows.net/',parameters('vmContainerName'),'/', parameters('vmNamePrefix'), '0', '-datadisk.vhd')]"
+                "uri": "[concat('http://',parameters('newStorageAccountNamePrefix'),'2.blob.core.windows.net/',parameters('vmContainerName'),'/', parameters('vmNamePrefix'), '0', '-datadisk.vhd')]"
               },
               "name": "[concat(parameters('vmNamePrefix'), '0','-datadisk')]",
               "caching": "None",
@@ -187,7 +187,7 @@
           "osDisk": {
             "name": "osdisk",
             "vhd": {
-              "uri": "[concat('http://',parameters('newStorageAccountNamePrefix'),'1.blob.core.windows.net/',parameters('vmContainerName'),'/',parameters('vmNamePrefix'), '1', '-osdisk.vhd')]"
+              "uri": "[concat('http://',parameters('newStorageAccountNamePrefix'),'2.blob.core.windows.net/',parameters('vmContainerName'),'/',parameters('vmNamePrefix'), '1', '-osdisk.vhd')]"
             },
             "caching": "ReadWrite",
             "createOption": "FromImage"
@@ -195,7 +195,7 @@
           "dataDisks": [
             {
               "vhd": {
-                "uri": "[concat('http://',parameters('newStorageAccountNamePrefix'),'1.blob.core.windows.net/',parameters('vmContainerName'),'/', parameters('vmNamePrefix'), '1', '-datadisk.vhd')]"
+                "uri": "[concat('http://',parameters('newStorageAccountNamePrefix'),'2.blob.core.windows.net/',parameters('vmContainerName'),'/', parameters('vmNamePrefix'), '1', '-datadisk.vhd')]"
               },
               "name": "[concat(parameters('vmNamePrefix'), '1','-datadisk')]",
               "caching": "None",
