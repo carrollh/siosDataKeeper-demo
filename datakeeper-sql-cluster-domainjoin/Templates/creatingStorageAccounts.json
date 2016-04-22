@@ -15,13 +15,9 @@
   "resources": [
   {
     "type": "Microsoft.Storage/storageAccounts",
-    "name": "[concat(parameters('newStorageAccountNamePrefix'), copyindex())]",
+    "name": "[concat(parameters('newStorageAccountNamePrefix'), '2')]",
     "apiVersion": "2015-06-15",
     "location": "[parameters('location')]",
-    "copy": {
-      "name": "storageAccountLoop",
-      "count": 2
-    },
     "properties": {
     "accountType": "[parameters('storageAccountType')]"
     }
@@ -29,15 +25,6 @@
   {
     "type": "Microsoft.Storage/storageAccounts",
     "name": "[concat(parameters('newStorageAccountNamePrefix'), 'diag')]",
-    "apiVersion": "2015-06-15",
-    "location": "[parameters('location')]",
-    "properties": {
-    "accountType": "Standard_LRS"
-    }
-  },
-  {
-    "type": "Microsoft.Storage/storageAccounts",
-    "name": "[concat(parameters('newStorageAccountNamePrefix'), 'clnt')]",
     "apiVersion": "2015-06-15",
     "location": "[parameters('location')]",
     "properties": {
