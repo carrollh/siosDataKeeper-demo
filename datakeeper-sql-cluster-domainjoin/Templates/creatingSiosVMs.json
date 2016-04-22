@@ -74,8 +74,8 @@
         },
         "osProfile": {
           "computerName": "[concat(parameters('vmNamePrefix'), '0')]",
-          "existingAdminUsername": "[parameters('existingDomainAdminUsername')]",
-          "existingAdminPassword": "[parameters('existingDomainAdminPassword')]"
+          "adminUsername": "[parameters('existingDomainAdminUsername')]",
+          "adminPassword": "[parameters('existingDomainAdminPassword')]"
         },
         "storageProfile": {
           "imageReference": {
@@ -137,10 +137,10 @@
           "modulesURL": "[parameters('prepareDataKeeperHeadNodeModuleURL')]",
           "configurationFunction": "[parameters('prepareDataKeeperHeadNodeCommandStr')]",
           "properties": {
-            "existingDomainName": "[parameters('existingDomainName')]",
+            "domainName": "[parameters('existingDomainName')]",
             "adminCreds": {
               "userName": "[parameters('existingDomainAdminUsername')]",
-              "password": "PrivateSettingsRef:existingDomainAdminPassword"
+              "password": "PrivateSettingsRef:adminPassword"
             },
             "licenseKeyFtpURL": "[parameters('licenseKeyFtpURL')]",
             "clusterName": "[parameters('clusterName')]",
@@ -150,7 +150,7 @@
         },
         "protectedSettings": {
           "items": {
-            "existingAdminPassword": "[parameters('existingDomainAdminPassword')]"
+            "adminPassword": "[parameters('existingDomainAdminPassword')]"
           }
         }
       }
