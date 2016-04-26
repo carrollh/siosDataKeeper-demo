@@ -2,47 +2,118 @@
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
+    "licenseKeyFtpURL": {
+      "type": "string",
+      "metadata": {
+        "description": "Enter the path to your temporary license file. This path appears in the email that you received from SIOS Technology Corp. when you requested an evaluation key. Provide the folder name which contains the license in this field.<br/>Example input - http://ftp.us.sios.com/pickup/EVAL_Some_User_2016-01-26_DKCE<br/><br/><br/>To request a free 14 day trial, visit http://us.sios.com/clustersyourway/cta/14-day-trial"
+      }
+    },
     "newStorageAccountNamePrefix": {
       "type": "string",
-      "defaultValue": "datakeeper",
       "metadata": {
         "description": "The prefix of the new storage account created to store the VMs disks, different storage accounts will be created for AD and DataKeeper VMs. This value must be composed of all lowercase letters or numbers and be a maximum of 20 characters long and globally unique within all of Azure."
       }
     },
-    "adminUsername": {
+    "storageAccountType": {
+      "type": "string",
+      "defaultValue": "Premium_LRS",
+      "allowedValues": [
+        "Standard_LRS",
+        "Standard_GRS",
+        "Standard_RAGRS",
+        "Premium_LRS"
+      ],
+      "metadata": {
+        "description": "Type of storage account to create. This must be set to Premium if DS size VMs are being created."
+      }
+    },
+    "domainName": {
+      "type": "string",
+      "defaultValue": "datakeeper.local",
+      "metadata": {
+        "description": "The domain name in FQDN form. This value should contain at least two parts, separated by a '.' (for example, datakeeper.local). The first part of the FQDN will be used as the login domain name (for example, login as datakeeper&#92;siosadmin), and must not match the DOMAINADMINUSERNAME. If DOMAINNAME does not contain a '.', the suffix '.local' will be appended."
+      }
+    },
+    "domainAdminUsername": { 	
       "type": "string",
       "defaultValue": "siosadmin",
       "metadata": {
-        "description": "The name of the Administrator of the new VMs and Domain"
+        "description": "The username for the Administrator of the new VMs and Domain. The DOMAINADMINUSERNAME chosen must not match the domain specified in the DOMAINNAME parameter (for example: using DOMAINNAME 'datakeeper.local' and DOMAINADMINUSERNAME 'datakeeper' will cause the deployment to fail)."
       }
     },
-    "adminPassword": {
+    "domainAdminPassword": {
       "type": "securestring",
       "defaultValue": "SIOS!5105",
       "metadata": {
         "description": "The password for the Administrator account of the new VMs and Domain"
       }
     },
-    "licenseKeyFtpURL": {
+    "vMNamePrefix": {
       "type": "string",
+      "defaultValue": "sios",
       "metadata": {
-        "description": "Temporary license key FTP address. Please contact SIOS Support for a valid link."
+        "description": "Name prefix for all of the DataKeeper / SQL VMs."
+      }
+    },
+    "aDVMSize": {
+      "type": "string",
+      "defaultValue": "Standard_DS1",
+      "allowedValues": [
+        "Standard_D1",
+        "Standard_DS1",
+        "Standard_D2",
+        "Standard_DS2",
+        "Standard_D3",
+        "Standard_DS3",
+        "Standard_D4",
+        "Standard_DS4",
+        "Standard_D11",
+        "Standard_DS11",
+        "Standard_D12",
+        "Standard_DS12",
+        "Standard_D13",
+        "Standard_DS13",
+        "Standard_D14",
+        "Standard_DS14"
+      ],
+      "metadata": {
+        "description": "The size of the primary domain controller VM. If a DS size is selected, the STORAGEACCOUNTTYPE parameter must have a Premium type selected."
+      }
+    },
+    "sQLVMSize": {
+      "type": "string",
+      "defaultValue": "Standard_DS1",
+      "allowedValues": [
+        "Standard_D1",
+        "Standard_DS1",
+        "Standard_D2",
+        "Standard_DS2",
+        "Standard_D3",
+        "Standard_DS3",
+        "Standard_D4",
+        "Standard_DS4",
+        "Standard_D11",
+        "Standard_DS11",
+        "Standard_D12",
+        "Standard_DS12",
+        "Standard_D13",
+        "Standard_DS13",
+        "Standard_D14",
+        "Standard_DS14"
+      ],
+      "metadata": {
+        "description": "The size of the DataKeeper / SQL VMs. If a DS size is selected, the STORAGEACCOUNTTYPE parameter must have a Premium type selected."
       }
     }
   },
   "variables": {
     "location": "[resourceGroup().location]",
-    "adminBase64Password": "[base64(parameters('adminPassword'))]",
-    "adVMSize": "Standard_DS1",
-    "siosVMSize": "Standard_DS1",
-    "domainName": "[concat(parameters('newStorageAccountNamePrefix'), '.local')]",
-    "storageAccountType": "Premium_LRS",
     "pdcRdpIPAddressName": "pdcRdpIP",
     "siosVMRdpIPAddressNamePrefix": "sios",
     "virtualNetworkAddressRange": "10.0.0.0/16",
     "staticSubnet": "10.0.0.0/24",
     "adPDCNICIPAddress": "10.0.0.4",
-    "baseUrl": "https://raw.githubusercontent.com/carrollh/siosDataKeeper-demo/master/datakeeper-sql-cluster",
+    "baseUrl": "https://raw.githubusercontent.com/SIOSDataKeeper/SIOSDataKeeper-SQL-Cluster/master",
     "subnetNames": {
       "staticSubnetName": "staticSubnet"
     },
@@ -54,22 +125,22 @@
     "ilbAOProbe": "ilbAlwaysOnEndPointProbe",
     "ilbFEConfigID": "[concat(variables('ilbID'),'/frontendIPConfigurations/',variables('ilbFE'))]",
     "ilbProbeID": "[concat(variables('ilbID'),'/probes/',variables('ilbAOProbe'))]",
-    "ilbBEAddressPoolID":"[concat(variables('ilbID'),'/backendAddressPools/',variables('ilbBE'))]",
+    "ilbBEAddressPoolID": "[concat(variables('ilbID'),'/backendAddressPools/',variables('ilbBE'))]",
     "vmSettings": {
       "availabilitySets": {
-        "siosAvailabilitySetName": "siosAvailabilitySet"
+        "siosAvailabilitySetName": "siosAvailabilitySet",
+        "clientAvailabilitySetName": "clientAvailabilitySet"
       },
       "vmContainerName": "vhds",
       "adPDCVMName": "ad-pdc",
-      "siosVMName": "sios-",
       "windowsImagePublisher": "MicrosoftWindowsServer",
       "windowsImageOffer": "WindowsServer",
       "windowsImageSKU": "2012-R2-Datacenter",
       "windowsDiskSize": 128
     },
     "virtualNetworkName": "[concat(parameters('newStorageAccountNamePrefix'), 'VNET')]",
-    "sharepath": "[concat(parameters('newStorageAccountNamePrefix'), '-fsw')]",
-    "clusterName": "[concat(parameters('newStorageAccountNamePrefix'),'-fc')]",
+    "sharepath": "[toLower(concat(parameters('newStorageAccountNamePrefix'), '-fsw'))]",
+    "clusterName": "[concat(parameters('vMNamePrefix'),'-fc')]",
     "adPDCNicName": "[concat(variables('vmSettings').adPDCVMName,'-nic')]",
     "VnetID": "[resourceId('Microsoft.Network/virtualNetworks', variables('virtualNetworkName'))]",
     "staticSubnetRef": "[concat(variables('VnetID'),'/subnets/',variables('subnetNames').staticSubnetName)]",
@@ -89,7 +160,6 @@
     ],
     "configuration": {
       "vnetwithDNSTemplateURL": "[concat(variables('baseUrl'),'/Templates/creatingVNetWithDNSServer.json')]",
-      "nicTemplateURL": "[concat(variables('baseUrl'),'/Templates/creatingSingleNIC.json')]",
       "adPDCModulesURL": "[concat(variables('baseUrl'),'/DSC/CreateADPDC.ps1.zip')]",
       "adPDCConfigurationFunction": "CreateADPDC.ps1\\CreateADPDC",
       "rdpIPAdressSetupURL": "[concat(variables('baseUrl'),'/Templates/creatingPublicIP-RDP.json')]",
@@ -127,7 +197,7 @@
             "value": "[parameters('newStorageAccountNamePrefix')]"
           },
           "storageAccountType": {
-            "value": "[variables('storageAccountType')]"
+            "value": "[parameters('storageAccountType')]"
           }
         }
       }
@@ -171,6 +241,9 @@
           },
           "siosAvailabilitySetName": {
             "value": "[variables('vmSettings').availabilitySets.siosAvailabilitySetName]"
+          },
+          "clientAvailabilitySetName": {
+            "value": "[variables('vmSettings').availabilitySets.clientAvailabilitySetName]"
           }
         }
       }
@@ -277,8 +350,8 @@
           "staticSubnetRef": {
             "value": "[variables('staticSubnetRef')]"
           },
-          "siosVMName": {
-            "value": "[variables('vmSettings').siosVMName]"
+          "siosVMNamePrefix": {
+            "value": "[parameters('vMNamePrefix')]"
           },
           "pdcRdpIPAddressName": {
             "value": "[variables('pdcRdpIPAddressName')]"
@@ -319,16 +392,16 @@
             "value": "[parameters('newStorageAccountNamePrefix')]"
           },
           "availabilitySet": {
-            "value": "[reference('CreatingAvailabilitySets').outputs.siosAvailabilitySetName.value]"
+            "value": "[reference('CreatingAvailabilitySets').outputs.siosAvailabilitySet.value]"
           },
           "adVMSize": {
-            "value": "[variables('adVMSize')]"
+            "value": "[parameters('adVMSize')]"
           },
           "adminUsername": {
-            "value": "[parameters('adminUsername')]"
+            "value": "[parameters('domainAdminUsername')]"
           },
           "adminPassword": {
-            "value": "[parameters('adminPassword')]"
+            "value": "[parameters('domainAdminPassword')]"
           },
           "windowsImagePublisher": {
             "value": "[variables('vmSettings').windowsImagePublisher]"
@@ -346,7 +419,7 @@
             "value": "[variables('adPDCNicName')]"
           },
           "domainName": {
-            "value": "[variables('domainName')]"
+            "value": "[parameters('domainName')]"
           },
           "sharePath": {
             "value": "[variables('sharePath')]"
@@ -402,7 +475,7 @@
         "Microsoft.Resources/deployments/CreatingStorageAccounts",
         "Microsoft.Resources/deployments/CreatingNetworkInterfaces",
         "Microsoft.Resources/deployments/CreatingAvailabilitySets",
-		"Microsoft.Resources/deployments/UpdatingDNStoPrimaryADVM"
+        "Microsoft.Resources/deployments/UpdatingDNStoPrimaryADVM"
       ],
       "properties": {
         "mode": "Incremental",
@@ -411,8 +484,8 @@
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
-          "siosVMName": {
-            "value": "[variables('vmSettings').siosVMName]"
+          "siosVMNamePrefix": {
+            "value": "[parameters('vMNamePrefix')]"
           },
           "location": {
             "value": "[variables('location')]"
@@ -420,20 +493,23 @@
           "newStorageAccountNamePrefix": {
             "value": "[parameters('newStorageAccountNamePrefix')]"
           },
-          "availabilitySet": {
-            "value": "[reference('CreatingAvailabilitySets').outputs.siosAvailabilitySetName.value]"
+          "siosAvailabilitySet": {
+            "value": "[reference('CreatingAvailabilitySets').outputs.siosAvailabilitySet.value]"
+          },
+          "clientAvailabilitySet": {
+            "value": "[reference('CreatingAvailabilitySets').outputs.clientAvailabilitySet.value]"
           },
           "siosVMSize": {
-            "value": "[variables('siosVMSize')]"
+            "value": "[parameters('sQLVMSize')]"
           },
           "domainName": {
-            "value": "[variables('domainName')]"
+            "value": "[parameters('domainName')]"
           },
           "adminUsername": {
-            "value": "[parameters('adminUsername')]"
+            "value": "[parameters('domainAdminUsername')]"
           },
           "adminPassword": {
-            "value": "[parameters('adminPassword')]"
+            "value": "[parameters('domainAdminPassword')]"
           },
           "vmContainerName": {
             "value": "[variables('vmSettings').vmContainerName]"
@@ -452,7 +528,7 @@
           },
           "prepareDataKeeperHeadNodeCommandStr": {
             "value": "[variables('configuration').prepareDataKeeperHeadNodeCommandStr]"
-          },
+          }, 
           "prepareDataKeeperNodesModuleURL": {
             "value": "[variables('configuration').prepareDataKeeperNodesModuleURL]"
           },

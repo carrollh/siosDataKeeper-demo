@@ -14,7 +14,7 @@
     "staticSubnetRef": {
       "type": "string"
     },
-    "siosVMName": {
+    "siosVMNamePrefix": {
       "type": "string"
     },
     "pdcRdpIPAddressName": {
@@ -26,6 +26,9 @@
     "ilbBEAddressPoolID": {
       "type": "string"
     }
+  },
+  "variables": {
+    "siosVMNamePrefix": "[concat(parameters('siosVMNamePrefix'), '-')]"
   },
   "resources": [
     {
@@ -52,7 +55,7 @@
       }
     },
     {
-      "name": "[concat(parameters('siosVMName'), '0-nic')]",
+      "name": "[concat(variables('siosVMNamePrefix'), '0-nic')]",
       "type": "Microsoft.Network/networkInterfaces",
       "location": "[parameters('location')]",
       "apiVersion": "2015-06-15",
@@ -71,7 +74,7 @@
               },
               "loadBalancerBackendAddressPools": [
                 {
-                  "id":"[parameters('ilbBEAddressPoolID')]"
+                  "id": "[parameters('ilbBEAddressPoolID')]"
                 }
               ]
             }
@@ -80,7 +83,7 @@
       }
     },
     {
-      "name": "[concat(parameters('siosVMName'), '1-nic')]",
+      "name": "[concat(variables('siosVMNamePrefix'), '1-nic')]",
       "type": "Microsoft.Network/networkInterfaces",
       "location": "[parameters('location')]",
       "apiVersion": "2015-06-15",
@@ -99,7 +102,7 @@
               },
               "loadBalancerBackendAddressPools": [
                 {
-                  "id":"[parameters('ilbBEAddressPoolID')]"
+                  "id": "[parameters('ilbBEAddressPoolID')]"
                 }
               ]
             }
@@ -131,5 +134,5 @@
       }
     }
   ],
-"outputs": {}
+  "outputs": { }
 }
