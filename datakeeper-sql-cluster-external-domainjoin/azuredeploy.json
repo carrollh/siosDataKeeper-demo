@@ -369,7 +369,7 @@
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2015-01-01",
       "dependsOn": [
-        "ProvisioningPrimaryADDomainController"
+        "Microsoft.Resources/deployments/CreatingVirtualNetwork"
       ],
       "properties": {
         "mode": "Incremental",
@@ -403,7 +403,8 @@
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2015-01-01",
       "dependsOn": [
-        "Microsoft.Resources/deployments/CreatingNetworkInterfaces"
+        "Microsoft.Resources/deployments/CreatingNetworkInterfaces",
+		"Microsoft.Resources/deployments/UpdatingDNStoPrimaryADVM"
       ],
       "properties": {
         "mode": "Incremental",
