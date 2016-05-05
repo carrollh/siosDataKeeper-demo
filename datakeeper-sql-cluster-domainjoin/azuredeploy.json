@@ -36,7 +36,7 @@
     },
     "existingVnetName": {
       "type": "string",
-      "defaultValue": "datakeeperVNET",
+      "defaultValue": "datakeeperhc1VNET",
       "metadata": {
         "description": "The name of the existing VNET to connect the VM(s) to."
       }
@@ -85,7 +85,7 @@
     },
     "vmNamePrefix": {
       "type": "string",
-      "defaultValue": "sios",
+      "defaultValue": "sios-",
       "metadata": {
         "description": "Name prefix for all of the DataKeeper / SQL VMs."
       }
@@ -135,7 +135,7 @@
     },
     "fileShareWitnessPath": {
       "type": "string",
-      "defaultValue": "\\\\ad-pdc\\datakeeper-fsw",
+      "defaultValue": "\\\\ad-pdc\\datakeeperhc1-fsw",
       "metadata": {
         "description": "File Share Witness being used for the cluster quorum"
       }
