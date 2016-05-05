@@ -15,7 +15,7 @@
   "resources": [
   {
     "type": "Microsoft.Storage/storageAccounts",
-    "name": "[concat(parameters('newStorageAccountNamePrefix'), '2')]",
+    "name": "[concat(parameters('newStorageAccountNamePrefix'), '1')]",
     "apiVersion": "2015-06-15",
     "location": "[parameters('location')]",
     "properties": {
