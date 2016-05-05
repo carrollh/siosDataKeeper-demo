@@ -1,0 +1,257 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "vmNamePrefix": {
+      "type": "string"
+    },
+    "location": {
+      "type": "string"
+    },
+    "newStorageAccountNamePrefix": {
+      "type": "string"
+    },
+    "existingAvailabilitySet": {
+      "type": "string"
+    },
+    "vmSize": {
+      "type": "string"
+    },
+    "existingDomainName": {
+      "type": "string"
+    },
+    "existingDomainAdminUsername": {
+      "type": "string"
+    },
+    "existingDomainAdminPassword": {
+      "type": "securestring"
+    },
+    "vmContainerName": {
+      "type": "string"
+    },
+    "licenseKeyFtpURL": {
+      "type": "string"
+    },
+    "clusterName": {
+      "type": "string"
+    },
+    "fileShareWitnessPath": {
+      "type": "string"
+    },
+    "prepareDataKeeperHeadNodeModuleURL": {
+      "type": "string"
+    },
+    "prepareDataKeeperHeadNodeCommandStr": {
+      "type": "string"
+    },
+    "prepareDataKeeperNodesModuleURL": {
+      "type": "string"
+    },
+    "prepareDataKeeperNodesCommandStr": {
+      "type": "string"
+    }
+  },
+  "variables": {
+    "sharePathPrefix": "\\\\ad-pdc\\"
+  },
+  "resources": [
+    {
+      "apiVersion": "2015-06-15",
+      "type": "Microsoft.Compute/virtualMachines",
+      "name": "[concat(parameters('vmNamePrefix'), '0')]",
+      "location": "[parameters('location')]",
+      "plan": {
+        "name": "bring_your_own_license_dkce_and_sql",
+        "publisher": "sios_datakeeper",
+        "product": "bring_your_own_license_dkce_and_sql"
+      },
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "[parameters('vmSize')]"
+        },
+        "availabilitySet": {
+          "id": "[parameters('existingAvailabilitySet')]"
+        },
+        "osProfile": {
+          "computerName": "[concat(parameters('vmNamePrefix'), '0')]",
+          "adminUsername": "[parameters('existingDomainAdminUsername')]",
+          "adminPassword": "[parameters('existingDomainAdminPassword')]"
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "sios_datakeeper",
+            "offer": "bring_your_own_license_dkce_and_sql",
+            "sku": "bring_your_own_license_dkce_and_sql",
+            "version": "latest"
+          },
+          "osDisk": {
+            "name": "osdisk",
+            "vhd": {
+              "uri": "[concat('http://',parameters('newStorageAccountNamePrefix'),'1.blob.core.windows.net/',parameters('vmContainerName'),'/',parameters('vmNamePrefix'), '0', '-osdisk.vhd')]"
+            },
+            "caching": "ReadWrite",
+            "createOption": "FromImage"
+          },
+          "dataDisks": [
+            {
+              "vhd": {
+                "uri": "[concat('http://',parameters('newStorageAccountNamePrefix'),'1.blob.core.windows.net/',parameters('vmContainerName'),'/', parameters('vmNamePrefix'), '0', '-datadisk.vhd')]"
+              },
+              "name": "[concat(parameters('vmNamePrefix'), '0','-datadisk')]",
+              "caching": "None",
+              "createOption": "empty",
+              "diskSizeGB": 100,
+              "lun": 0
+            }
+          ]
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId(resourceGroup().name,'Microsoft.Network/networkInterfaces',concat(parameters('vmNamePrefix'), '0','-nic'))]"
+            }
+          ]
+        },
+        "diagnosticsProfile": {
+          "bootDiagnostics": {
+            "enabled": "true",
+            "storageUri": "[concat('http://',parameters('newStorageAccountNamePrefix'),'diag.blob.core.windows.net')]"
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Compute/virtualMachines/extensions",
+      "name": "[concat(parameters('vmNamePrefix'), '0', '/configureSiosVM')]",
+      "apiVersion": "2015-06-15",
+      "location": "[parameters('location')]",
+      "dependsOn": [
+        "[concat('Microsoft.Compute/virtualMachines/', parameters('vmNamePrefix'), '0')]"
+      ],
+      "properties": {
+        "publisher": "Microsoft.Powershell",
+        "type": "DSC",
+        "typeHandlerVersion": "2.6",
+        "autoUpgradeMinorVersion": true,
+        "settings": {
+          "modulesURL": "[parameters('prepareDataKeeperHeadNodeModuleURL')]",
+          "configurationFunction": "[parameters('prepareDataKeeperHeadNodeCommandStr')]",
+          "properties": {
+            "domainName": "[parameters('existingDomainName')]",
+            "adminCreds": {
+              "userName": "[parameters('existingDomainAdminUsername')]",
+              "password": "PrivateSettingsRef:adminPassword"
+            },
+            "licenseKeyFtpURL": "[parameters('licenseKeyFtpURL')]",
+            "clusterName": "[parameters('clusterName')]",
+            "sharePath": "[parameters('fileShareWitnessPath')]",
+            "nodes": [ "sios-0", "sios-1" ]
+          }
+        },
+        "protectedSettings": {
+          "items": {
+            "adminPassword": "[parameters('existingDomainAdminPassword')]"
+          }
+        }
+      }
+    },
+    {
+      "apiVersion": "2015-06-15",
+      "type": "Microsoft.Compute/virtualMachines",
+      "name": "[concat(parameters('vmNamePrefix'), '1')]",
+      "location": "[parameters('location')]",
+      "plan": {
+        "name": "bring_your_own_license_dkce_and_sql",
+        "publisher": "sios_datakeeper",
+        "product": "bring_your_own_license_dkce_and_sql"
+      },
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "[parameters('vmSize')]"
+        },
+        "availabilitySet": {
+          "id": "[parameters('existingAvailabilitySet')]"
+        },
+        "osProfile": {
+          "computerName": "[concat(parameters('vmNamePrefix'), '1')]",
+          "adminUsername": "[parameters('existingDomainAdminUsername')]",
+          "adminPassword": "[parameters('existingDomainAdminPassword')]"
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "sios_datakeeper",
+            "offer": "bring_your_own_license_dkce_and_sql",
+            "sku": "bring_your_own_license_dkce_and_sql",
+            "version": "latest"
+          },
+          "osDisk": {
+            "name": "osdisk",
+            "vhd": {
+              "uri": "[concat('http://',parameters('newStorageAccountNamePrefix'),'1.blob.core.windows.net/',parameters('vmContainerName'),'/',parameters('vmNamePrefix'), '1', '-osdisk.vhd')]"
+            },
+            "caching": "ReadWrite",
+            "createOption": "FromImage"
+          },
+          "dataDisks": [
+            {
+              "vhd": {
+                "uri": "[concat('http://',parameters('newStorageAccountNamePrefix'),'1.blob.core.windows.net/',parameters('vmContainerName'),'/', parameters('vmNamePrefix'), '1', '-datadisk.vhd')]"
+              },
+              "name": "[concat(parameters('vmNamePrefix'), '1','-datadisk')]",
+              "caching": "None",
+              "createOption": "empty",
+              "diskSizeGB": 100,
+              "lun": 0
+            }
+          ]
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId(resourceGroup().name,'Microsoft.Network/networkInterfaces',concat(parameters('vmNamePrefix'), '1','-nic'))]"
+            }
+          ]
+        },
+        "diagnosticsProfile": {
+          "bootDiagnostics": {
+            "enabled": "true",
+            "storageUri": "[concat('http://',parameters('newStorageAccountNamePrefix'),'diag.blob.core.windows.net')]"
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Compute/virtualMachines/extensions",
+      "name": "[concat(parameters('vmNamePrefix'), '1', '/configureSiosVM')]",
+      "apiVersion": "2015-06-15",
+      "location": "[parameters('location')]",
+      "dependsOn": [
+        "[concat('Microsoft.Compute/virtualMachines/', parameters('vmNamePrefix'), '1')]"
+      ],
+      "properties": {
+        "publisher": "Microsoft.Powershell",
+        "type": "DSC",
+        "typeHandlerVersion": "2.6",
+        "autoUpgradeMinorVersion": true,
+        "settings": {
+          "modulesURL": "[parameters('prepareDataKeeperNodesModuleURL')]",
+          "configurationFunction": "[parameters('prepareDataKeeperNodesCommandStr')]",
+          "properties": {
+            "domainName": "[parameters('existingDomainName')]",
+            "adminCreds": {
+              "userName": "[parameters('existingDomainAdminUsername')]",
+              "password": "PrivateSettingsRef:adminPassword"
+            },
+            "licenseKeyFtpURL": "[parameters('licenseKeyFtpURL')]"
+          }
+        },
+        "protectedSettings": {
+          "items": {
+            "adminPassword": "[parameters('existingDomainAdminPassword')]"
+          }
+        }
+      }
+    }
+  ],
+    "outputs": {}
+}

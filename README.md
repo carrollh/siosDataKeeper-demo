@@ -24,11 +24,17 @@ This template creates 4 virtual machines in total: a primary AD domain controlle
 </a>
 This template creates 4 virtual machines in total: a primary AD domain controller and 3 Sios DataKeeper nodes with SQL 2014 installed; all running Windows Server 2012 R2 DataCenter.
 
-# Create SIOS DataKeeper Clustered SQL Server in an Existing Domain
+# Create SIOS DataKeeper Clustered SQL Server in an Existing Domain (IN THE SAME RESOURCE GROUP IN AZURE)
 <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fcarrollh%2FsiosDataKeeper-demo%2Fmaster%2Fdatakeeper-sql-cluster-domainjoin%2Fazuredeploy.json" target="_blank">
     <img src="http://azuredeploy.net/deploybutton.png"/>
 </a>
-This template creates 2 Sios DataKeeper nodes with SQL 2014 installed, and a client vm; all running Windows Server 2012 R2 DataCenter.
+This template creates 2 Sios DataKeeper nodes with SQL 2014 installed, all running Windows Server 2012 R2 DataCenter. It provisions them in the same resource group and availability set as an existing domain controller in Azure.
+
+# Create SIOS DataKeeper Clustered SQL Server in an Existing Domain (IN A NEW RESOURCE GROUP) 
+<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fcarrollh%2FsiosDataKeeper-demo%2Fmaster%2Fdatakeeper-sql-cluster-external-domainjoin%2Fazuredeploy.json" target="_blank">
+    <img src="http://azuredeploy.net/deploybutton.png"/>
+</a>
+This template creates 2 Sios DataKeeper nodes with SQL 2014 installed, all running Windows Server 2012 R2 DataCenter. It provisions them in their own resource group and joins them to a publically accessible domain. 
 
 # Add SIOS DataKeeper Node to Clustered SQL Resource
 <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fcarrollh%2FsiosDataKeeper-demo%2Fmaster%2Fdatakeeper-domainjoin%2Fazuredeploy.json" target="_blank">
