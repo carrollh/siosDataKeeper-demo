@@ -371,6 +371,7 @@
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2015-01-01",
       "dependsOn": [
+	    "Microsoft.Resources/deployments/CreatingStorageAccounts",
         "Microsoft.Resources/deployments/CreatingNetworkInterfaces",
 		"Microsoft.Resources/deployments/CreatingVirtualNetwork"
       ],
