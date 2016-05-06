@@ -312,7 +312,8 @@
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2015-01-01",
       "dependsOn": [
-        "Microsoft.Resources/deployments/CreatingNetworkInterfaces"
+        "Microsoft.Resources/deployments/CreatingNetworkInterfaces",
+		"Microsoft.Resources/deployments/CreatingStorageAccounts"
       ],
       "properties": {
         "mode": "Incremental",
