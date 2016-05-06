@@ -372,7 +372,7 @@
       "apiVersion": "2015-01-01",
       "dependsOn": [
         "Microsoft.Resources/deployments/CreatingNetworkInterfaces",
-		"Microsoft.Resources/deployments/UpdatingDNStoPrimaryADVM"
+		"Microsoft.Resources/deployments/CreatingVirtualNetwork"
       ],
       "properties": {
         "mode": "Incremental",
