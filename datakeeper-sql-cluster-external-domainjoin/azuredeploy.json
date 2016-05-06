@@ -186,8 +186,7 @@
 	  "vnetSetupURL": "[concat(variables('baseUrl'),'/Templates/creatingNewVNet.json')]",
       "creatingInternalLoadBalancerURL": "[concat(variables('baseUrl'),'/Templates/creatingInternalLoadBalancer.json')]",
       "creatingNicsUrl": "[concat(variables('baseUrl'),'/Templates/creatingNICs.json')]",
-      "vnetwithDNSTemplateURL": "[concat(variables('baseUrl'),'/Templates/creatingVNetWithDNSServer.json')]",
-	  "creatingSiosVMsURL": "[concat(variables('baseUrl'),'/Templates/creatingSiosVMs.json')]",
+      "creatingSiosVMsURL": "[concat(variables('baseUrl'),'/Templates/creatingSiosVMs.json')]",
       "prepareDataKeeperHeadNodeModuleURL": "[concat(variables('baseUrl'),'/DSC/ConfigureSiosVM0.ps1.zip')]",
       "prepareDataKeeperHeadNodeCommandStr": "ConfigureSiosVM0.ps1\\ConfigureSiosVM0",
       "prepareDataKeeperNodesModuleURL": "[concat(variables('baseUrl'),'/DSC/ConfigureSiosVM.ps1.zip')]",
@@ -280,6 +279,9 @@
           },
           "subnets": {
             "value": "[variables('subnets')]"
+          },
+		  "dnsIPAddressForNewVNet": {
+            "value": "[parameters('dnsIPAddressForNewVNet')]"
           }
         }
       }
@@ -360,40 +362,6 @@
           },
           "ilbBEAddressPoolID": {
             "value": "[variables('ilbBEAddressPoolID')]"
-          }
-        }
-      }
-    },
-	{
-      "name": "UpdatingDNStoPrimaryADVM",
-      "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2015-01-01",
-      "dependsOn": [
-        "Microsoft.Resources/deployments/CreatingVirtualNetwork"
-      ],
-      "properties": {
-        "mode": "Incremental",
-        "templateLink": {
-          "uri": "[variables('configuration').vnetwithDNSTemplateURL]",
-          "contentVersion": "1.0.0.0"
-        },
-        "parameters": {
-          "location": {
-            "value": "[variables('location')]"
-          },
-          "virtualNetworkName": {
-            "value": "[variables('virtualNetworkName')]"
-          },
-          "virtualNetworkAddressRange": {
-            "value": "[parameters('virtualNetworkAddressRange')]"
-          },
-          "subnets": {
-            "value": "[variables('subnets')]"
-          },
-          "DNSServerAddress": {
-            "value": [
-              "[parameters('dnsIPAddressForNewVNet')]"
-            ]
           }
         }
       }

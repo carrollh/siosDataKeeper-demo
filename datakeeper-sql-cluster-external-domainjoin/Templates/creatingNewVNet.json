@@ -13,7 +13,10 @@
     },
     "subnets": {
       "type": "array"
-    }
+    },
+	"dnsIPAddressForNewVNet": {
+	  "type": "string"
+	}
   },
   "resources": [
   {
@@ -27,6 +30,11 @@
         "[parameters('virtualNetworkAddressRange')]"
       ]
       },
+	  "dhcpOptions": {
+		"dnsServers": [
+			"[parameters('dnsIPAddressForNewVNet')]"
+		]
+	  },
       "subnets": "[parameters('subnets')]"
     }
   }
