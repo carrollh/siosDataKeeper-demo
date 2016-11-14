@@ -1,5 +1,11 @@
 # SIOS DataKeeper Azure template deployment demo.
 
+# Create 3 Node SIOS DataKeeper Clustered SQL Server on Windows Server 2008R2, 2012R2, or 2016 
+<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fcarrollh%2FsiosDataKeeper-demo%2Fmaster%2Fdatakeeper-sql-cluster-Win20XX%2Fazuredeploy.json" target="_blank">
+    <img src="http://azuredeploy.net/deploybutton.png"/>
+</a>
+This template creates 3+ virtual machines: an AD domain controller, and 2+ Sios DataKeeper nodes. All VMs run the same version of Windows Server chosen at time of deployment.
+
 # Create SIOS DataKeeper Replication
 <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fcarrollh%2FsiosDataKeeper-demo%2Fmaster%2Fdatakeeper-standalone%2Fazuredeploy.json" target="_blank">
     <img src="http://azuredeploy.net/deploybutton.png"/>
