@@ -150,8 +150,7 @@
     "ilbBEAddressPoolID": "[concat(variables('ilbID'),'/backendAddressPools/',variables('ilbBE'))]",
     "vmSettings": {
       "availabilitySets": {
-        "siosAvailabilitySetName": "siosAvailabilitySet",
-        "clientAvailabilitySetName": "clientAvailabilitySet"
+        "siosAvailabilitySetName": "siosAvailabilitySet"
       },
       "vmContainerName": "vhds",
       "adPDCVMName": "ad-pdc",
@@ -194,9 +193,7 @@
       "prepareDataKeeperHeadNodeModuleURL": "[concat(variables('baseUrl'),'/DSC/ConfigureSiosVM0.ps1.zip')]",
       "prepareDataKeeperHeadNodeCommandStr": "ConfigureSiosVM0.ps1\\ConfigureSiosVM0",
       "prepareDataKeeperNodesModuleURL": "[concat(variables('baseUrl'),'/DSC/ConfigureSiosVM.ps1.zip')]",
-      "prepareDataKeeperNodesCommandStr": "ConfigureSiosVM.ps1\\ConfigureSiosVM",
-      "prepareClientVMModuleURL": "[concat(variables('baseUrl'),'/DSC/ConfigureSiosClientVM.ps1.zip')]",
-      "prepareClientVMCommandStr": "ConfigureSiosClientVM.ps1\\ConfigureSiosClientVM"
+      "prepareDataKeeperNodesCommandStr": "ConfigureSiosVM.ps1\\ConfigureSiosVM"
     }
   },
   "resources": [
@@ -262,9 +259,6 @@
           },
           "siosAvailabilitySetName": {
             "value": "[variables('vmSettings').availabilitySets.siosAvailabilitySetName]"
-          },
-          "clientAvailabilitySetName": {
-            "value": "[variables('vmSettings').availabilitySets.clientAvailabilitySetName]"
           }
         }
       }
@@ -555,12 +549,6 @@
           },
           "prepareDataKeeperNodesCommandStr": {
             "value": "[variables('configuration').prepareDataKeeperNodesCommandStr]"
-          },
-          "prepareClientVMModuleURL": {
-            "value": "[variables('configuration').prepareClientVMModuleURL]"
-          },
-          "prepareClientVMCommandStr": {
-            "value": "[variables('configuration').prepareClientVMCommandStr]"
           }
         }
       }

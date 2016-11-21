@@ -109,29 +109,6 @@
           }
         ]
       }
-    },
-    {
-      "name": "sios-client-nic",
-      "type": "Microsoft.Network/networkInterfaces",
-      "location": "[parameters('location')]",
-      "apiVersion": "2015-06-15",
-      "properties": {
-        "ipConfigurations": [
-          {
-            "name": "ipconfig1",
-            "properties": {
-              "privateIPAllocationMethod": "Static",
-              "privateIPAddress": "10.0.0.7",
-              "publicIPAddress": {
-                "id": "[resourceId('Microsoft.Network/publicIPAddresses',concat(parameters('siosVMRdpIPAddressNamePrefix'), 'clientRdpIP'))]"
-              },
-              "subnet": {
-                "id": "[parameters('staticSubnetRef')]"
-              }
-            }
-          }
-        ]
-      }
     }
   ],
   "outputs": { }
