@@ -431,7 +431,7 @@
             "value": "[variables('vmSettings').windowsImageOffer]"
           },
           "windowsImageSKU": {
-            "value": "[parameters('windowsImageSKU')]"
+            "value": "2012-R2-Datacenter"
           },
           "vmContainerName": {
             "value": "[variables('vmSettings').vmContainerName]"
