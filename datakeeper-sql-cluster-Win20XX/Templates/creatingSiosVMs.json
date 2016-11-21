@@ -52,12 +52,6 @@
     },
     "prepareDataKeeperNodesCommandStr": {
       "type": "string"
-    },
-    "prepareClientVMModuleURL": {
-      "type": "string"
-    },
-    "prepareClientVMCommandStr": {
-      "type": "string"
     }
   },
   "variables": {
