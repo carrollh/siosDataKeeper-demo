@@ -70,11 +70,6 @@
       "type": "Microsoft.Compute/virtualMachines",
       "name": "[concat(variables('siosVMNamePrefix'), '0')]",
       "location": "[parameters('location')]",
-      "plan": {
-        "name": "[parameters('windowsImageSKU')]",
-        "publisher": "MicrosoftWindowsServer",
-        "product": "WindowsServer"
-      },
       "properties": {
         "hardwareProfile": {
           "vmSize": "[parameters('siosVMSize')]"
@@ -170,11 +165,6 @@
       "type": "Microsoft.Compute/virtualMachines",
       "name": "[concat(variables('siosVMNamePrefix'), '1')]",
       "location": "[parameters('location')]",
-      "plan": {
-        "name": "[parameters('windowsImageSKU')]",
-        "publisher": "MicrosoftWindowsServer",
-        "product": "WindowsServer"
-      },
       "properties": {
         "hardwareProfile": {
           "vmSize": "[parameters('siosVMSize')]"
