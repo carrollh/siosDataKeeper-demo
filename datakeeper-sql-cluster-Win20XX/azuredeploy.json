@@ -29,10 +29,9 @@
     },
 	"windowsImageSKU": {
       "type": "string",
-      "defaultValue": "SQL2014SP2-WS2012R2-BYOL",
+      "defaultValue": "2016-Datacenter",
 	  "allowedValues": [
-        "SQL2014SP2-WS2012R2-BYOL",
-		"2016-Datacenter",
+        "2016-Datacenter",
         "2012-R2-Datacenter",
         "2008-R2-SP1"
       ],
