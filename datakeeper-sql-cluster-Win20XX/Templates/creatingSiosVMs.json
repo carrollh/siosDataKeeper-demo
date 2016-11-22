@@ -78,9 +78,9 @@
         },
         "storageProfile": {
           "imageReference": {
-            "publisher": "MicrosoftWindowsServer",
-            "offer": "WindowsServer",
-            "sku": "[parameters('windowsImageSKU')]",
+            "publisher": "MicrosoftSQLServer",
+            "offer": "SQL2014SP2-WS2012R2-BYOL",
+            "sku": "Standard",
             "version": "latest"
           },
           "osDisk": {
@@ -173,9 +173,9 @@
         },
         "storageProfile": {
           "imageReference": {
-            "publisher": "MicrosoftWindowsServer",
-            "offer": "WindowsServer",
-            "sku": "[parameters('windowsImageSKU')]",
+            "publisher": "MicrosoftSQLServer",
+            "offer": "SQL2014SP2-WS2012R2-BYOL",
+            "sku": "Standard",
             "version": "latest"
           },
           "osDisk": {
