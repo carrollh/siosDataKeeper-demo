@@ -226,7 +226,7 @@
         },
         "DomainAdminUser": {
             "AllowedPattern": "[a-zA-Z0-9]*",
-            "Default": "StackAdmin",
+            "Default": "siosadmin",
             "Description": "User name for the account that will be added as Domain Administrator. This is separate from the default \"Administrator\" account",
             "MaxLength": "25",
             "MinLength": "5",
@@ -234,7 +234,7 @@
         },
         "DomainDNSName": {
             "AllowedPattern": "[a-zA-Z0-9]+\\..+",
-            "Default": "example.com",
+            "Default": "datakeeper.local",
             "Description": "Fully qualified domain name (FQDN) of the forest root domain e.g. example.com",
             "MaxLength": "25",
             "MinLength": "3",
@@ -242,7 +242,7 @@
         },
         "DomainNetBIOSName": {
             "AllowedPattern": "[a-zA-Z0-9]+",
-            "Default": "example",
+            "Default": "datakeeper",
             "Description": "NetBIOS name of the domain (upto 15 characters) for users of earlier versions of Windows e.g. EXAMPLE",
             "MaxLength": "15",
             "MinLength": "1",
@@ -325,7 +325,7 @@
         },
         "SQLServiceAccount": {
             "AllowedPattern": "[a-zA-Z0-9]*",
-            "Default": "sqlsa",
+            "Default": "siossqlserver",
             "Description": "User name for the SQL Server Service Account. This Account is a Domain User.",
             "MaxLength": "25",
             "MinLength": "5",
@@ -358,7 +358,7 @@
         },
         "WSFCNode1NetBIOSName": {
             "AllowedPattern": "[a-zA-Z0-9]+",
-            "Default": "WSFCNode1",
+            "Default": "sios0",
             "Description": "NetBIOS name of the 1st WSFC Node (up to 15 characters)",
             "MaxLength": "15",
             "MinLength": "1",
@@ -392,7 +392,7 @@
         },
         "WSFCNode2NetBIOSName": {
             "AllowedPattern": "[a-zA-Z0-9]+",
-            "Default": "WSFCNode2",
+            "Default": "sios1",
             "Description": "NetBIOS name of the 2nd WSFC Node (up to 15 characters)",
             "MaxLength": "15",
             "MinLength": "1",
