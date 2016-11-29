@@ -126,6 +126,18 @@
       "metadata": {
         "description": "The size of the DataKeeper / SQL VMs. If a DS size is selected, the STORAGEACCOUNTTYPE parameter must have a Premium type selected."
       }
+    },
+    "dataDiskSizeGB": {
+      "type": "int",
+      "defaultValue": 128,
+      "allowedValues": [
+        128,
+        512,
+        1023
+      ],
+      "metadata": {
+        "description": "The capacity of the replicated datadisk. A datadisk of this size will be attached to each non DC node."
+      }
     }
   },
   "variables": {
@@ -537,6 +549,9 @@
           },
           "sharePath": {
             "value": "[variables('sharePath')]"
+          },
+          "dataDiskSizeGB": {
+            "value": "[parameters('dataDiskSizeGB')]"
           },
           "prepareDataKeeperHeadNodeModuleURL": {
             "value": "[variables('configuration').prepareDataKeeperHeadNodeModuleURL]"

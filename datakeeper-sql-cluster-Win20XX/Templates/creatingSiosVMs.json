@@ -41,6 +41,9 @@
     "sharePath": {
       "type": "string"
     },
+    "dataDiskSizeGB": {
+      "type": "int"
+    },
     "prepareDataKeeperHeadNodeModuleURL": {
       "type": "string"
     },
@@ -99,7 +102,7 @@
               "name": "[concat(variables('siosVMNamePrefix'), '0','-datadisk')]",
               "caching": "None",
               "createOption": "empty",
-              "diskSizeGB": 100,
+              "diskSizeGB": "[parameters('dataDiskSizeGB')]",
               "lun": 0
             }
           ]
@@ -194,7 +197,7 @@
               "name": "[concat(variables('siosVMNamePrefix'), '1','-datadisk')]",
               "caching": "None",
               "createOption": "empty",
-              "diskSizeGB": 100,
+              "diskSizeGB": "[parameters('dataDiskSizeGB')]",
               "lun": 0
             }
           ]
