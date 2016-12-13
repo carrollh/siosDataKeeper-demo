@@ -424,7 +424,7 @@
         "ADStack": {
             "Type": "AWS::CloudFormation::Stack",
             "Properties": {
-                "TemplateURL": "https://s3.amazonaws.com/quickstart-reference/microsoft/activedirectory/latest/templates/Template_1_AD_2012R2.template",
+                "TemplateURL": "https://raw.githubusercontent.com/carrollh/siosDataKeeper-demo/master/aws-datakeeper-sql-cluster/Template_1_AD_2012R2.template",
                 "Parameters": {
                     "ADServer1InstanceType": {
                         "Ref": "ADServer1InstanceType"
@@ -487,7 +487,7 @@
             "Type": "AWS::CloudFormation::Stack",
             "DependsOn": "ADStack",
             "Properties": {
-                "TemplateURL": "https://s3.amazonaws.com/quickstart-reference/microsoft/sql/latest/templates/Template_1_SQL_AlwaysOn.template",
+                "TemplateURL": "https://raw.githubusercontent.com/carrollh/siosDataKeeper-demo/master/aws-datakeeper-sql-cluster/Template_1_SQL_AlwaysOn.template",
                 "Parameters": {
                     "ADServer1PrivateIp": {
                         "Ref": "ADServer1PrivateIP"
