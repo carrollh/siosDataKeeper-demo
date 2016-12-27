@@ -72,7 +72,7 @@
     },
     "vmName": {
       "type": "string",
-      "defaultValue": "sios",
+      "defaultValue": "sios-3",
       "metadata": {
         "description": "Name for the vm being created."
       }
