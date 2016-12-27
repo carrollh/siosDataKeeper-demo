@@ -40,7 +40,6 @@
               "subnet": {
                 "id": "[parameters('staticSubnetRef')]"
               }
-              ]
             }
           }
         ]
