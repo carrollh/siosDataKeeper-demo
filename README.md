@@ -60,3 +60,11 @@ This template creates a single virtual machine running Windows Server 2012 R2, S
     <img src="http://azuredeploy.net/deploybutton.png"/>
 </a>
 Deployment testing template.
+
+
+# TEST - Simple Domain Join a New Server 20XX Node to Existing Domain in Azure 
+(IN A NEW RESOURCE GROUP) [NON-FUNCTIONAL]
+<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fcarrollh%2FsiosDataKeeper-demo%2Fmaster%2Ftest-domainjoin%2Fazuredeploy.json" target="_blank">
+    <img src="http://azuredeploy.net/deploybutton.png"/>
+</a>
+This creates a new Server 20XX node and adds it to an existing domain. 

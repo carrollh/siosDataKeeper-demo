@@ -73,19 +73,7 @@
             },
             "caching": "ReadWrite",
             "createOption": "FromImage"
-          },
-          "dataDisks": [
-            {
-              "vhd": {
-                "uri": "[concat('http://',parameters('existingDiskStorageAccountName'),'.blob.core.windows.net/',parameters('vmContainerName'),'/', parameters('vmName'), '-datadisk.vhd')]"
-              },
-              "name": "[concat(parameters('vmName'),'-datadisk')]",
-              "caching": "None",
-              "createOption": "empty",
-              "diskSizeGB": 100,
-              "lun": 0
-            }
-          ]
+          }
         },
         "networkProfile": {
           "networkInterfaces": [
@@ -96,8 +84,7 @@
         },
         "diagnosticsProfile": {
           "bootDiagnostics": {
-            "enabled": "true",
-            "storageUri": "[concat('http://',parameters('existingDiagnosticStorageAccountName'),'.blob.core.windows.net')]"
+            "enabled": "false"
           }
         }
       }
@@ -123,9 +110,7 @@
             "adminCreds": {
               "userName": "[parameters('adminUserName')]",
               "password": "PrivateSettingsRef:adminPassword"
-            },
-            "licenseKeyFtpURL": "[parameters('licenseKeyFtpURL')]",
-            "clusterIPAddress": "[parameters('clusterIPAddress')]"
+            }
           }
         },
         "protectedSettings": {
