@@ -1,0 +1,30 @@
+{
+	"AWSTemplateFormatVersion" : "2010-09-09",
+	"Parameters" : {
+		"KeyPairName": {
+            "Type": "AWS::EC2::KeyPair::KeyName"
+        }
+	},
+	"Resources" : { 
+		"VPCStack": {
+            "Type": "AWS::CloudFormation::Stack",
+            "Properties": {
+                "TemplateURL" : "https://s3.amazonaws.com/sios-datakeeper/CloudFormation/Templates/sios-vpc.template",
+                "Parameters" : { }
+            }
+        },
+		"ADStack" : {
+			"DependsOn" : "VPCStack",
+			"Type": "AWS::CloudFormation::Stack",
+            "Properties": {
+                "TemplateURL": "https://s3.amazonaws.com/sios-datakeeper/CloudFormation/Templates/adpdc.template",
+                "Parameters": { 
+					"KeyPairName" : { "Ref" : "KeyPairName" },
+					"SecurityGroupId" : { "Fn::GetAtt": [ "VPCStack", "Outputs.InstanceSecurityGroupId" ] },
+					"SubnetId" : { "Fn::GetAtt": [ "VPCStack", "Outputs.PublicSubnetId" ] }
+				}
+            }
+		}
+	},
+	"Outputs" : { }
+}
