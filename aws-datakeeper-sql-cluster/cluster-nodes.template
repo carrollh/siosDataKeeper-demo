@@ -27,7 +27,7 @@
 						"config": [
 							"rename",
 							"downloadFiles",
-							"bootstrapDSC"
+							"runDSC"
 						]
 					},
 					"rename": {
@@ -41,12 +41,27 @@
 					"downloadFiles": {
 						"sources": {
 							"C:\\Windows\\Temp\\CreateADPDC": "http://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/CreateADPDC.ps1.zip"
+						},
+						"files": {
+							"C:\\Windows\\Temp\\DK-Setup.exe": {
+								"source": "http://s3.amazonaws.com/sios-datakeeper/Software/DK-Setup.exe"
+							}
+						},
+						"commands": {
+							"a-download-CreateADPDC": {
+								"command": "powershell.exe -Command Invoke-WebRequest -Uri http://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/CreateADPDC.ps1.zip -OutFile C:\\Windows\\Temp\\CreateADPDC.ps2.zip > C:\\Windows\\Temp\\dl-CreateAdpdc.txt",
+								"waitAfterCompletion": "forever"
+							},
+							"a-download-DKSetup": {
+								"command": "powershell.exe -Command Invoke-WebRequest -Uri http://s3.amazonaws.com/sios-datakeeper/Software/DK-Setup.exe -OutFile C:\\Windows\\Temp\\DK-Setup2.exe > C:\\Windows\\Temp\\dl-DKSetup.txt",
+								"waitAfterCompletion": "forever"
+							}
 						}
 					},
-					"bootstrapDSC": {
+					"runDSC": {
 						"commands": {
 							"a-run-dsc": {
-								"command": "powershell.exe -Command Start-DSCConfiguration -Path C:\\Windows\\Temp\\CreateADPDC\\CreateADPDC 9>&1> C:\\Windows\\Temp\\runDSC.txt",
+								"command": "got here > C:\\Windows\\Temp\\gothere.txt",
 								"waitAfterCompletion": "forever"
 							}
 						}
