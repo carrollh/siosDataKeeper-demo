@@ -2,7 +2,7 @@
 
 # AWS TEMPLATES
 # Create 2 Node SIOS DataKeeper Clustered SQL Server with Domain Controller
-<a href="https://console.aws.amazon.com/cloudformation/home?region=us-west-1#cstack=sn%7EDSC2%7Cturl%7Ehttps://s3.amazonaws.com/sios-datakeeper/CloudFormation/sios-master.template" target="_blank">
+<a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#cstack=sn%7EDSC2%7Cturl%7Ehttps://s3.amazonaws.com/sios-datakeeper/CloudFormation/sios-master.template" target="_blank">
     <img src="http://azuredeploy.net/deploybutton.png"/>
 </a>
 This template creates 3 virtual machines: a primary AD domain controller, and 2 Sios DataKeeper nodes. All VMs are running Windows Server 2012 R2.
