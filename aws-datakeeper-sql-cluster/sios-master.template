@@ -21,7 +21,10 @@
                 "Parameters": { 
 					"KeyPairName" : { "Ref" : "KeyPairName" },
 					"SecurityGroupId" : { "Fn::GetAtt": [ "VPCStack", "Outputs.InstanceSecurityGroupId" ] },
-					"SubnetId" : { "Fn::GetAtt": [ "VPCStack", "Outputs.PublicSubnetId" ] }
+					"SubnetId" : { "Fn::GetAtt": [ "VPCStack", "Outputs.PublicSubnetId" ] },
+					"DomainName" : "datakeeper.local",
+					"DomainAdminUsername" : "siosadmin",
+					"DomainAdminPassword" : "SIOS!5105"
 				}
             }
 		}

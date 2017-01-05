@@ -16,6 +16,20 @@
 		},
 		"SubnetId": {
 			"Type": "AWS::EC2::Subnet::Id"
+		},
+		"DomainName": {
+			"Type": "String"
+		},
+		"DomainAdminUsername": {
+			"Type": "String"
+		},
+		"DomainAdminPassword": {
+			"AllowedPattern": "(?=^.{6,255}$)((?=.*\\d)(?=.*[A-Z])(?=.*[a-z])|(?=.*\\d)(?=.*[^A-Za-z0-9])(?=.*[a-z])|(?=.*[^A-Za-z0-9])(?=.*[A-Z])(?=.*[a-z])|(?=.*\\d)(?=.*[A-Z])(?=.*[^A-Za-z0-9]))^.*",
+			"Description": "Password for the Administrator user account. Must be at least 8 characters containing letters, numbers and symbols",
+			"MaxLength": "32",
+			"MinLength": "8",
+			"NoEcho": "true",
+			"Type": "String"
 		}
 	},
 	"Resources": {
@@ -27,27 +41,83 @@
 						"config": [
 							"rename",
 							"downloadFiles",
-							"bootstrapDSC"
+							"bootstrapDSC",
+							"finalize"
 						]
 					},
 					"rename": {
 						"commands": {
-							"a-rename-computer": {
-								"command": "powershell.exe -Command Rename-Computer -NewName ad-pdc -Restart > C:\\Windows\\Temp\\rename.txt",
+							"a-reset-local-admin": {
+								"command": {
+									"Fn::Join": [
+										"", [
+											"powershell.exe -executionpolicy remotesigned -command C:\\cfn\\scripts\\Reset-LocalAdminPassword.ps1 -password '", {
+												"Ref": "DomainAdminPassword"
+											},
+											"'"
+										]
+									]
+								},
+								"waitAfterCompletion": "0"
+							},
+							"b-rename-computer": {
+								"command": "powershell.exe -Command Rename-Computer -NewName ad-pdc -Restart",
 								"waitAfterCompletion": "forever"
 							}
 						}
 					},
 					"downloadFiles": {
 						"sources": {
-							"C:\\Windows\\Temp\\CreateADPDC": "http://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/CreateADPDC.ps1.zip"
+							"C:\\Program Files\\WindowsPowerShell\\Modules\\cDisk": "http://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/cDisk.zip",
+							"C:\\Program Files\\WindowsPowerShell\\Modules\\xActiveDirectory": "http://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/xActiveDirectory.zip",
+							"C:\\Program Files\\WindowsPowerShell\\Modules\\xDisk": "http://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/xDisk.zip",
+							"C:\\Program Files\\WindowsPowerShell\\Modules\\xNetworking": "http://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/xNetworking.zip",
+							"C:\\Program Files\\WindowsPowerShell\\Modules\\xSmbShare": "http://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/xSmbShare.zip",
+							"C:\\cfn\\scripts\\": "http://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/scripts.zip"
 						}
 					},
 					"bootstrapDSC": {
 						"commands": {
-							"a-run-dsc": {
-								"command": "powershell.exe -Command Start-DSCConfiguration -Path C:\\Windows\\Temp\\CreateADPDC\\CreateADPDC 9>&1> C:\\Windows\\Temp\\runDSC.txt",
+							"a-create-cert": {
+								"command": {
+									"Fn::Join": [
+										"", [
+											"powershell.exe -command c:\\cfn\\scripts\\New-DSCCertificate.ps1 -Password '", {
+												"Ref": "DomainAdminPassword"
+											},
+											"' -Instance ad-pdc"
+										]
+									]
+								},
+								"waitAfterCompletion": "0"
+							},
+							"a-run-dsc-config": {
+								"command": {
+									"Fn::Join": [
+										"", [
+											"powershell.exe -Command c:\\cfn\\scripts\\CreateADPDC.ps1 -DomainName ", {
+												"Ref": "DomainName"
+											},
+											" -AdminUsername ", {
+												"Ref": "DomainAdminUsername"
+											},
+											" -AdminPassword ", {
+												"Ref": "DomainAdminPassword"
+											},
+											" -SharePath ",
+											"sios-fsw"
+										]
+									]
+								},
 								"waitAfterCompletion": "forever"
+							}
+						}
+					},
+					"finalize": {
+						"commands": {
+							"a-write-status": {
+								"command": "powershell.exe -command Write-AWSQuickStartStatus",
+								"waitAfterCompletion": "0"
 							}
 						}
 					}

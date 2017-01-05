@@ -1,5 +1,14 @@
-# SIOS DataKeeper Azure template deployment demo.
+# SIOS DataKeeper CLOUD template deployment demo.
 
+# AWS TEMPLATES
+# Create 2 Node SIOS DataKeeper Clustered SQL Server with Domain Controller
+<a href="https://console.aws.amazon.com/cloudformation/home?region=us-west-1#cstack=sn%7EDSC2%7Cturl%7Ehttps://s3.amazonaws.com/sios-datakeeper/CloudFormation/sios-master.template" target="_blank">
+    <img src="http://azuredeploy.net/deploybutton.png"/>
+</a>
+This template creates 3 virtual machines: a primary AD domain controller, and 2 Sios DataKeeper nodes. All VMs are running Windows Server 2012 R2.
+
+
+# AZURE TEMPLATES
 # Create 2+ Node SQL Server 2014 Cluster with SIOS DataKeeper Replication on Windows Server (2008R2, 2012R2, or 2016) 
 [WIP: Only works for Server 2012R2 currently. Close for 2016, but something in the DSC engine breaks while installing sql last check. Server 2008R2 comes online with local execution policy disabled for scripts, so DSC config doesn't start.]
 <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fcarrollh%2FsiosDataKeeper-demo%2Fmaster%2Fdatakeeper-sql-cluster-Win20XX%2Fazuredeploy.json" target="_blank">
