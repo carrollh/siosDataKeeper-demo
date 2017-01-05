@@ -39,11 +39,21 @@
 				"AWS::CloudFormation::Init": {
 					"configSets": {
 						"config": [
-							"rename",
 							"downloadFiles",
+							"rename",
 							"bootstrapDSC",
 							"finalize"
 						]
+					},
+					"downloadFiles": {
+						"sources": {
+							"C:\\Program Files\\WindowsPowerShell\\Modules\\cDisk": "http://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/cDisk.zip",
+							"C:\\Program Files\\WindowsPowerShell\\Modules\\xActiveDirectory": "http://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/xActiveDirectory.zip",
+							"C:\\Program Files\\WindowsPowerShell\\Modules\\xDisk": "http://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/xDisk.zip",
+							"C:\\Program Files\\WindowsPowerShell\\Modules\\xNetworking": "http://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/xNetworking.zip",
+							"C:\\Program Files\\WindowsPowerShell\\Modules\\xSmbShare": "http://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/xSmbShare.zip",
+							"C:\\cfn\\scripts\\": "http://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/scripts.zip"
+						}
 					},
 					"rename": {
 						"commands": {
@@ -64,16 +74,6 @@
 								"command": "powershell.exe -Command Rename-Computer -NewName ad-pdc -Restart",
 								"waitAfterCompletion": "forever"
 							}
-						}
-					},
-					"downloadFiles": {
-						"sources": {
-							"C:\\Program Files\\WindowsPowerShell\\Modules\\cDisk": "http://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/cDisk.zip",
-							"C:\\Program Files\\WindowsPowerShell\\Modules\\xActiveDirectory": "http://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/xActiveDirectory.zip",
-							"C:\\Program Files\\WindowsPowerShell\\Modules\\xDisk": "http://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/xDisk.zip",
-							"C:\\Program Files\\WindowsPowerShell\\Modules\\xNetworking": "http://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/xNetworking.zip",
-							"C:\\Program Files\\WindowsPowerShell\\Modules\\xSmbShare": "http://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/xSmbShare.zip",
-							"C:\\cfn\\scripts\\": "http://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/scripts.zip"
 						}
 					},
 					"bootstrapDSC": {
