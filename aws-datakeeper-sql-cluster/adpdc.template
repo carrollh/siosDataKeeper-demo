@@ -39,15 +39,15 @@
 				"AWS::CloudFormation::Init": {
 					"configSets": {
 						"config": [
-							"downloadFiles",
-							"rename",
-							"bootstrapDSC",
-							"finalize"
+							"setup",
+							"config",
+							"bootstrapDSC"
 						]
 					},
-					"downloadFiles": {
+					"setup": {
 						"sources": {
 							"C:\\Program Files\\WindowsPowerShell\\Modules\\cDisk": "http://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/cDisk.zip",
+							"C:\\Program Files\\WindowsPowerShell\\Modules\\PSDscResources": "http://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/PSDscResources.zip",
 							"C:\\Program Files\\WindowsPowerShell\\Modules\\xActiveDirectory": "http://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/xActiveDirectory.zip",
 							"C:\\Program Files\\WindowsPowerShell\\Modules\\xDisk": "http://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/xDisk.zip",
 							"C:\\Program Files\\WindowsPowerShell\\Modules\\xNetworking": "http://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/xNetworking.zip",
@@ -55,13 +55,17 @@
 							"C:\\cfn\\scripts\\": "http://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/scripts.zip"
 						}
 					},
-					"rename": {
+					"config": {
 						"commands": {
-							"a-reset-local-admin": {
+							"a-set-execution-policy": {
+								"command": "powershell.exe -command Set-ExecutionPolicy Unrestricted -Force",
+								"waitAfterCompletion": "0"
+							},
+							"b-reset-local-admin-password": {
 								"command": {
 									"Fn::Join": [
 										"", [
-											"powershell.exe -executionpolicy remotesigned -command C:\\cfn\\scripts\\Reset-LocalAdminPassword.ps1 -password '", {
+											"powershell.exe -ExecutionPolicy Unrestricted -Command C:\\cfn\\scripts\\Reset-LocalAdminPassword.ps1 -password '", {
 												"Ref": "DomainAdminPassword"
 											},
 											"'"
@@ -70,7 +74,20 @@
 								},
 								"waitAfterCompletion": "0"
 							},
-							"b-rename-computer": {
+							"c-reset-builtin-admin-username": {
+								"command": {
+									"Fn::Join": [
+										"", [
+											"powershell.exe -ExecutionPolicy Unrestricted -Command C:\\cfn\\scripts\\Reset-BuiltInAdminUsername.ps1 -username '", {
+												"Ref": "DomainAdminUsername"
+											},
+											"'"
+										]
+									]
+								},
+								"waitAfterCompletion": "0"
+							},
+							"d-rename-computer": {
 								"command": "powershell.exe -Command Rename-Computer -NewName ad-pdc -Restart",
 								"waitAfterCompletion": "forever"
 							}
@@ -82,7 +99,7 @@
 								"command": {
 									"Fn::Join": [
 										"", [
-											"powershell.exe -command c:\\cfn\\scripts\\New-DSCCertificate.ps1 -Password '", {
+											"powershell.exe -ExecutionPolicy Unrestricted -command c:\\cfn\\scripts\\New-DSCCertificate.ps1 -Password '", {
 												"Ref": "DomainAdminPassword"
 											},
 											"' -Instance ad-pdc"
@@ -95,7 +112,7 @@
 								"command": {
 									"Fn::Join": [
 										"", [
-											"powershell.exe -Command c:\\cfn\\scripts\\CreateADPDC.ps1 -DomainName ", {
+											"powershell.exe -ExecutionPolicy Unrestricted -Command c:\\cfn\\scripts\\CreateADPDC.ps1 -DomainName ", {
 												"Ref": "DomainName"
 											},
 											" -AdminUsername ", {
@@ -110,14 +127,6 @@
 									]
 								},
 								"waitAfterCompletion": "forever"
-							}
-						}
-					},
-					"finalize": {
-						"commands": {
-							"a-write-status": {
-								"command": "powershell.exe -command Write-AWSQuickStartStatus",
-								"waitAfterCompletion": "0"
 							}
 						}
 					}
@@ -137,6 +146,7 @@
 					"AssociatePublicIpAddress": "true",
 					"DeviceIndex": "0",
 					"DeleteOnTermination": "true",
+					"PrivateIpAddress": "10.0.0.4",
 					"SubnetId": {
 						"Ref": "SubnetId"
 					}
