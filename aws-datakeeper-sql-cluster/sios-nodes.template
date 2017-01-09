@@ -10,20 +10,36 @@
 	"Parameters": {
 		"InstanceType": {
 			"AllowedValues": [
-				"t2.small",
-				"t2.medium",
-				"t2.large",
 				"m3.medium",
 				"m3.large",
 				"m3.xlarge",
 				"m3.2xlarge",
 				"m4.large",
-				"m4.xlarge",
-				"m4.2xlarge",
-				"m4.4xlarge"
+				"c3.large",
+				"c3.xlarge",
+				"c3.2xlarge",
+				"c3.4xlarge",
+				"c3.8xlarge",
+				"r3.large",
+				"r3.xlarge",
+				"r3.2xlarge",
+				"r3.4xlarge",
+				"r3.8xlarge",
+				"x1.16xlarge",
+				"x1.32xlarge",
+				"d2.large",
+				"d2.xlarge",
+				"d2.2xlarge",
+				"d2.4xlarge",
+				"d2.8xlarge",
+				"i2.large",
+				"i2.xlarge",
+				"i2.2xlarge",
+				"i2.4xlarge",
+				"i2.8xlarge"
 			],
-			"Default": "t2.small",
-			"Description": "Amazon EC2 instance type for this AD domain controller Instance.",
+			"Default": "m3.medium",
+			"Description": "Amazon EC2 instance type for this SQL / replication node Instance.",
 			"Type": "String"
 		},
 		"SecurityGroupId": {
@@ -55,10 +71,21 @@
 			"MinLength": "8",
 			"NoEcho": "true",
 			"Type": "String"
+		},
+		"VMNamePrefix": {
+			"AllowedPattern": "[a-zA-Z0-9]+",
+			"Default": "SIOS",
+			"Description": "NetBIOS name prefix for both SQL / replication nodes (up to 13 characters)",
+			"MaxLength": "13",
+			"MinLength": "1",
+			"Type": "String"
+		},
+		"LicenseKeyFtpURL": {
+			"Type": "String"
 		}
 	},
 	"Resources": {
-		"ADPDC": {
+		"SIOS0": {
 			"Type": "AWS::EC2::Instance",
 			"Metadata": {
 				"AWS::CloudFormation::Init": {
@@ -73,10 +100,14 @@
 						"sources": {
 							"C:\\Program Files\\WindowsPowerShell\\Modules\\cDisk": "http://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/cDisk.zip",
 							"C:\\Program Files\\WindowsPowerShell\\Modules\\xActiveDirectory": "http://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/xActiveDirectory.zip",
+							"C:\\Program Files\\WindowsPowerShell\\Modules\\xComputerManagement": "http://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/xComputerManagement.zip",
+							"C:\\Program Files\\WindowsPowerShell\\Modules\\xDataKeeper": "http://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/xDataKeeper.zip",
+							"C:\\Program Files\\WindowsPowerShell\\Modules\\xFailoverCluster": "http://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/xFailoverCluster.zip",
 							"C:\\Program Files\\WindowsPowerShell\\Modules\\xDisk": "http://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/xDisk.zip",
 							"C:\\Program Files\\WindowsPowerShell\\Modules\\xNetworking": "http://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/xNetworking.zip",
-							"C:\\Program Files\\WindowsPowerShell\\Modules\\xSmbShare": "http://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/xSmbShare.zip",
-							"C:\\cfn\\scripts\\": "http://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/scripts.zip"
+							"C:\\cfn\\scripts\\": "http://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/scripts.zip",
+							"C:\\Windows\\Temp\\": "http://s3.amazonaws.com/sios-datakeeper/Software/DK-Setup.zip",
+							"C:\\SQL2014\\": "http://s3.amazonaws.com/sios-datakeeper/Software/SQL2014.zip"
 						}
 					},
 					"config": {
@@ -112,7 +143,17 @@
 								"waitAfterCompletion": "0"
 							},
 							"d-rename-computer": {
-								"command": "powershell.exe -Command Rename-Computer -NewName ad-pdc -Restart",
+								"command": {
+									"Fn::Join": [
+										"", [
+											"powershell.exe Rename-Computer -NewName ", {
+												"Ref": "VMNamePrefix"
+											},
+											"-0",
+											" -Restart"
+										]
+									]
+								},
 								"waitAfterCompletion": "forever"
 							}
 						}
@@ -126,7 +167,10 @@
 											"powershell.exe -ExecutionPolicy Unrestricted -command c:\\cfn\\scripts\\New-DSCCertificate.ps1 -Password '", {
 												"Ref": "DomainAdminPassword"
 											},
-											"' -Instance ad-pdc"
+											"' -Instance ", {
+												"Ref": "VMNamePrefix"
+											},
+											"-0"
 										]
 									]
 								},
@@ -136,7 +180,7 @@
 								"command": {
 									"Fn::Join": [
 										"", [
-											"powershell.exe -ExecutionPolicy Unrestricted -Command c:\\cfn\\scripts\\CreateADPDC.ps1",
+											"powershell.exe -ExecutionPolicy Unrestricted -Command c:\\cfn\\scripts\\ConfigureSiosVM0.ps1",
 											" -DomainName ", {
 												"Ref": "DomainName"
 											},
@@ -145,7 +189,18 @@
 											},
 											" -AdminPassword ", {
 												"Ref": "DomainAdminPassword"
-											}
+											},
+											" -LicenseKeyFtpURL ", {
+												"Ref": "LicenseKeyFtpURL"
+											},
+											" -ClusterName ", {
+												"Ref": "VMNamePrefix"
+											}, "-fc",
+											" -Nodes ", {
+												"Ref": "VMNamePrefix"
+											}, "-0,", {
+												"Ref": "VMNamePrefix"
+											}, "-1"
 										]
 									]
 								},
@@ -171,7 +226,7 @@
 					"AssociatePublicIpAddress": "true",
 					"DeviceIndex": "0",
 					"DeleteOnTermination": "true",
-					"PrivateIpAddress": "10.0.0.4",
+					"PrivateIpAddress": "10.0.0.5",
 					"SubnetId": {
 						"Ref": "SubnetId"
 					}
@@ -185,7 +240,7 @@
 							" --stack ", {
 								"Ref": "AWS::StackId"
 							},
-							" --resource ADPDC ",
+							" --resource SIOS0 ",
 							" --region ", {
 								"Ref": "AWS::Region"
 							}, "\n",
@@ -196,14 +251,20 @@
 				"BlockDeviceMappings": [{
 					"DeviceName": "/dev/sdc",
 					"VirtualName": "ephemeral0"
+				}, {
+					"DeviceName": "/dev/sda1",
+					"Ebs": {
+						"VolumeSize": "100",
+						"VolumeType": "gp2"
+					}
 				}]
 			}
 		}
 	},
 	"Outputs": {
-		"ADPDC": {
+		"SIOS0": {
 			"Value": {
-				"Ref": "ADPDC"
+				"Ref": "SIOS0"
 			}
 		}
 	}
