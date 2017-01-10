@@ -5,7 +5,8 @@
 		"SIOSVPC": {
 			"Type": "AWS::EC2::VPC",
 			"Properties": {
-				"CidrBlock": "10.0.0.0/16"
+				"CidrBlock": "10.0.0.0/16",
+				"EnableDnsSupport": "true"
 			}
 		},
 		"PublicSubnet": {
@@ -15,8 +16,7 @@
 				"VpcId": {
 					"Ref": "SIOSVPC"
 				},
-				"CidrBlock": "10.0.0.0/24",
-				"EnableDnsSupport": "true"
+				"CidrBlock": "10.0.0.0/24"
 			}
 		},
 		"InternetGateway": {
