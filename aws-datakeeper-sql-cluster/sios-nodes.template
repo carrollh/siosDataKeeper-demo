@@ -255,14 +255,195 @@
 					}
 				},
 				"BlockDeviceMappings": [{
-					"DeviceName": "/dev/sdc",
-					"VirtualName": "ephemeral0"
-				}, {
 					"DeviceName": "/dev/sda1",
+					"Ebs": {
+						"VolumeSize": "50",
+						"VolumeType": "gp2"
+					}
+				}, {
+					"DeviceName": "/dev/sdb",
 					"Ebs": {
 						"VolumeSize": "100",
 						"VolumeType": "gp2"
 					}
+				}, {
+					"DeviceName": "/dev/sdc",
+					"VirtualName": "ephemeral0"
+				}]
+			}
+		},
+		"SIOS1": {
+			"Type": "AWS::EC2::Instance",
+			"Metadata": {
+				"AWS::CloudFormation::Init": {
+					"configSets": {
+						"config": [
+							"setup",
+							"config",
+							"bootstrapDSC"
+						]
+					},
+					"setup": {
+						"sources": {
+							"C:\\Program Files\\WindowsPowerShell\\Modules\\cDisk": "http://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/cDisk.zip",
+							"C:\\Program Files\\WindowsPowerShell\\Modules\\xActiveDirectory": "http://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/xActiveDirectory.zip",
+							"C:\\Program Files\\WindowsPowerShell\\Modules\\xComputerManagement": "http://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/xComputerManagement.zip",
+							"C:\\Program Files\\WindowsPowerShell\\Modules\\xDataKeeper": "http://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/xDataKeeper.zip",
+							"C:\\Program Files\\WindowsPowerShell\\Modules\\xDisk": "http://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/xDisk.zip",
+							"C:\\Program Files\\WindowsPowerShell\\Modules\\xNetworking": "http://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/xNetworking.zip",
+							"C:\\cfn\\scripts\\": "http://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/scripts.zip",
+							"C:\\Windows\\Temp\\": "http://s3.amazonaws.com/sios-datakeeper/Software/DK-Setup.zip",
+							"C:\\SQL2014\\": "http://s3.amazonaws.com/sios-datakeeper/Software/SQL2014.zip"
+						}
+					},
+					"config": {
+						"commands": {
+							"a-set-execution-policy": {
+								"command": "powershell.exe -command Set-ExecutionPolicy Unrestricted -Force",
+								"waitAfterCompletion": "0"
+							},
+							"b-reset-local-admin-password": {
+								"command": {
+									"Fn::Join": [
+										"", [
+											"powershell.exe -ExecutionPolicy Unrestricted -Command C:\\cfn\\scripts\\Reset-LocalAdminPassword.ps1 -password '", {
+												"Ref": "DomainAdminPassword"
+											},
+											"'"
+										]
+									]
+								},
+								"waitAfterCompletion": "0"
+							},
+							"c-reset-builtin-admin-username": {
+								"command": {
+									"Fn::Join": [
+										"", [
+											"powershell.exe -ExecutionPolicy Unrestricted -Command C:\\cfn\\scripts\\Reset-BuiltInAdminUsername.ps1 -username '", {
+												"Ref": "DomainAdminUsername"
+											},
+											"'"
+										]
+									]
+								},
+								"waitAfterCompletion": "0"
+							},
+							"d-rename-computer": {
+								"command": {
+									"Fn::Join": [
+										"", [
+											"powershell.exe Rename-Computer -NewName ", {
+												"Ref": "VMNamePrefix"
+											},
+											"-1",
+											" -Restart"
+										]
+									]
+								},
+								"waitAfterCompletion": "forever"
+							}
+						}
+					},
+					"bootstrapDSC": {
+						"commands": {
+							"a-create-cert": {
+								"command": {
+									"Fn::Join": [
+										"", [
+											"powershell.exe -ExecutionPolicy Unrestricted -command c:\\cfn\\scripts\\New-DSCCertificate.ps1 -Password '", {
+												"Ref": "DomainAdminPassword"
+											},
+											"' -Instance ", {
+												"Ref": "VMNamePrefix"
+											},
+											"-1"
+										]
+									]
+								},
+								"waitAfterCompletion": "0"
+							},
+							"b-run-dsc-config": {
+								"command": {
+									"Fn::Join": [
+										"", [
+											"powershell.exe -ExecutionPolicy Unrestricted -Command c:\\cfn\\scripts\\ConfigureSiosVM.ps1",
+											" -DomainName ", {
+												"Ref": "DomainName"
+											},
+											" -AdminUsername ", {
+												"Ref": "DomainAdminUsername"
+											},
+											" -AdminPassword ", {
+												"Ref": "DomainAdminPassword"
+											},
+											" -LicenseKeyFtpURL ", {
+												"Ref": "LicenseKeyFtpURL"
+											}, "-1"
+										]
+									]
+								},
+								"waitAfterCompletion": "forever"
+							}
+						}
+					}
+				}
+			},
+			"Properties": {
+				"ImageId": {
+					"Fn::FindInMap": ["RegionMap", {
+						"Ref": "AWS::Region"
+					}, "64"]
+				},
+				"InstanceType": {
+					"Ref": "InstanceType"
+				},
+				"NetworkInterfaces": [{
+					"GroupSet": [{
+						"Ref": "SecurityGroupId"
+					}],
+					"AssociatePublicIpAddress": "true",
+					"DeviceIndex": "0",
+					"DeleteOnTermination": "true",
+					"PrivateIpAddress": "10.0.0.6",
+					"SubnetId": {
+						"Ref": "SubnetId"
+					}
+				}],
+				"KeyName": {
+					"Ref": "KeyPairName"
+				},
+				"UserData": {
+					"Fn::Base64": {
+						"Fn::Join": ["", [
+							"<script>\n",
+							"cfn-init.exe -v ",
+							" --configsets config ",
+							" --stack ", {
+								"Ref": "AWS::StackId"
+							},
+							" --resource SIOS1 ",
+							" --region ", {
+								"Ref": "AWS::Region"
+							}, "\n",
+							"</script>\n"
+						]]
+					}
+				},
+				"BlockDeviceMappings": [{
+					"DeviceName": "/dev/sda1",
+					"Ebs": {
+						"VolumeSize": "50",
+						"VolumeType": "gp2"
+					}
+				}, {
+					"DeviceName": "/dev/sdb",
+					"Ebs": {
+						"VolumeSize": "100",
+						"VolumeType": "gp2"
+					}
+				}, {
+					"DeviceName": "/dev/sdc",
+					"VirtualName": "ephemeral0"
 				}]
 			}
 		}
@@ -271,6 +452,11 @@
 		"SIOS0": {
 			"Value": {
 				"Ref": "SIOS0"
+			}
+		},
+		"SIOS1": {
+			"Value": {
+				"Ref": "SIOS1"
 			}
 		}
 	}

@@ -131,7 +131,7 @@
 				}
 			}
 		},
-		"SIOS0Stack": {
+		"SIOSStack": {
 			"DependsOn": "ADStack",
 			"Type": "AWS::CloudFormation::Stack",
 			"Properties": {
