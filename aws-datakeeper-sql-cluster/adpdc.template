@@ -153,7 +153,21 @@
 									]
 								},
 								"waitAfterCompletion": "forever"
-							}
+							},
+							"c-signal-success": {
+                                "command": {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            "cfn-signal.exe -e 0 \"",
+                                            {
+                                                "Ref": "ADPDCWaitHandle"
+                                            },
+                                            "\""
+                                        ]
+                                    ]
+                                }
+                            }
 						}
 					}
 				}
@@ -204,7 +218,20 @@
 					"VirtualName": "ephemeral0"
 				}]
 			}
-		}
+		},
+		"ADPDCWaitCondition": {
+            "Type": "AWS::CloudFormation::WaitCondition",
+            "DependsOn": "ADPDC",
+            "Properties": {
+                "Handle": {
+                    "Ref": "ADPDCWaitHandle"
+                },
+                "Timeout": "3600"
+            }
+        },
+        "ADPDCWaitHandle": {
+            "Type": "AWS::CloudFormation::WaitConditionHandle"
+        }
 	},
 	"Outputs": {
 		"ADPDC": {
