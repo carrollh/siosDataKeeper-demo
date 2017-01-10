@@ -8,6 +8,9 @@
 		}
 	},
 	"Parameters": {
+		"KeyPairName": {
+			"Type": "AWS::EC2::KeyPair::KeyName"
+		},
 		"InstanceType": {
 			"AllowedValues": [
 				"t2.small",
@@ -176,6 +179,9 @@
 						"Ref": "SubnetId"
 					}
 				}],
+				"KeyName": {
+					"Ref": "KeyPairName"
+				},
 				"UserData": {
 					"Fn::Base64": {
 						"Fn::Join": ["", [

@@ -1,6 +1,9 @@
 {
 	"AWSTemplateFormatVersion": "2010-09-09",
 	"Parameters": {
+		"KeyPairName": {
+			"Type": "AWS::EC2::KeyPair::KeyName"
+		},
 		"LicenseKeyFtpURL": {
 			"Type": "String"
 		},
@@ -104,6 +107,9 @@
 			"Properties": {
 				"TemplateURL": "https://s3.amazonaws.com/sios-datakeeper/CloudFormation/Templates/adpdc.template",
 				"Parameters": {
+					"KeyPairName": {
+						"Ref": "KeyPairName"
+					},
 					"InstanceType": {
 						"Ref": "ADVMType"
 					},
@@ -131,6 +137,9 @@
 			"Properties": {
 				"TemplateURL": "https://s3.amazonaws.com/sios-datakeeper/CloudFormation/Templates/sios-nodes.template",
 				"Parameters": {
+					"KeyPairName": {
+						"Ref": "KeyPairName"
+					},
 					"InstanceType": {
 						"Ref": "SQLVMType"
 					},
