@@ -4,6 +4,11 @@
 		"KeyPairName": {
 			"Type": "AWS::EC2::KeyPair::KeyName"
 		},
+		"AvailabilityZone": {
+			"Description": "List of Availability Zones to use for the subnets in the VPC. Note: The logical order is preserved and only 2 AZs are used for this deployment.",
+			"Type": "AWS::EC2::AvailabilityZone::Name",
+			"Default": "us-east-1"
+		},
 		"LicenseKeyFtpURL": {
 			"Type": "String"
 		},
@@ -98,7 +103,14 @@
 			"Type": "AWS::CloudFormation::Stack",
 			"Properties": {
 				"TemplateURL": "https://s3.amazonaws.com/sios-datakeeper/CloudFormation/Templates/sios-vpc.template",
-				"Parameters": {}
+				"Parameters": {
+					"AvailabilityZone": {
+						"Ref": "AvailabilityZone"
+					},
+					"VPCCIDR": "10.0.0.0/16",
+					"PublicSubnetCIDR": "10.0.128.0/20",
+					"PrivateSubnetCIDR": "10.0.0.0/24"
+				}
 			}
 		},
 		"ADStack": {
@@ -117,7 +129,7 @@
 						"Fn::GetAtt": ["VPCStack", "Outputs.InstanceSecurityGroupId"]
 					},
 					"SubnetId": {
-						"Fn::GetAtt": ["VPCStack", "Outputs.PublicSubnetId"]
+						"Fn::GetAtt": ["VPCStack", "Outputs.PrivateSubnetId"]
 					},
 					"DomainName": {
 						"Ref": "DomainName"
@@ -147,7 +159,7 @@
 						"Fn::GetAtt": ["VPCStack", "Outputs.InstanceSecurityGroupId"]
 					},
 					"SubnetId": {
-						"Fn::GetAtt": ["VPCStack", "Outputs.PublicSubnetId"]
+						"Fn::GetAtt": ["VPCStack", "Outputs.PrivateSubnetId"]
 					},
 					"DomainName": {
 						"Ref": "DomainName"
