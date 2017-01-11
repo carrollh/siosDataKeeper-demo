@@ -105,7 +105,7 @@
 			"DependsOn": "VPCStack",
 			"Type": "AWS::CloudFormation::Stack",
 			"Properties": {
-				"TemplateURL": "https://s3.amazonaws.com/sios-datakeeper/CloudFormation/Templates/adpdc.template",
+				"TemplateURL": "https://s3.amazonaws.com/sios-datakeeper/CloudFormation/Templates/sios-adpdc.template",
 				"Parameters": {
 					"KeyPairName": {
 						"Ref": "KeyPairName"
