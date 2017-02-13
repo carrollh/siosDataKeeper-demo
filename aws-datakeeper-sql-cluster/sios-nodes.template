@@ -2,8 +2,44 @@
 	"AWSTemplateFormatVersion": "2010-09-09",
 	"Mappings": {
 		"RegionMap": {
+			"ap-northeast-2": {
+				"64": "ami-673dec09"
+			},
+			"ap-south-1": {
+				"64": "ami-3c0b7a53"
+			},
+			"ap-southeast-1": {
+				"64": "ami-67318404"
+			},
+			"ap-southeast-2": {
+				"64": "ami-c1b0b7a2"
+			},
+			"ca-central-1": {
+				"64": "ami-55cf7231"
+			},
+			"eu-central-1": {
+				"64": "ami-c778b6a8"
+			},
+			"eu-west-1": {
+				"64": "ami-4feeb729"
+			},
+			"eu-west-2": {
+				"64": "ami-5c534638"
+			},
+			"sa-east-1": {
+				"64": "ami-ab0367c7"
+			},
 			"us-east-1": {
-				"64": "ami-21414f36"
+				"64": "ami-6abd427c"
+			},
+			"us-east-2": {
+				"64": "ami-d13015b4"
+			},
+			"us-west-1": {
+				"64": "ami-b45409d4"
+			},
+			"us-west-2": {
+				"64": "ami-f677cf96"
 			}
 		}
 	},
@@ -48,12 +84,27 @@
 		"SecurityGroupId": {
 			"Type": "AWS::EC2::SecurityGroup::Id"
 		},
-		"SubnetId": {
+		"PrivateSubnetId01": {
 			"Type": "AWS::EC2::Subnet::Id"
+		},
+		"PrivateSubnetId02": {
+			"Type": "AWS::EC2::Subnet::Id"
+		},
+		"Node0PrivateIP": {
+			"AllowedPattern": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$",
+			"Default": "10.0.0.5",
+			"Description": "Fixed private IP for the first Active Directory server located in Availability Zone 1",
+			"Type": "String"
+		},
+		"Node1PrivateIP": {
+			"AllowedPattern": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$",
+			"Default": "10.0.0.6",
+			"Description": "Fixed private IP for the first Active Directory server located in Availability Zone 1",
+			"Type": "String"
 		},
 		"DomainName": {
 			"AllowedPattern": "[a-zA-Z0-9]+\\..+",
-			"Default": "example.com",
+			"Default": "datakeeper.local",
 			"Description": "Fully qualified domain name (FQDN) of the forest root domain e.g. example.com",
 			"MaxLength": "25",
 			"MinLength": "3",
@@ -61,7 +112,7 @@
 		},
 		"DomainAdminUsername": {
 			"AllowedPattern": "[a-zA-Z0-9]*",
-			"Default": "StackAdmin",
+			"Default": "siosadmin",
 			"Description": "User name for the account that will be added as Domain Administrator. This is separate from the default \"Administrator\" account",
 			"MaxLength": "25",
 			"MinLength": "5",
@@ -69,6 +120,7 @@
 		},
 		"DomainAdminPassword": {
 			"AllowedPattern": "(?=^.{6,255}$)((?=.*\\d)(?=.*[A-Z])(?=.*[a-z])|(?=.*\\d)(?=.*[^A-Za-z0-9])(?=.*[a-z])|(?=.*[^A-Za-z0-9])(?=.*[A-Z])(?=.*[a-z])|(?=.*\\d)(?=.*[A-Z])(?=.*[^A-Za-z0-9]))^.*",
+			"Default": "SIOS!5105",
 			"Description": "Password for the Administrator user account. Must be at least 8 characters containing letters, numbers and symbols",
 			"MaxLength": "32",
 			"MinLength": "8",
@@ -105,12 +157,10 @@
 							"C:\\Program Files\\WindowsPowerShell\\Modules\\xActiveDirectory": "http://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/xActiveDirectory.zip",
 							"C:\\Program Files\\WindowsPowerShell\\Modules\\xComputerManagement": "http://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/xComputerManagement.zip",
 							"C:\\Program Files\\WindowsPowerShell\\Modules\\xDataKeeper": "http://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/xDataKeeper.zip",
-							"C:\\Program Files\\WindowsPowerShell\\Modules\\xFailoverCluster": "http://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/xFailoverCluster.zip",
+							"C:\\Program Files\\WindowsPowerShell\\Modules\\xFailOverCluster": "http://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/xFailOverCluster.zip",
 							"C:\\Program Files\\WindowsPowerShell\\Modules\\xDisk": "http://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/xDisk.zip",
 							"C:\\Program Files\\WindowsPowerShell\\Modules\\xNetworking": "http://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/xNetworking.zip",
-							"C:\\cfn\\scripts\\": "http://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/scripts.zip",
-							"C:\\Windows\\Temp\\": "http://s3.amazonaws.com/sios-datakeeper/Software/DK-Setup.zip",
-							"C:\\SQL2014\\": "http://s3.amazonaws.com/sios-datakeeper/Software/SQL2014.zip"
+							"C:\\cfn\\scripts\\": "http://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/scripts.zip"
 						}
 					},
 					"config": {
@@ -215,9 +265,12 @@
 			},
 			"Properties": {
 				"ImageId": {
-					"Fn::FindInMap": ["RegionMap", {
-						"Ref": "AWS::Region"
-					}, "64"]
+					"Fn::FindInMap": [
+						"RegionMap", {
+							"Ref": "AWS::Region"
+						},
+						"64"
+					]
 				},
 				"InstanceType": {
 					"Ref": "InstanceType"
@@ -229,9 +282,11 @@
 					"AssociatePublicIpAddress": "true",
 					"DeviceIndex": "0",
 					"DeleteOnTermination": "true",
-					"PrivateIpAddress": "10.0.0.5",
+					"PrivateIpAddress": {
+						"Ref": "Node0PrivateIP"
+					},
 					"SubnetId": {
-						"Ref": "SubnetId"
+						"Ref": "PrivateSubnetId01"
 					}
 				}],
 				"KeyName": {
@@ -291,9 +346,7 @@
 							"C:\\Program Files\\WindowsPowerShell\\Modules\\xDataKeeper": "http://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/xDataKeeper.zip",
 							"C:\\Program Files\\WindowsPowerShell\\Modules\\xDisk": "http://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/xDisk.zip",
 							"C:\\Program Files\\WindowsPowerShell\\Modules\\xNetworking": "http://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/xNetworking.zip",
-							"C:\\cfn\\scripts\\": "http://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/scripts.zip",
-							"C:\\Windows\\Temp\\": "http://s3.amazonaws.com/sios-datakeeper/Software/DK-Setup.zip",
-							"C:\\SQL2014\\": "http://s3.amazonaws.com/sios-datakeeper/Software/SQL2014.zip"
+							"C:\\cfn\\scripts\\": "http://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/scripts.zip"
 						}
 					},
 					"config": {
@@ -378,7 +431,7 @@
 											},
 											" -LicenseKeyFtpURL ", {
 												"Ref": "LicenseKeyFtpURL"
-											}, "-1"
+											}
 										]
 									]
 								},
@@ -390,9 +443,12 @@
 			},
 			"Properties": {
 				"ImageId": {
-					"Fn::FindInMap": ["RegionMap", {
-						"Ref": "AWS::Region"
-					}, "64"]
+					"Fn::FindInMap": [
+						"RegionMap", {
+							"Ref": "AWS::Region"
+						},
+						"64"
+					]
 				},
 				"InstanceType": {
 					"Ref": "InstanceType"
@@ -404,9 +460,11 @@
 					"AssociatePublicIpAddress": "true",
 					"DeviceIndex": "0",
 					"DeleteOnTermination": "true",
-					"PrivateIpAddress": "10.0.0.6",
+					"PrivateIpAddress": {
+						"Ref": "Node1PrivateIP"
+					},
 					"SubnetId": {
-						"Ref": "SubnetId"
+						"Ref": "PrivateSubnetId02"
 					}
 				}],
 				"KeyName": {

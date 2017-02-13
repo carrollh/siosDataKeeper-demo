@@ -2,8 +2,8 @@
 	"AWSTemplateFormatVersion": "2010-09-09",
 	"Mappings": {
 		"RegionMap": {
-			"us-east-1": {
-				"64": "ami-21414f36"
+			"us-west-1": {
+				"64": "ami-98fcaef8"
 			}
 		}
 	},
@@ -195,15 +195,7 @@
 							" --region ", {
 								"Ref": "AWS::Region"
 							}, "\n",
-
-							"cfn-signal -e 0 --stack ", {
-								"Ref": "AWS::StackName"
-							},
-							" --resource ADPDC ",
-							" --region ", {
-								"Ref": "AWS::Region"
-							}, "\n",
-							"</script>"
+							"</script>\n"
 						]]
 					}
 				},
@@ -211,11 +203,6 @@
 					"DeviceName": "/dev/sdc",
 					"VirtualName": "ephemeral0"
 				}]
-			},
-			"CreationPolicy": {
-				"ResourceSignal": {
-					"Timeout": "PT45M"
-				}
 			}
 		}
 	},
