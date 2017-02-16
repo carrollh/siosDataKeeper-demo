@@ -1,10 +1,74 @@
 {
 	"AWSTemplateFormatVersion": "2010-09-09",
-	"Description": "(0003) - This template deploys two Windows Server Failover Clustering (WSFC) and SQL Server 2012 AlwaysOn Availability Group nodes. This template is intended to be installed into an existing VPC that was built using the sample reference architecture titled: \"Implementing Active Directory Domain Services in the AWS Cloud\" **WARNING** This template creates Amazon EC2 Windows instance and related resources. You will be billed for the AWS resources used if you create a stack from this template.",
+	"Description": "This template deploys two SIOS DataKeeper Cluster Edition nodes running on Microsoft Windows Server 2012 R2. This template also installs and configures MS SQL Server 2014 SP1 Evaluation Edition. A license will be required to fully active SQL Server 2014. **WARNING** This template creates Amazon EC2 Windows instance and related resources. You will be billed for the AWS resources used if you create a stack from this template.",
+	"Metadata": {
+		"AWS::CloudFormation::Interface": {
+			"ParameterGroups": [{
+				"Label": {
+					"default": "VPC Network Configuration"
+				},
+				"Parameters": [
+					"VPCID",
+					"VPCCIDR",
+					"PrivateSubnet1AId",
+					"PrivateSubnet1ACIDR",
+					"PrivateSubnet2AId",
+					"PrivateSubnet2ACIDR",
+					"PublicSubnet1CIDR",
+					"PublicSubnet2CIDR"
+				]
+			}, {
+				"Label": {
+					"default": "Active Directory Configuration"
+				},
+				"Parameters": [
+					"FullyQualifiedDomainName",
+					"DomainNetBIOSName",
+					"AD1ServerNetBIOSName",
+					"AD1ServerPrivateIp",
+					"AD2ServerNetBIOSName",
+					"AD2ServerPrivateIp",
+					"DomainAdminUser",
+					"DomainAdminPassword"
+				]
+			}, {
+				"Label": {
+					"default": "Replication Node General Configuration"
+				},
+				"Parameters": [
+					"KeyPairName",
+					"LicenseKeyFtpURL",
+					"WSFCNode1InstanceType",
+					"WSFCNode1NetBIOSName",
+					"WSFCNode2InstanceType",
+					"WSFCNode2NetBIOSName",
+					"SQLServiceAccount",
+					"SQLServiceAccountPassword"
+				]
+			}, {
+				"Label": {
+					"default": "Replication Node Network Configuration"
+				},
+				"Parameters": [
+					"DomainMemberSGID",
+					"WSFCNode1PrivateIp",
+					"WSFCNode1ClusterPrivateIp",
+					"WSFCNode1SQLServerPrivateIp",
+					"WSFCNode2PrivateIp",
+					"WSFCNode2ClusterPrivateIp",
+					"WSFCNode2SQLServerPrivateIp"
+				]
+			}]
+		}
+	},
 	"Parameters": {
+		"LicenseKeyFtpURL": {
+			"Type": "String"
+		},
 		"KeyPairName": {
 			"Description": "Public/private key pairs allow you to securely connect to your instance after it launches",
-			"Type": "AWS::EC2::KeyPair::KeyName"
+			"Type": "AWS::EC2::KeyPair::KeyName",
+			"Default": "http://ftp.us.sios.com/pickup/EVAL_Joe_User_JoeUser_2017-02-05_DKCE/"
 		},
 		"WSFCNode1InstanceType": {
 			"Description": "Amazon EC2 instance type for the 1st WSFC Node",
@@ -58,7 +122,7 @@
 			],
 			"ConstraintDescription": "Only large+ instance sizes with non-EBS backed instance storage allowed."
 		},
-		"DomainDNSName": {
+		"FullyQualifiedDomainName": {
 			"Description": "Fully qualified domain name (FQDN) of the forest root domain e.g. corp.example.com",
 			"Type": "String",
 			"Default": "datakeeper.local",
@@ -90,7 +154,7 @@
 			"MaxLength": "15",
 			"AllowedPattern": "[a-zA-Z0-9]+"
 		},
-		"ADServerNetBIOSName1": {
+		"AD1ServerNetBIOSName": {
 			"Description": "NetBIOS name of the existing Domain Controller in AZ1",
 			"Type": "String",
 			"Default": "DC1",
@@ -98,7 +162,7 @@
 			"MaxLength": "15",
 			"AllowedPattern": "[a-zA-Z0-9]+"
 		},
-		"ADServerNetBIOSName2": {
+		"AD2ServerNetBIOSName": {
 			"Description": "NetBIOS name of the existing Domain Controller in AZ2",
 			"Type": "String",
 			"Default": "DC2",
@@ -140,85 +204,45 @@
 			"AllowedPattern": "(?=^.{6,255}$)((?=.*\\d)(?=.*[A-Z])(?=.*[a-z])|(?=.*\\d)(?=.*[^A-Za-z0-9])(?=.*[a-z])|(?=.*[^A-Za-z0-9])(?=.*[A-Z])(?=.*[a-z])|(?=.*\\d)(?=.*[A-Z])(?=.*[^A-Za-z0-9]))^.*",
 			"NoEcho": "true"
 		},
-		"ADServer1PrivateIp": {
+		"AD1ServerPrivateIp": {
 			"Description": "Fixed private IP for the first existing Active Directory server located in AZ1",
 			"Type": "String",
 			"Default": "10.0.0.10"
 		},
-		"ADServer2PrivateIp": {
+		"AD2ServerPrivateIp": {
 			"Description": "Fixed private IP for the second existing Active Directory serverr located in AZ2",
 			"Type": "String",
 			"Default": "10.0.32.10"
-		},
-		"ADServer3PrivateIp": {
-			"Description": "Fixed private IP for the third existing Active Directory server located in AZ3",
-			"Type": "String",
-			"Default": "10.0.64.10"
-		},
-		"ADServer4PrivateIp": {
-			"Description": "Fixed private IP for the fourth existing Active Directory server located in AZ4",
-			"Type": "String",
-			"Default": "10.0.96.10"
 		},
 		"WSFCNode1PrivateIp": {
 			"Description": "Primary private IP for the 1st WSFC Node located in AZ1",
 			"Type": "String",
 			"Default": "10.0.0.100"
 		},
-		"WSFCNode1PrivateIp2": {
+		"WSFCNode1ClusterPrivateIp": {
 			"Description": "Secondary private IP for WSFC cluster on 1st WSFC Node",
 			"Type": "String",
 			"Default": "10.0.0.101"
 		},
-		"WSFCNode1PrivateIp3": {
-			"Description": "Third private IP for Availability Group Listner on 1st WSFC Node",
+		"WSFCNode1SQLServerPrivateIp": {
+			"Description": "Secondary private IP for WSFC cluster on 2nd WSFC Node",
 			"Type": "String",
-			"Default": "10.0.0.102"
+			"Default": "10.0.0.200"
 		},
 		"WSFCNode2PrivateIp": {
 			"Description": "Primary private IP for the 2nd WSFC Node located in AZ2",
 			"Type": "String",
 			"Default": "10.0.32.100"
 		},
-		"WSFCNode2PrivateIp2": {
+		"WSFCNode2ClusterPrivateIp": {
 			"Description": "Secondary private IP for WSFC cluster on 2nd WSFC Node",
 			"Type": "String",
 			"Default": "10.0.32.101"
 		},
-		"WSFCNode2PrivateIp3": {
-			"Description": "Third private IP for Availability Group Listner on 2nd WSFC Node",
+		"WSFCNode2SQLServerPrivateIp": {
+			"Description": "Secondary private IP for WSFC cluster on 2nd WSFC Node",
 			"Type": "String",
-			"Default": "10.0.32.102"
-		},
-		"WSFCNode3PrivateIp": {
-			"Description": "Primary private IP for the 3rd WSFC Node located in AZ3",
-			"Type": "String",
-			"Default": "10.0.64.100"
-		},
-		"WSFCNode3PrivateIp2": {
-			"Description": "Secondary private IP for WSFC cluster on 3rd WSFC Node",
-			"Type": "String",
-			"Default": "10.0.64.101"
-		},
-		"WSFCNode3PrivateIp3": {
-			"Description": "Third private IP for Availability Group Listner on 3rd WSFC Node",
-			"Type": "String",
-			"Default": "10.0.64.102"
-		},
-		"WSFCNode4PrivateIp": {
-			"Description": "Primary private IP for the 4th WSFC Node located in AZ4",
-			"Type": "String",
-			"Default": "10.0.96.100"
-		},
-		"WSFCNode4PrivateIp2": {
-			"Description": "Secondary private IP for WSFC cluster on 4th WSFC Node",
-			"Type": "String",
-			"Default": "10.0.96.101"
-		},
-		"WSFCNode4PrivateIp3": {
-			"Description": "Third private IP for Availability Group Listner on 4th WSFC Node",
-			"Type": "String",
-			"Default": "10.0.96.102"
+			"Default": "10.0.32.200"
 		},
 		"DomainMemberSGID": {
 			"Description": "ID of the Domain Member Security Group (e.g., sg-7f16e910)",
@@ -236,14 +260,6 @@
 			"Description": "ID of the subnet you want to provision the second WSFC node into (e.g., subnet-e3246d8e)",
 			"Type": "AWS::EC2::Subnet::Id"
 		},
-		"PrivateSubnet3AId": {
-			"Description": "ID of the subnet you want to provision the third WSFC node into (e.g., subnet-a0246dcd)",
-			"Type": "AWS::EC2::Subnet::Id"
-		},
-		"PrivateSubnet4AId": {
-			"Description": "ID of the subnet you want to provision the fourth WSFC node into (e.g., subnet-a0246dcd)",
-			"Type": "AWS::EC2::Subnet::Id"
-		},
 		"PrivateSubnet1ACIDR": {
 			"Description": "CIDR Block for Private Subnet located in AZ1",
 			"Type": "String",
@@ -254,18 +270,6 @@
 			"Description": "CIDR Block for Private Subnet located in AZ2",
 			"Type": "String",
 			"Default": "10.0.32.0/19",
-			"AllowedPattern": "[a-zA-Z0-9]+\\..+"
-		},
-		"PrivateSubnet3ACIDR": {
-			"Description": "CIDR Block for Private Subnet located in AZ3",
-			"Type": "String",
-			"Default": "10.0.64.0/19",
-			"AllowedPattern": "[a-zA-Z0-9]+\\..+"
-		},
-		"PrivateSubnet4ACIDR": {
-			"Description": "CIDR Block for Private Subnet located in AZ4",
-			"Type": "String",
-			"Default": "10.0.96.0/19",
 			"AllowedPattern": "[a-zA-Z0-9]+\\..+"
 		},
 		"VPCCIDR": {
@@ -322,19 +326,6 @@
 		}
 	},
 	"Resources": {
-		"WSFCNode1WaitCondition": {
-			"Type": "AWS::CloudFormation::WaitCondition",
-			"DependsOn": "WSFCNode1",
-			"Properties": {
-				"Handle": {
-					"Ref": "WSFCNode1WaitHandle"
-				},
-				"Timeout": "5400"
-			}
-		},
-		"WSFCNode1WaitHandle": {
-			"Type": "AWS::CloudFormation::WaitConditionHandle"
-		},
 		"WSFCNode2WaitCondition": {
 			"Type": "AWS::CloudFormation::WaitCondition",
 			"DependsOn": "WSFCNode2",
@@ -359,10 +350,20 @@
 							"join",
 							"createSqlAccount",
 							"installsql",
-							"finalize"
+							"bootstrapDSC"
 						]
 					},
 					"CFNsetup": {
+						"sources": {
+							"C:\\Program Files\\WindowsPowerShell\\Modules\\cDisk": "http://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/cDisk.zip",
+							"C:\\Program Files\\WindowsPowerShell\\Modules\\xActiveDirectory": "http://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/xActiveDirectory.zip",
+							"C:\\Program Files\\WindowsPowerShell\\Modules\\xComputerManagement": "http://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/xComputerManagement.zip",
+							"C:\\Program Files\\WindowsPowerShell\\Modules\\xDataKeeper": "http://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/xDataKeeper.zip",
+							"C:\\Program Files\\WindowsPowerShell\\Modules\\xFailOverCluster": "http://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/xFailOverCluster.zip",
+							"C:\\Program Files\\WindowsPowerShell\\Modules\\xDisk": "http://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/xDisk.zip",
+							"C:\\Program Files\\WindowsPowerShell\\Modules\\xNetworking": "http://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/xNetworking.zip",
+							"C:\\cfn\\scripts\\": "http://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/scripts.zip"
+						},
 						"files": {
 							"c:\\cfn\\cfn-hup.conf": {
 								"content": {
@@ -452,10 +453,10 @@
 											"powershell.exe -Command ",
 											"\"",
 											"Get-NetAdapter | Set-DnsClientServerAddress -ServerAddresses ", {
-												"Ref": "ADServer1PrivateIp"
+												"Ref": "AD1ServerPrivateIp"
 											},
 											",", {
-												"Ref": "ADServer2PrivateIp"
+												"Ref": "AD2ServerPrivateIp"
 											},
 											"\""
 										]
@@ -470,7 +471,7 @@
 											"powershell.exe ",
 											"-Command \"",
 											"Add-Computer -DomainName ", {
-												"Ref": "DomainDNSName"
+												"Ref": "FullyQualifiedDomainName"
 											},
 											" -Credential ",
 											"(New-Object System.Management.Automation.PSCredential('", {
@@ -508,7 +509,7 @@
 												"Ref": "SQLServiceAccount"
 											},
 											"@", {
-												"Ref": "DomainDNSName"
+												"Ref": "FullyQualifiedDomainName"
 											},
 											" ",
 											"-AccountPassword (ConvertTo-SecureString ", {
@@ -517,7 +518,7 @@
 											" -AsPlainText -Force) ",
 											"-Enabled $true ",
 											"-PasswordNeverExpires $true -EA 0} -ComputerName ", {
-												"Ref": "ADServerNetBIOSName1"
+												"Ref": "AD1ServerNetBIOSName"
 											},
 											" -Credential ",
 											"(New-Object System.Management.Automation.PSCredential('", {
@@ -580,6 +581,16 @@
 											"$de = [ADSI]\"WinNT://$ServerName/$GroupName,group\"",
 											"\n",
 											"$de.psbase.Invoke(\"Add\",([ADSI]\"WinNT://$DomainNetBIOSName/$UserName\").path)",
+											"\n"
+										]
+									]
+								}
+							},
+							"C:\\cfn\\scripts\\InstallSQL.bat": {
+								"content": {
+									"Fn::Join": [
+										"", [
+											"C:\\SQL2014\\setup /ACTION=\"InstallFailoverCluster\" /SkipRules=Cluster_VerifyForErrors Cluster_IsWMIServiceOperational /ENU=\"True\" /Q /UpdateEnabled=\"False\" /ERRORREPORTING=\"False\" /USEMICROSOFTUPDATE=\"False\" /FEATURES=SQLENGINE,REPLICATION,FULLTEXT,DQ,SSMS,ADV_SSMS /UpdateSource=\"MU\" /HELP=\"False\" /INDICATEPROGRESS=\"False\" /X86=\"False\" /INSTALLSHAREDDIR=\"C:\\Program Files\\Microsoft SQL Server\" /INSTALLSHAREDWOWDIR=\"C:\\Program Files (x86)\\Microsoft SQL Server\" /INSTANCENAME=\"MSSQLSERVER\" /SQMREPORTING=\"False\" /INSTANCEID=\"MSSQLSERVER\" /INSTANCEDIR=\"C:\\Program Files\\Microsoft SQL Server\" /FAILOVERCLUSTERDISKS=\"DataKeeper Volume D\" /FAILOVERCLUSTERGROUP=\"SQL Server (MSSQLSERVER)\" /FAILOVERCLUSTERIPADDRESSES=\"IPv4;10.0.0.200;Cluster Network 1;255.255.224.0\" /FAILOVERCLUSTERNETWORKNAME=\"siossqlserver\" /AGTSVCACCOUNT=\"datakeeper\\siosadmin\" /COMMFABRICPORT=\"0\" /COMMFABRICNETWORKLEVEL=\"0\" /COMMFABRICENCRYPTION=\"0\" /MATRIXCMBRICKCOMMPORT=\"0\" /FILESTREAMLEVEL=\"0\" /SQLCOLLATION=\"SQL_Latin1_General_CP1_CI_AS\" /SQLSVCACCOUNT=\"datakeeper\\siosadmin\" /SQLSYSADMINACCOUNTS=\"datakeeper\\siosadmin\" /INSTALLSQLDATADIR=\"D:\" /SQLTEMPDBDIR=\"C:\\TempDB\" /FTSVCACCOUNT=\"NT Service\\MSSQLFDLauncher\" /SQLSVCPASSWORD=\"SIOS!5105\" /AGTSVCPASSWORD=\"SIOS!5105\" /IAcceptSQLServerLicenseTerms ",
 											"\n"
 										]
 									]
@@ -663,7 +674,7 @@
 												"Ref": "DomainAdminUser"
 											},
 											"@", {
-												"Ref": "DomainDNSName"
+												"Ref": "FullyQualifiedDomainName"
 											},
 											" | out-null",
 											";",
@@ -692,7 +703,50 @@
 										"", [
 											"powershell.exe -Command ",
 											"\"Invoke-Command -Scriptblock{ repadmin /syncall /A /e /P } -ComputerName ", {
-												"Ref": "ADServerNetBIOSName1"
+												"Ref": "AD1ServerNetBIOSName"
+											},
+											" -Credential ",
+											"(New-Object System.Management.Automation.PSCredential('", {
+												"Ref": "DomainNetBIOSName"
+											},
+											"\\", {
+												"Ref": "DomainAdminUser"
+											},
+											"',",
+											"(ConvertTo-SecureString ", {
+												"Ref": "DomainAdminPassword"
+											},
+											" -AsPlainText -Force))) ",
+											"\""
+										]
+									]
+								},
+								"waitAfterCompletion": "0"
+							}
+						}
+					},
+					"bootstrapDSC": {
+						"commands": {
+							"a-create-cert": {
+								"command": {
+									"Fn::Join": [
+										"", [
+											"powershell.exe -ExecutionPolicy Unrestricted -command c:\\cfn\\scripts\\New-DSCCertificate.ps1 -Password '", {
+												"Ref": "DomainAdminPassword"
+											},
+											"' -Instance WSFCNode1"
+										]
+									]
+								},
+								"waitAfterCompletion": "60"
+							},
+							"b-create-dns-entry-dc2": {
+								"command": {
+									"Fn::Join": [
+										"", [
+											"powershell.exe -Command ",
+											"\"Invoke-Command -Scriptblock{ Add-DnsServerResourceRecordA -Name WSFCNode2 -ZoneName datakeeper.local -AllowUpdateAny -IPv4Address 10.0.32.100 } -ComputerName ", {
+												"Ref": "AD1ServerNetBIOSName"
 											},
 											" -Credential ",
 											"(New-Object System.Management.Automation.PSCredential('", {
@@ -712,7 +766,75 @@
 								},
 								"waitAfterCompletion": "0"
 							},
-							"j-cleanup-registry": {
+							"c-run-dsc-config": {
+								"command": {
+									"Fn::Join": [
+										"", [
+											"powershell.exe -ExecutionPolicy Unrestricted -Command c:\\cfn\\scripts\\ConfigureWSFCNode1.ps1",
+											" -DomainName ", {
+												"Ref": "FullyQualifiedDomainName"
+											},
+											" -AdminUsername ", {
+												"Ref": "DomainAdminUser"
+											},
+											" -AdminPassword ", {
+												"Ref": "DomainAdminPassword"
+											},
+											" -LicenseKeyFtpURL ", {
+												"Ref": "LicenseKeyFtpURL"
+											},
+											" -ClusterName WSFCluster1",
+											" -Nodes WSFCNode1,WSFCNode2"
+										]
+									]
+								},
+								"waitAfterCompletion": "10"
+							},
+							"d-create-mirror": {
+								"command": {
+									"Fn::Join": [
+										"", [
+											"\"%extmirrbase%\"\\emcmd 10.0.0.100 CREATEMIRROR D 10.0.32.100 S",
+											"\n"
+										]
+									]
+								},
+								"waitAfterCompletion": "10"
+							},
+							"e-register-cluster-volume": {
+								"command": {
+									"Fn::Join": [
+										"", [
+											"\"%extmirrbase%\"\\emcmd . REGISTERCLUSTERVOLUME D",
+											"\n"
+										]
+									]
+								},
+								"waitAfterCompletion": "10"
+							},
+							"f-set-startup-script": {
+								"command": {
+									"Fn::Join": [
+										"", [
+											"powershell.exe -Command ",
+											"\"New-ItemProperty -Path HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunOnce -Name InstallSQL -Value C:\\cfn\\scripts\\InstallSQL.bat",
+											"\""
+										]
+									]
+								},
+								"waitAfterCompletion": "0"
+							},
+							"g-reboot": {
+								"command": {
+									"Fn::Join": [
+										"", [
+											"powershell.exe -Command Restart-Computer -Force"
+										]
+									]
+								},
+								"waitAfterCompletion": "forever"
+							},
+							"h-cleanup-registry": {
 								"command": {
 									"Fn::Join": [
 										"", [
@@ -727,22 +849,6 @@
 									]
 								},
 								"waitAfterCompletion": "60"
-							}
-						}
-					},
-					"finalize": {
-						"commands": {
-							"1-signal-success": {
-								"command": {
-									"Fn::Join": [
-										"", [
-											"cfn-signal.exe -e 0 \"", {
-												"Ref": "WSFCNode1WaitHandle"
-											},
-											"\""
-										]
-									]
-								}
 							}
 						}
 					}
@@ -775,12 +881,7 @@
 					}, {
 						"Primary": "false",
 						"PrivateIpAddress": {
-							"Ref": "WSFCNode1PrivateIp2"
-						}
-					}, {
-						"Primary": "false",
-						"PrivateIpAddress": {
-							"Ref": "WSFCNode1PrivateIp3"
+							"Ref": "WSFCNode1ClusterPrivateIp"
 						}
 					}],
 					"GroupSet": [{
@@ -848,7 +949,6 @@
 		},
 		"WSFCNode2": {
 			"Type": "AWS::EC2::Instance",
-			"DependsOn": "WSFCNode1WaitCondition",
 			"Metadata": {
 				"AWS::CloudFormation::Init": {
 					"configSets": {
@@ -858,10 +958,21 @@
 							"join",
 							"installsql",
 							"configsql",
+							"bootstrapDSC",
 							"finalize"
 						]
 					},
 					"CFNsetup": {
+						"sources": {
+							"C:\\Program Files\\WindowsPowerShell\\Modules\\cDisk": "http://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/cDisk.zip",
+							"C:\\Program Files\\WindowsPowerShell\\Modules\\xActiveDirectory": "http://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/xActiveDirectory.zip",
+							"C:\\Program Files\\WindowsPowerShell\\Modules\\xComputerManagement": "http://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/xComputerManagement.zip",
+							"C:\\Program Files\\WindowsPowerShell\\Modules\\xDataKeeper": "http://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/xDataKeeper.zip",
+							"C:\\Program Files\\WindowsPowerShell\\Modules\\xFailOverCluster": "http://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/xFailOverCluster.zip",
+							"C:\\Program Files\\WindowsPowerShell\\Modules\\xDisk": "http://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/xDisk.zip",
+							"C:\\Program Files\\WindowsPowerShell\\Modules\\xNetworking": "http://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/xNetworking.zip",
+							"C:\\cfn\\scripts\\": "http://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/scripts.zip"
+						},
 						"files": {
 							"c:\\cfn\\cfn-hup.conf": {
 								"content": {
@@ -954,10 +1065,10 @@
 											"powershell.exe -Command ",
 											"\"",
 											"Get-NetAdapter | Set-DnsClientServerAddress -ServerAddresses ", {
-												"Ref": "ADServer2PrivateIp"
+												"Ref": "AD2ServerPrivateIp"
 											},
 											",", {
-												"Ref": "ADServer1PrivateIp"
+												"Ref": "AD1ServerPrivateIp"
 											},
 											"\""
 										]
@@ -972,7 +1083,7 @@
 											"powershell.exe ",
 											"-Command \"",
 											"Add-Computer -DomainName ", {
-												"Ref": "DomainDNSName"
+												"Ref": "FullyQualifiedDomainName"
 											},
 											" -Credential ",
 											"(New-Object System.Management.Automation.PSCredential('", {
@@ -1092,7 +1203,7 @@
 												"Ref": "DomainAdminUser"
 											},
 											"@", {
-												"Ref": "DomainDNSName"
+												"Ref": "FullyQualifiedDomainName"
 											},
 											";",
 											"New-ItemProperty -Path 'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon' -Name DefaultPassword -Value ", {
@@ -1129,10 +1240,10 @@
 												"Ref": "WSFCNode2NetBIOSName"
 											},
 											" -StaticAddress ", {
-												"Ref": "WSFCNode1PrivateIp2"
+												"Ref": "WSFCNode1ClusterPrivateIp"
 											},
 											",", {
-												"Ref": "WSFCNode2PrivateIp2"
+												"Ref": "WSFCNode2ClusterPrivateIp"
 											},
 											"\n"
 										]
@@ -1151,7 +1262,7 @@
 										]
 									]
 								},
-								"waitAfterCompletion": "1500"
+								"waitAfterCompletion": "900"
 							},
 							"b-reboot": {
 								"command": {
@@ -1169,7 +1280,7 @@
 										"", [
 											"powershell.exe -Command ",
 											"\"Invoke-Command -Scriptblock{ repadmin /syncall /A /e /P } -ComputerName ", {
-												"Ref": "ADServerNetBIOSName2"
+												"Ref": "AD2ServerNetBIOSName"
 											},
 											" -Credential ",
 											"(New-Object System.Management.Automation.PSCredential('", {
@@ -1196,7 +1307,7 @@
 											"powershell.exe -Command ",
 											"\"",
 											"Invoke-Command -ScriptBlock {New-Item -ItemType directory -Path c:\\ -Name witness} -ComputerName ", {
-												"Ref": "ADServerNetBIOSName1"
+												"Ref": "AD1ServerNetBIOSName"
 											},
 											" -Credential ",
 											"(New-Object System.Management.Automation.PSCredential('", {
@@ -1223,7 +1334,7 @@
 											"powershell.exe -Command ",
 											"\"",
 											"Invoke-Command -ScriptBlock { New-SmbShare -Name witness -Path c:\\witness -FullAccess everyone } -ComputerName ", {
-												"Ref": "ADServerNetBIOSName1"
+												"Ref": "AD1ServerNetBIOSName"
 											},
 											" -Credential ",
 											"(New-Object System.Management.Automation.PSCredential('", {
@@ -1258,7 +1369,7 @@
 											"    $acl.AddAccessRule($rule);",
 											"    Set-Acl c:\\witness $acl",
 											"} -ComputerName ", {
-												"Ref": "ADServerNetBIOSName1"
+												"Ref": "AD1ServerNetBIOSName"
 											},
 											" -Credential ",
 											"(New-Object System.Management.Automation.PSCredential('", {
@@ -1285,7 +1396,7 @@
 											"powershell.exe -Command ",
 											"\"Invoke-Command -Scriptblock{ ",
 											"Set-ClusterQuorum -NodeAndFileShareMajority \\\\", {
-												"Ref": "ADServerNetBIOSName1"
+												"Ref": "AD1ServerNetBIOSName"
 											},
 											"\\witness",
 											" } -ComputerName ", {
@@ -1308,6 +1419,46 @@
 									]
 								},
 								"waitAfterCompletion": "0"
+							}
+						}
+					},
+					"bootstrapDSC": {
+						"commands": {
+							"a-create-cert": {
+								"command": {
+									"Fn::Join": [
+										"", [
+											"powershell.exe -ExecutionPolicy Unrestricted -command c:\\cfn\\scripts\\New-DSCCertificate.ps1 -Password '", {
+												"Ref": "DomainAdminPassword"
+											},
+											"' -Instance WSFCNode2"
+										]
+									]
+								},
+								"waitAfterCompletion": "0"
+							},
+							"b-run-dsc-config": {
+								"command": {
+									"Fn::Join": [
+										"", [
+											"powershell.exe -ExecutionPolicy Unrestricted -Command c:\\cfn\\scripts\\ConfigureWSFCNode2.ps1",
+											" -DomainName ", {
+												"Ref": "FullyQualifiedDomainName"
+											},
+											" -AdminUsername ", {
+												"Ref": "DomainAdminUser"
+											},
+											" -AdminPassword ", {
+												"Ref": "DomainAdminPassword"
+											},
+											" -LicenseKeyFtpURL ", {
+												"Ref": "LicenseKeyFtpURL"
+											},
+											" -ClusterName WSFCluster1"
+										]
+									]
+								},
+								"waitAfterCompletion": "forever"
 							}
 						}
 					},
@@ -1372,12 +1523,7 @@
 					}, {
 						"Primary": "false",
 						"PrivateIpAddress": {
-							"Ref": "WSFCNode2PrivateIp2"
-						}
-					}, {
-						"Primary": "false",
-						"PrivateIpAddress": {
-							"Ref": "WSFCNode2PrivateIp3"
+							"Ref": "WSFCNode2ClusterPrivateIp"
 						}
 					}],
 					"GroupSet": [{
