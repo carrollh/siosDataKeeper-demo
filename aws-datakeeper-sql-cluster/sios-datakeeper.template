@@ -590,7 +590,34 @@
 								"content": {
 									"Fn::Join": [
 										"", [
-											"C:\\SQL2014\\setup /ACTION=\"InstallFailoverCluster\" /SkipRules=Cluster_VerifyForErrors Cluster_IsWMIServiceOperational /ENU=\"True\" /Q /UpdateEnabled=\"False\" /ERRORREPORTING=\"False\" /USEMICROSOFTUPDATE=\"False\" /FEATURES=SQLENGINE,REPLICATION,FULLTEXT,DQ,SSMS,ADV_SSMS /UpdateSource=\"MU\" /HELP=\"False\" /INDICATEPROGRESS=\"False\" /X86=\"False\" /INSTALLSHAREDDIR=\"C:\\Program Files\\Microsoft SQL Server\" /INSTALLSHAREDWOWDIR=\"C:\\Program Files (x86)\\Microsoft SQL Server\" /INSTANCENAME=\"MSSQLSERVER\" /SQMREPORTING=\"False\" /INSTANCEID=\"MSSQLSERVER\" /INSTANCEDIR=\"C:\\Program Files\\Microsoft SQL Server\" /FAILOVERCLUSTERDISKS=\"DataKeeper Volume D\" /FAILOVERCLUSTERGROUP=\"SQL Server (MSSQLSERVER)\" /FAILOVERCLUSTERIPADDRESSES=\"IPv4;10.0.0.200;Cluster Network 1;255.255.224.0\" /FAILOVERCLUSTERNETWORKNAME=\"siossqlserver\" /AGTSVCACCOUNT=\"datakeeper\\siosadmin\" /COMMFABRICPORT=\"0\" /COMMFABRICNETWORKLEVEL=\"0\" /COMMFABRICENCRYPTION=\"0\" /MATRIXCMBRICKCOMMPORT=\"0\" /FILESTREAMLEVEL=\"0\" /SQLCOLLATION=\"SQL_Latin1_General_CP1_CI_AS\" /SQLSVCACCOUNT=\"datakeeper\\siosadmin\" /SQLSYSADMINACCOUNTS=\"datakeeper\\siosadmin\" /INSTALLSQLDATADIR=\"D:\" /SQLTEMPDBDIR=\"C:\\TempDB\" /FTSVCACCOUNT=\"NT Service\\MSSQLFDLauncher\" /SQLSVCPASSWORD=\"SIOS!5105\" /AGTSVCPASSWORD=\"SIOS!5105\" /IAcceptSQLServerLicenseTerms ",
+											"C:\\SQL2014\\setup /ACTION=\"InstallFailoverCluster\" /SkipRules=Cluster_VerifyForErrors Cluster_IsWMIServiceOperational /ENU=\"True\" /Q /UpdateEnabled=\"False\" /ERRORREPORTING=\"False\" /USEMICROSOFTUPDATE=\"False\" /FEATURES=SQLENGINE,REPLICATION,FULLTEXT,DQ,SSMS,ADV_SSMS /UpdateSource=\"MU\" /HELP=\"False\" /INDICATEPROGRESS=\"False\" /X86=\"False\" /INSTALLSHAREDDIR=\"C:\\Program Files\\Microsoft SQL Server\" /INSTALLSHAREDWOWDIR=\"C:\\Program Files (x86)\\Microsoft SQL Server\" /INSTANCENAME=\"MSSQLSERVER\" /SQMREPORTING=\"False\" /INSTANCEID=\"MSSQLSERVER\" /INSTANCEDIR=\"C:\\Program Files\\Microsoft SQL Server\" /FAILOVERCLUSTERDISKS=\"DataKeeper Volume D\" /FAILOVERCLUSTERGROUP=\"SQL Server (MSSQLSERVER)\" /FAILOVERCLUSTERIPADDRESSES=\"IPv4;", {
+												"Ref": "WSFCNode1SQLServerPrivateIp"
+											},
+											";Cluster Network 1;255.255.224.0\" /FAILOVERCLUSTERNETWORKNAME=\"siossqlserver\" /AGTSVCACCOUNT=\"", {
+												"Ref": "DomainNetBIOSName"
+											},
+											"\\", {
+												"Ref": "DomainAdminUser"
+											},
+											"\" /COMMFABRICPORT=\"0\" /COMMFABRICNETWORKLEVEL=\"0\" /COMMFABRICENCRYPTION=\"0\" /MATRIXCMBRICKCOMMPORT=\"0\" /FILESTREAMLEVEL=\"0\" /SQLCOLLATION=\"SQL_Latin1_General_CP1_CI_AS\" /SQLSVCACCOUNT=\"", {
+												"Ref": "DomainNetBIOSName"
+											},
+											"\\", {
+												"Ref": "DomainAdminUser"
+											},
+											"\" /SQLSYSADMINACCOUNTS=\"", {
+												"Ref": "DomainNetBIOSName"
+											},
+											"\\", {
+												"Ref": "DomainAdminUser"
+											},
+											"\" /INSTALLSQLDATADIR=\"D:\" /SQLTEMPDBDIR=\"C:\\TempDB\" /FTSVCACCOUNT=\"NT Service\\MSSQLFDLauncher\" /SQLSVCPASSWORD=\"", {
+												"Ref": "DomainAdminPassword"
+											},
+											"\" /AGTSVCPASSWORD=\"", {
+												"Ref": "DomainAdminPassword"
+											},
+											"\" /IAcceptSQLServerLicenseTerms ",
 											"\n"
 										]
 									]
@@ -745,7 +772,13 @@
 									"Fn::Join": [
 										"", [
 											"powershell.exe -Command ",
-											"\"Invoke-Command -Scriptblock{ Add-DnsServerResourceRecordA -Name WSFCNode2 -ZoneName datakeeper.local -AllowUpdateAny -IPv4Address 10.0.32.100 } -ComputerName ", {
+											"\"Invoke-Command -Scriptblock{ Add-DnsServerResourceRecordA -Name ", {
+												"Ref": "WSFCNode2NetBIOSName"
+											},
+											" -ZoneName datakeeper.local -AllowUpdateAny -IPv4Address ", {
+												"Ref": "WSFCNode2PrivateIp"
+											},
+											" -ComputerName ", {
 												"Ref": "AD1ServerNetBIOSName"
 											},
 											" -Credential ",
@@ -784,7 +817,13 @@
 												"Ref": "LicenseKeyFtpURL"
 											},
 											" -ClusterName WSFCluster1",
-											" -Nodes WSFCNode1,WSFCNode2"
+											" -Nodes WSFCNode1,WSFCNode2",
+											" -SourceIP ", {
+												"Ref": "WSFCNode1PrivateIp"
+											},
+											" -TargetIP ", {
+												"Ref": "WSFCNode2PrivateIp"
+											}
 										]
 									]
 								},
@@ -794,7 +833,13 @@
 								"command": {
 									"Fn::Join": [
 										"", [
-											"\"%extmirrbase%\"\\emcmd 10.0.0.100 CREATEMIRROR D 10.0.32.100 S",
+											"\"%extmirrbase%\"\\emcmd ", {
+												"Ref": "WSFCNode1PrivateIp"
+											},
+											" CREATEMIRROR D ", {
+												"Ref": "WSFCNode2PrivateIp"
+											},
+											" S",
 											"\n"
 										]
 									]
@@ -1454,7 +1499,18 @@
 											" -LicenseKeyFtpURL ", {
 												"Ref": "LicenseKeyFtpURL"
 											},
-											" -ClusterName WSFCluster1"
+											" -ClusterName WSFCluster1",
+											" -ClusterIPAddresses ", {
+												"Ref": "WSFCNode1SQLServerPrivateIp"
+											}, ",", {
+												"Ref": "WSFCNode2SQLServerPrivateIp"
+											},
+											" -ClusterSubnetCidrs ", {
+												"Ref": "PrivateSubnet1ACIDR"
+											}, {
+												"Ref": "PrivateSubnet2ACIDR"
+											}
+											
 										]
 									]
 								},
