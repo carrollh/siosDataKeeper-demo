@@ -197,94 +197,53 @@
 	"Mappings": {
 		"AWSAMIRegionMap": {
 			"AMI": {
-				"AWSNATHVM": "amzn-ami-vpc-nat-hvm-2016.09.1.20170119-x86_64-ebs",
 				"WS2012R2": "Windows_Server-2012-R2_RTM-English-64Bit-Base-2017.01.11"
 			},
 			"ap-northeast-1": {
-				"AWSNATHVM": "ami-78d6af1f",
 				"WS2012R2": "ami-7accbe1d"
 			},
 			"ap-northeast-2": {
-				"AWSNATHVM": "ami-7ec31210",
 				"WS2012R2": "ami-e979af87"
 			},
 			"ap-south-1": {
-				"AWSNATHVM": "ami-48dcaa27",
 				"WS2012R2": "ami-31a6d05e"
 			},
 			"ap-southeast-1": {
-				"AWSNATHVM": "ami-a0903ac3",
 				"WS2012R2": "ami-89e74cea"
 			},
 			"ap-southeast-2": {
-				"AWSNATHVM": "ami-1e47407d",
 				"WS2012R2": "ami-059d9866"
 			},
 			"ca-central-1": {
-				"AWSNATHVM": "ami-cdf24fa9",
 				"WS2012R2": "ami-7805b71c"
 			},
 			"eu-central-1": {
-				"AWSNATHVM": "ami-7d0ec112",
 				"WS2012R2": "ami-6f559800"
 			},
 			"eu-west-1": {
-				"AWSNATHVM": "ami-47ecb121",
 				"WS2012R2": "ami-dd9eb6ae"
 			},
 			"eu-west-2": {
-				"AWSNATHVM": "ami-7c959f18",
 				"WS2012R2": "ami-738a8017"
 			},
 			"sa-east-1": {
-				"AWSNATHVM": "ami-f80b6e94",
 				"WS2012R2": "ami-f4d84298"
 			},
 			"us-east-1": {
-				"AWSNATHVM": "ami-dd3dd7cb",
 				"WS2012R2": "ami-abf616bd"
 			},
 			"us-east-2": {
-				"AWSNATHVM": "ami-564b6e33",
 				"WS2012R2": "ami-c06d48a5"
 			},
 			"us-west-1": {
-				"AWSNATHVM": "ami-7d54061d",
 				"WS2012R2": "ami-76227116"
 			},
 			"us-west-2": {
-				"AWSNATHVM": "ami-3b6fd05b",
 				"WS2012R2": "ami-1562d075"
 			}
 		}
 	},
 	"Resources": {
-		"DhcpOptions": {
-			"Type": "AWS::EC2::DHCPOptions",
-			"Properties": {
-				"DomainName": {
-					"Ref": "FullyQualifiedDomainName"
-				},
-				"DomainNameServers": [
-					"AmazonProvidedDNS"
-				],
-				"NtpServers": [{
-					"Ref": "AD1PrivateIp"
-				}],
-				"NetbiosNameServers": [{
-					"Ref": "AD1PrivateIp"
-				}, {
-					"Ref": "AD2PrivateIp"
-				}],
-				"NetbiosNodeType": "2",
-				"Tags": [{
-					"Key": "Domain",
-					"Value": {
-						"Ref": "FullyQualifiedDomainName"
-					}
-				}]
-			}
-		},
 		"RdgwEIP": {
 			"Type": "AWS::EC2::EIP",
 			"Properties": {
@@ -563,7 +522,7 @@
 								},
 								"waitAfterCompletion": "0"
 							},
-							"c-create-public-private-subnet-1": {
+							"c-create-public-subnet-1": {
 								"command": {
 									"Fn::Join": [
 										"", [
@@ -576,7 +535,7 @@
 								},
 								"waitAfterCompletion": "0"
 							},
-							"d-create-public-private-subnet-2": {
+							"d-create-public-subnet-2": {
 								"command": {
 									"Fn::Join": [
 										"", [
@@ -640,7 +599,7 @@
 											" -Password ", {
 												"Ref": "DomainAdminPassword"
 											},
-											" -FullyQualifiedDomainName ", {
+											" -DomainDNSName ", {
 												"Ref": "FullyQualifiedDomainName"
 											}
 										]
@@ -951,7 +910,7 @@
 											" -Password ", {
 												"Ref": "DomainAdminPassword"
 											},
-											" -FullyQualifiedDomainName ", {
+											" -DomainDNSName ", {
 												"Ref": "FullyQualifiedDomainName"
 											}
 										]

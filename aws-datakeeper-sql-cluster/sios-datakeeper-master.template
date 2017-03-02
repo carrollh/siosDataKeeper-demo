@@ -83,6 +83,10 @@
 			"Description": "Number of Availability Zones to use in the VPC. This number must match the number of your selections in the list of Availability Zones parameter. (ONLY 2 SUPPORTED CURRENTLY)",
 			"Type": "String"
 		},
+		"LicenseKeyFtpURL": {
+			"Description": "URL used to obtain license key for SIOS DataKeeper software.",
+			"Type": "String"
+		},
 		"KeyPairName": {
 			"Description": "Public/private key pairs allow you to securely connect to your instance after it launches",
 			"Type": "AWS::EC2::KeyPair::KeyName"
@@ -349,6 +353,17 @@
 			"Properties": {
 				"TemplateURL": "https://s3.amazonaws.com/sios-datakeeper/CloudFormation/Templates/sios-datakeeper-vpc.template",
 				"Parameters": {
+					"AvailabilityZones": {
+                        "Fn::Join": [
+                            ",",
+                            {
+                                "Ref": "AvailabilityZones"
+                            }
+                        ]
+                    },
+                    "KeyPairName": {
+                        "Ref": "KeyPairName"
+                    },
 					"VPCCIDR": {
 						"Ref": "VPCCIDR"
 					},
@@ -399,6 +414,9 @@
 			"Properties": {
 				"TemplateURL": "https://s3.amazonaws.com/sios-datakeeper/CloudFormation/Templates/sios-datakeeper-ad.template",
 				"Parameters": {
+					"KeyPairName": {
+						"Ref": "KeyPairName"
+					},
 					"AD1ServerNetBIOSName": {
 						"Ref": "AD1ServerNetBIOSName"
 					},
@@ -450,12 +468,6 @@
 					"DomainNetBIOSName": {
 						"Ref": "DomainNetBIOSName"
 					},
-					"KeyPairName": {
-						"Ref": "KeyPairName"
-					},
-					"NATInstanceType": {
-						"Ref": "NATInstanceType"
-					},
 					"PrivateSubnet1AID": {
 						"Fn::GetAtt": [
 							"VPCStack",
@@ -486,7 +498,7 @@
 				}
 			}
 		},
-		"SQLStack": {
+		"SIOSStack": {
 			"Type": "AWS::CloudFormation::Stack",
 			"DependsOn": "ADStack",
 			"Properties": {
@@ -531,10 +543,10 @@
 					"SQLServiceAccountPassword": {
 						"Ref": "SQLServiceAccountPassword"
 					},
-					"VPC": {
+					"VPCID": {
 						"Fn::GetAtt": [
-							"ADStack",
-							"Outputs.VPC"
+							"VPCStack",
+							"Outputs.VPCID"
 						]
 					},
 					"PrivateSubnet1ACIDR": {
@@ -555,10 +567,10 @@
 					"WSFCNode1SQLServerIp": {
 						"Ref": "WSFCNode1SQLServerIp"
 					},
-					"PrivateSubnet1Id": {
+					"PrivateSubnet1AId": {
 						"Fn::GetAtt": [
-							"ADStack",
-							"Outputs.PrivateSubnet1Id"
+							"VPCStack",
+							"Outputs.PrivateSubnet1AID"
 						]
 					},
 					"PrivateSubnet2ACIDR": {
@@ -579,17 +591,20 @@
 					"WSFCNode2SQLServerIp": {
 						"Ref": "WSFCNode2SQLServerIp"
 					},
-					"PrivateSubnet2Id": {
+					"PrivateSubnet2AId": {
 						"Fn::GetAtt": [
-							"ADStack",
-							"Outputs.PrivateSubnet2Id"
+							"VPCStack",
+							"Outputs.PrivateSubnet2AID"
 						]
 					},
 					"VPCCIDR": {
 						"Fn::GetAtt": [
-							"ADStack",
+							"VPCStack",
 							"Outputs.VPCCIDR"
 						]
+					},
+					"LicenseKeyFtpURL": {
+						"Ref": "LicenseKeyFtpURL"
 					}
 				}
 			}

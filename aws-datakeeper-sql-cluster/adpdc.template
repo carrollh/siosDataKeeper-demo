@@ -1,0 +1,243 @@
+{
+	"AWSTemplateFormatVersion": "2010-09-09",
+	"Mappings": {
+		"RegionMap": {
+			"us-west-1": {
+				"64": "ami-21414f36"
+			}
+		}
+	},
+	"Parameters": {
+		"KeyPairName": {
+			"Type": "AWS::EC2::KeyPair::KeyName"
+		},
+		"InstanceType": {
+			"AllowedValues": [
+				"t2.small",
+				"t2.medium",
+				"t2.large",
+				"m3.medium",
+				"m3.large",
+				"m3.xlarge",
+				"m3.2xlarge",
+				"m4.large",
+				"m4.xlarge",
+				"m4.2xlarge",
+				"m4.4xlarge"
+			],
+			"Default": "t2.small",
+			"Description": "Amazon EC2 instance type for this AD domain controller Instance.",
+			"Type": "String"
+		},
+		"SecurityGroupId": {
+			"Type": "AWS::EC2::SecurityGroup::Id"
+		},
+		"SubnetId": {
+			"Type": "AWS::EC2::Subnet::Id"
+		},
+		"DomainName": {
+			"AllowedPattern": "[a-zA-Z0-9]+\\..+",
+			"Default": "example.com",
+			"Description": "Fully qualified domain name (FQDN) of the forest root domain e.g. example.com",
+			"MaxLength": "25",
+			"MinLength": "3",
+			"Type": "String"
+		},
+		"DomainAdminUsername": {
+			"AllowedPattern": "[a-zA-Z0-9]*",
+			"Default": "StackAdmin",
+			"Description": "User name for the account that will be added as Domain Administrator. This is separate from the default \"Administrator\" account",
+			"MaxLength": "25",
+			"MinLength": "5",
+			"Type": "String"
+		},
+		"DomainAdminPassword": {
+			"AllowedPattern": "(?=^.{6,255}$)((?=.*\\d)(?=.*[A-Z])(?=.*[a-z])|(?=.*\\d)(?=.*[^A-Za-z0-9])(?=.*[a-z])|(?=.*[^A-Za-z0-9])(?=.*[A-Z])(?=.*[a-z])|(?=.*\\d)(?=.*[A-Z])(?=.*[^A-Za-z0-9]))^.*",
+			"Description": "Password for the Administrator user account. Must be at least 8 characters containing letters, numbers and symbols",
+			"MaxLength": "32",
+			"MinLength": "8",
+			"NoEcho": "true",
+			"Type": "String"
+		}
+	},
+	"Resources": {
+		"ADPDC": {
+			"Type": "AWS::EC2::Instance",
+			"Metadata": {
+				"AWS::CloudFormation::Init": {
+					"configSets": {
+						"config": [
+							"setup",
+							"config",
+							"bootstrapDSC"
+						]
+					},
+					"setup": {
+						"sources": {
+							"C:\\Program Files\\WindowsPowerShell\\Modules\\cDisk": "http://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/cDisk.zip",
+							"C:\\Program Files\\WindowsPowerShell\\Modules\\xActiveDirectory": "http://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/xActiveDirectory.zip",
+							"C:\\Program Files\\WindowsPowerShell\\Modules\\xDisk": "http://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/xDisk.zip",
+							"C:\\Program Files\\WindowsPowerShell\\Modules\\xNetworking": "http://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/xNetworking.zip",
+							"C:\\Program Files\\WindowsPowerShell\\Modules\\xSmbShare": "http://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/xSmbShare.zip",
+							"C:\\cfn\\scripts\\": "http://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/scripts.zip"
+						}
+					},
+					"config": {
+						"commands": {
+							"a-set-execution-policy": {
+								"command": "powershell.exe -command Set-ExecutionPolicy Unrestricted -Force",
+								"waitAfterCompletion": "0"
+							},
+							"b-reset-local-admin-password": {
+								"command": {
+									"Fn::Join": [
+										"", [
+											"powershell.exe -ExecutionPolicy Unrestricted -Command C:\\cfn\\scripts\\Reset-LocalAdminPassword.ps1 -password '", {
+												"Ref": "DomainAdminPassword"
+											},
+											"'"
+										]
+									]
+								},
+								"waitAfterCompletion": "0"
+							},
+							"c-reset-builtin-admin-username": {
+								"command": {
+									"Fn::Join": [
+										"", [
+											"powershell.exe -ExecutionPolicy Unrestricted -Command C:\\cfn\\scripts\\Reset-BuiltInAdminUsername.ps1 -username '", {
+												"Ref": "DomainAdminUsername"
+											},
+											"'"
+										]
+									]
+								},
+								"waitAfterCompletion": "0"
+							},
+							"d-rename-computer": {
+								"command": "powershell.exe -Command Rename-Computer -NewName ad-pdc -Restart",
+								"waitAfterCompletion": "forever"
+							}
+						}
+					},
+					"bootstrapDSC": {
+						"commands": {
+							"a-create-cert": {
+								"command": {
+									"Fn::Join": [
+										"", [
+											"powershell.exe -ExecutionPolicy Unrestricted -command c:\\cfn\\scripts\\New-DSCCertificate.ps1 -Password '", {
+												"Ref": "DomainAdminPassword"
+											},
+											"' -Instance ad-pdc"
+										]
+									]
+								},
+								"waitAfterCompletion": "0"
+							},
+							"b-run-dsc-config": {
+								"command": {
+									"Fn::Join": [
+										"", [
+											"powershell.exe -ExecutionPolicy Unrestricted -Command c:\\cfn\\scripts\\CreateADPDC.ps1",
+											" -DomainName ", {
+												"Ref": "DomainName"
+											},
+											" -AdminUsername ", {
+												"Ref": "DomainAdminUsername"
+											},
+											" -AdminPassword ", {
+												"Ref": "DomainAdminPassword"
+											}
+										]
+									]
+								},
+								"waitAfterCompletion": "forever"
+							},
+							"c-signal-success": {
+                                "command": {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            "cfn-signal.exe -e 0 \"",
+                                            {
+                                                "Ref": "ADPDCWaitHandle"
+                                            },
+                                            "\""
+                                        ]
+                                    ]
+                                }
+                            }
+						}
+					}
+				}
+			},
+			"Properties": {
+				"ImageId": {
+					"Fn::FindInMap": ["RegionMap", {
+						"Ref": "AWS::Region"
+					}, "64"]
+				},
+				"InstanceType": {
+					"Ref": "InstanceType"
+				},
+				"NetworkInterfaces": [{
+					"GroupSet": [{
+						"Ref": "SecurityGroupId"
+					}],
+					"AssociatePublicIpAddress": "true",
+					"DeviceIndex": "0",
+					"DeleteOnTermination": "true",
+					"PrivateIpAddress": "10.0.0.4",
+					"SubnetId": {
+						"Ref": "SubnetId"
+					}
+				}],
+				"KeyName": {
+					"Ref": "KeyPairName"
+				},
+				"UserData": {
+					"Fn::Base64": {
+						"Fn::Join": ["", [
+							"<script>\n",
+							"cfn-init.exe -v ",
+							" --configsets config ",
+							" --stack ", {
+								"Ref": "AWS::StackId"
+							},
+							" --resource ADPDC ",
+							" --region ", {
+								"Ref": "AWS::Region"
+							}, "\n",
+							"</script>\n"
+						]]
+					}
+				},
+				"BlockDeviceMappings": [{
+					"DeviceName": "/dev/sdc",
+					"VirtualName": "ephemeral0"
+				}]
+			}
+		},
+		"ADPDCWaitCondition": {
+            "Type": "AWS::CloudFormation::WaitCondition",
+            "DependsOn": "ADPDC",
+            "Properties": {
+                "Handle": {
+                    "Ref": "ADPDCWaitHandle"
+                },
+                "Timeout": "3600"
+            }
+        },
+        "ADPDCWaitHandle": {
+            "Type": "AWS::CloudFormation::WaitConditionHandle"
+        }
+	},
+	"Outputs": {
+		"ADPDC": {
+			"Value": {
+				"Ref": "ADPDC"
+			}
+		}
+	}
+}

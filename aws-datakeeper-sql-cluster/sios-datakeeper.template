@@ -63,6 +63,7 @@
 	},
 	"Parameters": {
 		"LicenseKeyFtpURL": {
+			"Description": "URL used to obtain license key for SIOS DataKeeper software.",
 			"Type": "String"
 		},
 		"KeyPairName": {
@@ -326,6 +327,86 @@
 		}
 	},
 	"Resources": {
+		"SIOSDataKeeperSG": {
+			"Type": "AWS::EC2::SecurityGroup",
+			"Properties": {
+				"GroupDescription": "Replication Nodes",
+				"VpcId": {
+					"Ref": "VPCID"
+				},
+				"SecurityGroupIngress": [{
+					"IpProtocol": "tcp",
+					"FromPort": "137",
+					"ToPort": "139",
+					"CidrIp": {
+						"Ref": "PrivateSubnet1ACIDR"
+					}
+				}, {
+					"IpProtocol": "udp",
+					"FromPort": "137",
+					"ToPort": "138",
+					"CidrIp": {
+						"Ref": "PrivateSubnet1ACIDR"
+					}
+				}, {
+					"IpProtocol": "tcp",
+					"FromPort": "9999",
+					"ToPort": "9999",
+					"CidrIp": {
+						"Ref": "PrivateSubnet1ACIDR"
+					}
+				}, {
+					"IpProtocol": "tcp",
+					"FromPort": "10004",
+					"ToPort": "10025",
+					"CidrIp": {
+						"Ref": "PrivateSubnet1ACIDR"
+					}
+				}, {
+					"IpProtocol": "tcp",
+					"FromPort": "445",
+					"ToPort": "445",
+					"CidrIp": {
+						"Ref": "PrivateSubnet1ACIDR"
+					}
+				}, {
+					"IpProtocol": "tcp",
+					"FromPort": "137",
+					"ToPort": "139",
+					"CidrIp": {
+						"Ref": "PrivateSubnet2ACIDR"
+					}
+				}, {
+					"IpProtocol": "udp",
+					"FromPort": "137",
+					"ToPort": "138",
+					"CidrIp": {
+						"Ref": "PrivateSubnet2ACIDR"
+					}
+				}, {
+					"IpProtocol": "tcp",
+					"FromPort": "9999",
+					"ToPort": "9999",
+					"CidrIp": {
+						"Ref": "PrivateSubnet2ACIDR"
+					}
+				}, {
+					"IpProtocol": "tcp",
+					"FromPort": "10004",
+					"ToPort": "10025",
+					"CidrIp": {
+						"Ref": "PrivateSubnet2ACIDR"
+					}
+				}, {
+					"IpProtocol": "tcp",
+					"FromPort": "445",
+					"ToPort": "445",
+					"CidrIp": {
+						"Ref": "PrivateSubnet2ACIDR"
+					}
+				}]
+			}
+		},
 		"WSFCNode2WaitCondition": {
 			"Type": "AWS::CloudFormation::WaitCondition",
 			"DependsOn": "WSFCNode2",
@@ -597,13 +678,13 @@
 												"Ref": "DomainNetBIOSName"
 											},
 											"\\", {
-												"Ref": "DomainAdminUser"
+												"Ref": "SQLServiceAccount"
 											},
 											"\" /COMMFABRICPORT=\"0\" /COMMFABRICNETWORKLEVEL=\"0\" /COMMFABRICENCRYPTION=\"0\" /MATRIXCMBRICKCOMMPORT=\"0\" /FILESTREAMLEVEL=\"0\" /SQLCOLLATION=\"SQL_Latin1_General_CP1_CI_AS\" /SQLSVCACCOUNT=\"", {
 												"Ref": "DomainNetBIOSName"
 											},
 											"\\", {
-												"Ref": "DomainAdminUser"
+												"Ref": "SQLServiceAccount"
 											},
 											"\" /SQLSYSADMINACCOUNTS=\"", {
 												"Ref": "DomainNetBIOSName"
@@ -612,10 +693,10 @@
 												"Ref": "DomainAdminUser"
 											},
 											"\" /INSTALLSQLDATADIR=\"D:\" /SQLTEMPDBDIR=\"C:\\TempDB\" /FTSVCACCOUNT=\"NT Service\\MSSQLFDLauncher\" /SQLSVCPASSWORD=\"", {
-												"Ref": "DomainAdminPassword"
+												"Ref": "SQLServiceAccountPassword"
 											},
 											"\" /AGTSVCPASSWORD=\"", {
-												"Ref": "DomainAdminPassword"
+												"Ref": "SQLServiceAccountPassword"
 											},
 											"\" /IAcceptSQLServerLicenseTerms ",
 											"\n"
@@ -935,6 +1016,8 @@
 						"Ref": "WSFCSecurityGroup"
 					}, {
 						"Ref": "WSFCClientSecurityGroup"
+					}, {
+						"Ref": "SIOSDataKeeperSG"
 					}]
 				}],
 				"Tags": [{
@@ -1164,6 +1247,38 @@
 							},
 							"c:\\cfn\\scripts\\OpenWSFCPorts.bat": {
 								"source": "https://s3.amazonaws.com/quickstart-reference/microsoft/sql/latest/scripts/OpenWSFCPorts.bat"
+							},
+							"C:\\cfn\\scripts\\InstallSQL.bat": {
+								"content": {
+									"Fn::Join": [
+										"", [
+											"C:\\SQL2014\\setup /ACTION=\"AddNode\" /SkipRules=Cluster_VerifyForErrors Cluster_IsWMIServiceOperational /ENU=\"True\" /Q /UpdateEnabled=\"False\" /ERRORREPORTING=\"False\" /USEMICROSOFTUPDATE=\"False\" /UpdateSource=\"MU\" /HELP=\"False\" /INDICATEPROGRESS=\"False\" /X86=\"False\" /INSTANCENAME=\"MSSQLSERVER\" /SQMREPORTING=\"False\" /FAILOVERCLUSTERGROUP=\"SQL Server (MSSQLSERVER)\" /CONFIRMIPDEPENDENCYCHANGE=\"True\" /FAILOVERCLUSTERIPADDRESSES=\"IPv4;", {
+												"Ref": "WSFCNode2SQLServerPrivateIp"
+											},
+											";Cluster Network 2;255.255.224.0\" \"IPv4;", {
+												"Ref": "WSFCNode1SQLServerPrivateIp"
+											},
+											";Cluster Network 1;255.255.224.0\" /FAILOVERCLUSTERNETWORKNAME=\"siossqlserver\" /AGTSVCACCOUNT=\"", {
+												"Ref": "DomainNetBIOSName"
+											}, "\\", {
+												"Ref": "SQLServiceAccount"
+											},
+											"\" /SQLSVCACCOUNT=\"", {
+												"Ref": "DomainNetBIOSName"
+											}, "\\", {
+												"Ref": "SQLServiceAccount"
+											},
+											"\" /FTSVCACCOUNT=\"NT Service\\MSSQLFDLauncher\" /SQLSVCPASSWORD=\"", {
+												"Ref": "SQLServiceAccountPassword"
+											},
+											"\" /AGTSVCPASSWORD=\"", {
+												"Ref": "SQLServiceAccountPassword"
+											},
+											"\" /IAcceptSQLServerLicenseTerms",
+											"\n"
+										]
+									]
+								}
 							},
 							"C:\\cfn\\scripts\\AddUserToGroup.ps1": {
 								"content": {
@@ -1509,12 +1624,99 @@
 												"Ref": "PrivateSubnet1ACIDR"
 											}, ",", {
 												"Ref": "PrivateSubnet2ACIDR"
+											},
+											" -SQLSvcAccount ", {
+												"Ref": "SQLServiceAccount"
+											},
+											" -SQLSvcAccountPassword ", {
+												"Ref": "SQLServiceAccountPassword"
 											}
-
+										]
+									]
+								},
+								"waitAfterCompletion": "0"
+							},
+							"c-set-startup-script": {
+								"command": {
+									"Fn::Join": [
+										"", [
+											"powershell.exe -Command ",
+											"\"New-ItemProperty -Path HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunOnce -Name InstallSQL -Value C:\\cfn\\scripts\\InstallSQL.bat",
+											"\""
+										]
+									]
+								},
+								"waitAfterCompletion": "0"
+							},
+							"d-reboot": {
+								"command": {
+									"Fn::Join": [
+										"", [
+											"powershell.exe -Command Restart-Computer -Force"
 										]
 									]
 								},
 								"waitAfterCompletion": "forever"
+							},
+							"e-create-dns-entry-sqlserver1 ": {
+								"command": {
+									"Fn::Join": [
+										"", [
+											"powershell.exe -Command ",
+											"\"Invoke-Command -Scriptblock{ Add-DnsServerResourceRecordA -Name siossqlserver",
+											" -ZoneName datakeeper.local -AllowUpdateAny -IPv4Address ", {
+												"Ref": "WSFCNode1SQLServerPrivateIp"
+											}, " }",
+											" -ComputerName ", {
+												"Ref": "AD1ServerNetBIOSName"
+											},
+											" -Credential ",
+											"(New-Object System.Management.Automation.PSCredential('", {
+												"Ref": "DomainNetBIOSName"
+											},
+											"\\", {
+												"Ref": "DomainAdminUser"
+											},
+											"',",
+											"(ConvertTo-SecureString ", {
+												"Ref": "DomainAdminPassword"
+											},
+											" -AsPlainText -Force))) ",
+											"\""
+										]
+									]
+								},
+								"waitAfterCompletion": "0"
+							},
+							"f-create-dns-entry-sqlserver2 ": {
+								"command": {
+									"Fn::Join": [
+										"", [
+											"powershell.exe -Command ",
+											"\"Invoke-Command -Scriptblock{ Add-DnsServerResourceRecordA -Name siossqlserver",
+											" -ZoneName datakeeper.local -AllowUpdateAny -IPv4Address ", {
+												"Ref": "WSFCNode2SQLServerPrivateIp"
+											}, " }",
+											" -ComputerName ", {
+												"Ref": "AD1ServerNetBIOSName"
+											},
+											" -Credential ",
+											"(New-Object System.Management.Automation.PSCredential('", {
+												"Ref": "DomainNetBIOSName"
+											},
+											"\\", {
+												"Ref": "DomainAdminUser"
+											},
+											"',",
+											"(ConvertTo-SecureString ", {
+												"Ref": "DomainAdminPassword"
+											},
+											" -AsPlainText -Force))) ",
+											"\""
+										]
+									]
+								},
+								"waitAfterCompletion": "0"
 							}
 						}
 					},
@@ -1588,6 +1790,8 @@
 						"Ref": "WSFCSecurityGroup"
 					}, {
 						"Ref": "WSFCClientSecurityGroup"
+					}, {
+						"Ref": "SIOSDataKeeperSG"
 					}]
 				}],
 				"Tags": [{
