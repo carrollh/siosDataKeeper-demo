@@ -34,10 +34,10 @@
 				"Parameters": [
 					"KeyPairName",
 					"RDGWInstanceType",
-					"AD1ServerNetBIOSName",
+					"AD1NetBIOSName",
 					"AD1InstanceType",
 					"AD1PrivateIp",
-					"AD2ServerNetBIOSName",
+					"AD2NetBIOSName",
 					"AD2InstanceType",
 					"AD2PrivateIp"
 				]
@@ -62,7 +62,7 @@
 					"DomainMemberSGID",
 					"WSFCNode1PrivateIp",
 					"WSFCNode1ClusterPrivateIp",
-					"WSFCNode1SQLServerPrivateIp",
+					"WSFCNode1SQLServerIp",
 					"WSFCNode2PrivateIp",
 					"WSFCNode2ClusterPrivateIp",
 					"WSFCNode2SQLServerPrivateIp"
@@ -201,7 +201,7 @@
 			"MaxLength": "15",
 			"AllowedPattern": "[a-zA-Z0-9]+"
 		},
-		"AD1ServerNetBIOSName": {
+		"AD1NetBIOSName": {
 			"Description": "NetBIOS name of the 1st AD Server (upto 15 characters)",
 			"Type": "String",
 			"Default": "DC1",
@@ -209,7 +209,7 @@
 			"MaxLength": "15",
 			"AllowedPattern": "[a-zA-Z0-9]+"
 		},
-		"AD2ServerNetBIOSName": {
+		"AD2NetBIOSName": {
 			"Description": "NetBIOS name of the 2nd AD Server (upto 15 characters)",
 			"Type": "String",
 			"Default": "DC2",
@@ -417,8 +417,8 @@
 					"KeyPairName": {
 						"Ref": "KeyPairName"
 					},
-					"AD1ServerNetBIOSName": {
-						"Ref": "AD1ServerNetBIOSName"
+					"AD1NetBIOSName": {
+						"Ref": "AD1NetBIOSName"
 					},
 					"AD1InstanceType": {
 						"Ref": "AD1InstanceType"
@@ -426,8 +426,8 @@
 					"AD1PrivateIp": {
 						"Ref": "AD1PrivateIp"
 					},
-					"AD2ServerNetBIOSName": {
-						"Ref": "AD2ServerNetBIOSName"
+					"AD2NetBIOSName": {
+						"Ref": "AD2NetBIOSName"
 					},
 					"AD2InstanceType": {
 						"Ref": "AD2InstanceType"
@@ -504,17 +504,17 @@
 			"Properties": {
 				"TemplateURL": "https://s3.amazonaws.com/sios-datakeeper/CloudFormation/Templates/sios-datakeeper.template",
 				"Parameters": {
-					"ADServer1PrivateIp": {
+					"AD1PrivateIp": {
 						"Ref": "AD1PrivateIp"
 					},
-					"ADServer2PrivateIp": {
+					"AD2PrivateIp": {
 						"Ref": "AD2PrivateIp"
 					},
-					"AD1ServerNetBIOSName": {
-						"Ref": "AD1ServerNetBIOSName"
+					"AD1NetBIOSName": {
+						"Ref": "AD1NetBIOSName"
 					},
-					"AD2ServerNetBIOSName": {
-						"Ref": "AD2ServerNetBIOSName"
+					"AD2NetBIOSName": {
+						"Ref": "AD2NetBIOSName"
 					},
 					"DomainAdminPassword": {
 						"Ref": "DomainAdminPassword"
