@@ -357,7 +357,7 @@
 					}
 				}, {
 					"IpProtocol": "tcp",
-					"FromPort": "10004",
+					"FromPort": "10003",
 					"ToPort": "10025",
 					"CidrIp": {
 						"Ref": "PrivateSubnet1ACIDR"
@@ -392,7 +392,7 @@
 					}
 				}, {
 					"IpProtocol": "tcp",
-					"FromPort": "10004",
+					"FromPort": "10003",
 					"ToPort": "10025",
 					"CidrIp": {
 						"Ref": "PrivateSubnet2ACIDR"
@@ -1606,7 +1606,7 @@
 										]
 									]
 								},
-								"waitAfterCompletion": "0"
+								"waitAfterCompletion": "600"
 							},
 							"c-set-startup-script": {
 								"command": {
