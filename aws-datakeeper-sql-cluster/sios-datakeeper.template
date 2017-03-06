@@ -910,35 +910,7 @@
 								},
 								"waitAfterCompletion": "10"
 							},
-							"d-create-mirror": {
-								"command": {
-									"Fn::Join": [
-										"", [
-											"\"%extmirrbase%\"\\emcmd ", {
-												"Ref": "WSFCNode1PrivateIp"
-											},
-											" CREATEMIRROR D ", {
-												"Ref": "WSFCNode2PrivateIp"
-											},
-											" S",
-											"\n"
-										]
-									]
-								},
-								"waitAfterCompletion": "10"
-							},
-							"e-register-cluster-volume": {
-								"command": {
-									"Fn::Join": [
-										"", [
-											"\"%extmirrbase%\"\\emcmd . REGISTERCLUSTERVOLUME D",
-											"\n"
-										]
-									]
-								},
-								"waitAfterCompletion": "10"
-							},
-							"f-set-startup-script": {
+							"d-set-startup-script": {
 								"command": {
 									"Fn::Join": [
 										"", [
@@ -950,7 +922,7 @@
 								},
 								"waitAfterCompletion": "0"
 							},
-							"g-reboot": {
+							"e-reboot": {
 								"command": {
 									"Fn::Join": [
 										"", [
@@ -960,7 +932,7 @@
 								},
 								"waitAfterCompletion": "forever"
 							},
-							"h-cleanup-registry": {
+							"f-cleanup-registry": {
 								"command": {
 									"Fn::Join": [
 										"", [
@@ -1658,7 +1630,7 @@
 								},
 								"waitAfterCompletion": "forever"
 							},
-							"e-create-dns-entry-sqlserver1 ": {
+                            "e-create-dns-entry-sqlserver1 ": {
 								"command": {
 									"Fn::Join": [
 										"", [
@@ -1699,6 +1671,66 @@
 											}, " }",
 											" -ComputerName ", {
 												"Ref": "AD1NetBIOSName"
+											},
+											" -Credential ",
+											"(New-Object System.Management.Automation.PSCredential('", {
+												"Ref": "DomainNetBIOSName"
+											},
+											"\\", {
+												"Ref": "DomainAdminUser"
+											},
+											"',",
+											"(ConvertTo-SecureString ", {
+												"Ref": "DomainAdminPassword"
+											},
+											" -AsPlainText -Force))) ",
+											"\""
+										]
+									]
+								},
+								"waitAfterCompletion": "0"
+							},
+							"g-create-dns-entry-sqlserver1 ": {
+								"command": {
+									"Fn::Join": [
+										"", [
+											"powershell.exe -Command ",
+											"\"Invoke-Command -Scriptblock{ Add-DnsServerResourceRecordA -Name siossqlserver",
+											" -ZoneName datakeeper.local -AllowUpdateAny -IPv4Address ", {
+												"Ref": "WSFCNode1SQLServerIp"
+											}, " }",
+											" -ComputerName ", {
+												"Ref": "AD2NetBIOSName"
+											},
+											" -Credential ",
+											"(New-Object System.Management.Automation.PSCredential('", {
+												"Ref": "DomainNetBIOSName"
+											},
+											"\\", {
+												"Ref": "DomainAdminUser"
+											},
+											"',",
+											"(ConvertTo-SecureString ", {
+												"Ref": "DomainAdminPassword"
+											},
+											" -AsPlainText -Force))) ",
+											"\""
+										]
+									]
+								},
+								"waitAfterCompletion": "0"
+							},
+							"h-create-dns-entry-sqlserver2 ": {
+								"command": {
+									"Fn::Join": [
+										"", [
+											"powershell.exe -Command ",
+											"\"Invoke-Command -Scriptblock{ Add-DnsServerResourceRecordA -Name siossqlserver",
+											" -ZoneName datakeeper.local -AllowUpdateAny -IPv4Address ", {
+												"Ref": "WSFCNode2SQLServerIp"
+											}, " }",
+											" -ComputerName ", {
+												"Ref": "AD2NetBIOSName"
 											},
 											" -Credential ",
 											"(New-Object System.Management.Automation.PSCredential('", {
