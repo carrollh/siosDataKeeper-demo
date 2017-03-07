@@ -336,16 +336,16 @@
 								}
 							},
 							"c:\\cfn\\scripts\\ConvertTo-EnterpriseAdmin.ps1": {
-								"source": "https://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/ConvertTo-EnterpriseAdmin.ps1"
+								"source": "https://s3.amazonaws.com/sios-datakeeper/CloudFormation/adscripts/ConvertTo-EnterpriseAdmin.ps1"
 							},
 							"c:\\cfn\\scripts\\New-CertificateAuthority.ps1": {
-								"source": "https://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/New-CertificateAuthority.ps1"
+								"source": "https://s3.amazonaws.com/sios-datakeeper/CloudFormation/adscripts/New-CertificateAuthority.ps1"
 							},
 							"c:\\cfn\\modules\\xAdcsDeployment_0.1.0.0.zip": {
-								"source": "https://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/xAdcsDeployment_0.1.0.0.zip"
+								"source": "https://s3.amazonaws.com/sios-datakeeper/CloudFormation/adscripts/xAdcsDeployment_0.1.0.0.zip"
 							},
 							"c:\\cfn\\scripts\\Unzip-Archive.ps1": {
-								"source": "https://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/Unzip-Archive.ps1"
+								"source": "https://s3.amazonaws.com/sios-datakeeper/CloudFormation/adscripts/Unzip-Archive.ps1"
 							}
 						},
 						"services": {
@@ -755,13 +755,13 @@
 								}
 							},
 							"c:\\cfn\\scripts\\New-CertificateAuthority.ps1": {
-								"source": "https://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/New-CertificateAuthority.ps1"
+								"source": "https://s3.amazonaws.com/sios-datakeeper/CloudFormation/adscripts/New-CertificateAuthority.ps1"
 							},
 							"c:\\cfn\\modules\\xAdcsDeployment_0.1.0.0.zip": {
-								"source": "https://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/xAdcsDeployment_0.1.0.0.zip"
+								"source": "https://s3.amazonaws.com/sios-datakeeper/CloudFormation/adscripts/xAdcsDeployment_0.1.0.0.zip"
 							},
 							"c:\\cfn\\scripts\\Unzip-Archive.ps1": {
-								"source": "https://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/Unzip-Archive.ps1"
+								"source": "https://s3.amazonaws.com/sios-datakeeper/CloudFormation/adscripts/Unzip-Archive.ps1"
 							}
 						},
 						"services": {
@@ -1099,7 +1099,7 @@
 								}
 							},
 							"c:\\cfn\\scripts\\Configure-RDGW.ps1": {
-								"source": "https://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/Configure-RDGW.ps1"
+								"source": "https://s3.amazonaws.com/sios-datakeeper/CloudFormation/adscripts/Configure-RDGW.ps1"
 							}
 						},
 						"services": {
@@ -1336,7 +1336,7 @@
 								}
 							},
 							"c:\\cfn\\scripts\\Configure-RDGW.ps1": {
-								"source": "https://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/Configure-RDGW.ps1"
+								"source": "https://s3.amazonaws.com/sios-datakeeper/CloudFormation/adscripts/Configure-RDGW.ps1"
 							}
 						},
 						"services": {
