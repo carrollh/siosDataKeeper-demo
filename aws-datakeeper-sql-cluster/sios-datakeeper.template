@@ -1968,7 +1968,7 @@
 		"WSFCSecurityGroup": {
 			"Type": "AWS::EC2::SecurityGroup",
 			"Properties": {
-				"GroupDescription": "Enable the WSFC and SQL AlwaysOn Availability Group communications",
+				"GroupDescription": "Enable the WSFC, SQL, DataKeeper replication communications",
 				"VpcId": {
 					"Ref": "VPCID"
 				},
