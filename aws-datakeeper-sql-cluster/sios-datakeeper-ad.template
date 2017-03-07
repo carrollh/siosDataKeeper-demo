@@ -24,6 +24,7 @@
 					"default": "Active Directory Configuration"
 				},
 				"Parameters": [
+					"RDGWCIDR",
 					"FullyQualifiedDomainName",
 					"DomainNetBIOSName",
 					"DomainAdminUser",
@@ -183,6 +184,12 @@
 			"Default": "10.0.32.0/19",
 			"AllowedPattern": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/(1[6-9]|2[0-8]))$"
 		},
+		"RDGWCIDR": {
+			"AllowedPattern": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$",
+			"ConstraintDescription": "CIDR block parameter must be in the form x.x.x.x/x",
+			"Description": "Allowed CIDR Block for external access to the Remote Desktop Gateways",
+			"Type": "String"
+		},
 		"VPCID": {
 			"Description": "ID for the VPC",
 			"Type": "AWS::EC2::VPC::Id"
@@ -328,23 +335,17 @@
 									]
 								}
 							},
-							"c:\\cfn\\scripts\\New-LabADUser.ps1": {
-								"source": "https://s3.amazonaws.com/quickstart-reference/microsoft/activedirectory/latest/scripts/New-LabADUser.ps1"
-							},
-							"c:\\cfn\\scripts\\users.csv": {
-								"source": "https://s3.amazonaws.com/quickstart-reference/microsoft/activedirectory/latest/scripts/users.csv"
-							},
 							"c:\\cfn\\scripts\\ConvertTo-EnterpriseAdmin.ps1": {
-								"source": "https://s3.amazonaws.com/quickstart-reference/microsoft/activedirectory/latest/scripts/ConvertTo-EnterpriseAdmin.ps1"
+								"source": "https://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/ConvertTo-EnterpriseAdmin.ps1"
 							},
 							"c:\\cfn\\scripts\\New-CertificateAuthority.ps1": {
-								"source": "https://s3.amazonaws.com/quickstart-reference/microsoft/activedirectory/latest/scripts/New-CertificateAuthority.ps1"
+								"source": "https://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/New-CertificateAuthority.ps1"
 							},
 							"c:\\cfn\\modules\\xAdcsDeployment_0.1.0.0.zip": {
-								"source": "https://s3.amazonaws.com/quickstart-reference/microsoft/activedirectory/latest/scripts/xAdcsDeployment_0.1.0.0.zip"
+								"source": "https://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/xAdcsDeployment_0.1.0.0.zip"
 							},
 							"c:\\cfn\\scripts\\Unzip-Archive.ps1": {
-								"source": "https://s3.amazonaws.com/quickstart-reference/microsoft/activedirectory/latest/submodules/quickstart-microsoft-utilities/scripts/Unzip-Archive.ps1"
+								"source": "https://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/Unzip-Archive.ps1"
 							}
 						},
 						"services": {
@@ -754,13 +755,13 @@
 								}
 							},
 							"c:\\cfn\\scripts\\New-CertificateAuthority.ps1": {
-								"source": "https://s3.amazonaws.com/quickstart-reference/microsoft/activedirectory/latest/scripts/New-CertificateAuthority.ps1"
+								"source": "https://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/New-CertificateAuthority.ps1"
 							},
 							"c:\\cfn\\modules\\xAdcsDeployment_0.1.0.0.zip": {
-								"source": "https://s3.amazonaws.com/quickstart-reference/microsoft/activedirectory/latest/scripts/xAdcsDeployment_0.1.0.0.zip"
+								"source": "https://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/xAdcsDeployment_0.1.0.0.zip"
 							},
 							"c:\\cfn\\scripts\\Unzip-Archive.ps1": {
-								"source": "https://s3.amazonaws.com/quickstart-reference/microsoft/activedirectory/latest/submodules/quickstart-microsoft-utilities/scripts/Unzip-Archive.ps1"
+								"source": "https://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/Unzip-Archive.ps1"
 							}
 						},
 						"services": {
@@ -1098,7 +1099,7 @@
 								}
 							},
 							"c:\\cfn\\scripts\\Configure-RDGW.ps1": {
-								"source": "https://s3.amazonaws.com/quickstart-reference/microsoft/activedirectory/latest/scripts/Configure-RDGW.ps1"
+								"source": "https://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/Configure-RDGW.ps1"
 							}
 						},
 						"services": {
@@ -1335,7 +1336,7 @@
 								}
 							},
 							"c:\\cfn\\scripts\\Configure-RDGW.ps1": {
-								"source": "https://s3.amazonaws.com/quickstart-reference/microsoft/activedirectory/latest/scripts/Configure-RDGW.ps1"
+								"source": "https://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/Configure-RDGW.ps1"
 							}
 						},
 						"services": {
@@ -2347,12 +2348,12 @@
 					"IpProtocol": "tcp",
 					"FromPort": "3389",
 					"ToPort": "3389",
-					"CidrIp": "0.0.0.0/0"
+					"CidrIp": "RDGWCIDR"
 				}, {
 					"IpProtocol": "icmp",
 					"FromPort": "-1",
 					"ToPort": "-1",
-					"CidrIp": "0.0.0.0/0"
+					"CidrIp": "RDGWCIDR"
 				}]
 			}
 		}
