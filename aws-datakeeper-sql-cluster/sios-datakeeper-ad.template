@@ -2348,12 +2348,16 @@
 					"IpProtocol": "tcp",
 					"FromPort": "3389",
 					"ToPort": "3389",
-					"CidrIp": "RDGWCIDR"
+					"CidrIp": {
+						"Ref": "RDGWCIDR"
+					}
 				}, {
 					"IpProtocol": "icmp",
 					"FromPort": "-1",
 					"ToPort": "-1",
-					"CidrIp": "RDGWCIDR"
+					"CidrIp": {
+						"Ref": "RDGWCIDR"
+					}
 				}]
 			}
 		}

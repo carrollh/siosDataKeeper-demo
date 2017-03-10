@@ -503,6 +503,9 @@
 					"PrivateSubnet2ACIDR": {
 						"Ref": "PrivateSubnet2ACIDR"
 					},
+					"RDGWCIDR": {
+						"Ref": "RDGWCIDR"
+					},
 					"VPCID": {
 						"Fn::GetAtt": [
 							"VPCStack",
@@ -619,9 +622,6 @@
 							"VPCStack",
 							"Outputs.PrivateSubnet2AID"
 						]
-					},
-					"RDGWCIDR": {
-						"Ref": "RDGWCIDR"
 					},
 					"VPCCIDR": {
 						"Fn::GetAtt": [
