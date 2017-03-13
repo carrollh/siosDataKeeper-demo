@@ -453,7 +453,7 @@
 							"C:\\Program Files\\WindowsPowerShell\\Modules\\xDataKeeper": "http://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/xDataKeeper.zip",
 							"C:\\Program Files\\WindowsPowerShell\\Modules\\xFailOverCluster": "http://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/xFailOverCluster.zip",
 							"C:\\cfn\\scripts\\": "http://s3.amazonaws.com/sios-datakeeper/CloudFormation/DSC/scripts.zip",
-							"C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\Modules\\": "https://s3.amazonaws.com/quickstart-reference/microsoft/activedirectory/latest/submodules/quickstart-microsoft-utilities/modules/AWSQuickStart.zip"
+							"C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\Modules\\": "https://s3.amazonaws.com/quickstart-reference/microsoft/sql/latest/submodules/quickstart-microsoft-utilities/modules/AWSQuickStart.zip"
 						},
 						"files": {
 							"c:\\cfn\\cfn-hup.conf": {
@@ -492,58 +492,15 @@
 									]
 								}
 							},
-                            "C:\\cfn\\scripts\\EnableCredSsp.ps1": {
-                                "source": {
-                                    "Fn::Join": [
-                                        "/",
-                                        [
-                                            {
-                                                "Fn::FindInMap": [
-                                                    "AWSInfoRegionMap",
-                                                    {
-                                                        "Ref": "AWS::Region"
-                                                    },
-                                                    "QuickStartS3URL"
-                                                ]
-                                            },
-                                            {
-                                                "Ref": "QSS3BucketName"
-                                            },
-                                            {
-                                                "Ref": "QSS3KeyPrefix"
-                                            },
-                                            "submodules/quickstart-microsoft-utilities",
-                                            "scripts/EnableCredSsp.ps1"
-                                        ]
-                                    ]
-                                }
-                            },
-                            "C:\\cfn\\scripts\\DisableCredSsp.ps1": {
-                                "source": {
-                                    "Fn::Join": [
-                                        "/",
-                                        [
-                                            {
-                                                "Fn::FindInMap": [
-                                                    "AWSInfoRegionMap",
-                                                    {
-                                                        "Ref": "AWS::Region"
-                                                    },
-                                                    "QuickStartS3URL"
-                                                ]
-                                            },
-                                            {
-                                                "Ref": "QSS3BucketName"
-                                            },
-                                            {
-                                                "Ref": "QSS3KeyPrefix"
-                                            },
-                                            "submodules/quickstart-microsoft-utilities",
-                                            "scripts/DisableCredSsp.ps1"
-                                        ]
-                                    ]
-                                }
-                            }
+							"C:\\cfn\\scripts\\EnableCredSsp.ps1": {
+								"source": "https://s3.amazonaws.com/quickstart-reference/microsoft/sql/latest/submodules/quickstart-microsoft-utilities/scripts/EnableCredSsp.ps1"
+							},
+							"C:\\cfn\\scripts\\DisableCredSsp.ps1": {
+								"source": "https://s3.amazonaws.com/quickstart-reference/microsoft/sql/latest/submodules/quickstart-microsoft-utilities/scripts/DisableCredSsp.ps1"
+							},
+							"C:\\cfn\\scripts\\Install-WMF5.ps1": {
+								"source": "https://s3.amazonaws.com/quickstart-reference/microsoft/sql/latest/submodules/quickstart-microsoft-utilities/scripts/Install-WMF5.ps1"
+							}
 						},
 						"services": {
 							"windows": {
@@ -855,6 +812,19 @@
 									]
 								},
 								"waitAfterCompletion": "0"
+							},
+							"j-execute-powershell-script-WMF5": {
+								"command": {
+									"Fn::Join": [
+										"", [
+											"powershell.exe ",
+											"-ExecutionPolicy",
+											" RemoteSigned",
+											" C:\\cfn\\scripts\\Install-WMF5.ps1"
+										]
+									]
+								},
+								"waitAfterCompletion": "0"
 							}
 						}
 					},
@@ -905,15 +875,19 @@
 								},
 								"waitAfterCompletion": "0"
 							},
-                            "c-enable-credssp": {
-                                "command": "powershell.exe -ExecutionPolicy RemoteSigned -Command \"C:\\cfn\\scripts\\EnableCredSsp.ps1",
-                                "waitAfterCompletion": "0"
-                            },
-                            "d-reboot": {
-                                "command": "powershell.exe -Command \"Restart-Computer -Force\"",
-                                "waitAfterCompletion": "forever"
-                            },
-							"e-run-dsc-config": {
+							"c-enable-credssp": {
+								"command": "powershell.exe -ExecutionPolicy RemoteSigned -Command \"C:\\cfn\\scripts\\EnableCredSsp.ps1",
+								"waitAfterCompletion": "0"
+							},
+							"d-create-document-encryption-cert": {
+								"command": "powershell.exe -Command \"certreq -new C:\\cfn\\scripts\\DocumentEncryption.inf C:\\DocumentEncryption.cer\"",
+								"waitAfterCompletion": "0"
+							},
+							"e-reboot": {
+								"command": "powershell.exe -Command \"Restart-Computer -Force\"",
+								"waitAfterCompletion": "forever"
+							},
+							"f-run-dsc-config": {
 								"command": {
 									"Fn::Join": [
 										"", [
@@ -940,14 +914,14 @@
 											},
 											" -SQLServerIPAddresses ", {
 												"Ref": "WSFCNode1SQLServerIp"
-											}, "," {
-                                                "Ref": "WSFCNode2SQLServerIp"
-                                            },
+											}, ",", {
+												"Ref": "WSFCNode2SQLServerIp"
+											},
 											" -SQLServerSubnetCidrs ", {
-												"Ref": "PrivateSubnet1AMask"
-											}, "," {
-                                                "Ref": "PrivateSubnet2AMask"
-                                            },
+												"Ref": "PrivateSubnet1ACIDR"
+											}, ",", {
+												"Ref": "PrivateSubnet2ACIDR"
+											},
 											" -SQLSvcAccount ", {
 												"Ref": "SQLServiceAccount"
 											},
@@ -959,11 +933,11 @@
 								},
 								"waitAfterCompletion": "10"
 							},
-                            "f-disable-credssp": {
-                                "command": "powershell.exe -ExecutionPolicy RemoteSigned -Command \"C:\\cfn\\scripts\\DisableCredSsp.ps1\"",
-                                "waitAfterCompletion": "0"
-                            },
-							"g-cleanup-registry": {
+							"g-disable-credssp": {
+								"command": "powershell.exe -ExecutionPolicy RemoteSigned -Command \"C:\\cfn\\scripts\\DisableCredSsp.ps1\"",
+								"waitAfterCompletion": "0"
+							},
+							"h-cleanup-registry": {
 								"command": {
 									"Fn::Join": [
 										"", [
@@ -1139,6 +1113,9 @@
 							},
 							"c:\\cfn\\scripts\\MaxDOP.sql": {
 								"source": "https://s3.amazonaws.com/quickstart-reference/microsoft/sql/latest/scripts/MaxDOP.sql"
+							},
+							"C:\\cfn\\scripts\\Install-WMF5.ps1": {
+								"source": "https://s3.amazonaws.com/quickstart-reference/microsoft/sql/latest/submodules/quickstart-microsoft-utilities/scripts/Install-WMF5.ps1"
 							}
 						},
 						"services": {
@@ -1278,58 +1255,12 @@
 									]
 								}
 							},
-                            "C:\\cfn\\scripts\\EnableCredSsp.ps1": {
-                                "source": {
-                                    "Fn::Join": [
-                                        "/",
-                                        [
-                                            {
-                                                "Fn::FindInMap": [
-                                                    "AWSInfoRegionMap",
-                                                    {
-                                                        "Ref": "AWS::Region"
-                                                    },
-                                                    "QuickStartS3URL"
-                                                ]
-                                            },
-                                            {
-                                                "Ref": "QSS3BucketName"
-                                            },
-                                            {
-                                                "Ref": "QSS3KeyPrefix"
-                                            },
-                                            "submodules/quickstart-microsoft-utilities",
-                                            "scripts/EnableCredSsp.ps1"
-                                        ]
-                                    ]
-                                }
-                            },
-                            "C:\\cfn\\scripts\\DisableCredSsp.ps1": {
-                                "source": {
-                                    "Fn::Join": [
-                                        "/",
-                                        [
-                                            {
-                                                "Fn::FindInMap": [
-                                                    "AWSInfoRegionMap",
-                                                    {
-                                                        "Ref": "AWS::Region"
-                                                    },
-                                                    "QuickStartS3URL"
-                                                ]
-                                            },
-                                            {
-                                                "Ref": "QSS3BucketName"
-                                            },
-                                            {
-                                                "Ref": "QSS3KeyPrefix"
-                                            },
-                                            "submodules/quickstart-microsoft-utilities",
-                                            "scripts/DisableCredSsp.ps1"
-                                        ]
-                                    ]
-                                }
-                            }
+							"C:\\cfn\\scripts\\EnableCredSsp.ps1": {
+								"source": "https://s3.amazonaws.com/quickstart-reference/microsoft/sql/latest/submodules/quickstart-microsoft-utilities/scripts/EnableCredSsp.ps1"
+							},
+							"C:\\cfn\\scripts\\DisableCredSsp.ps1": {
+								"source": "https://s3.amazonaws.com/quickstart-reference/microsoft/sql/latest/submodules/quickstart-microsoft-utilities/scripts/DisableCredSsp.ps1"
+							}
 						},
 						"commands": {
 							"a-execute-powershell-script-WSFC": {
@@ -1394,7 +1325,20 @@
 								},
 								"waitAfterCompletion": "0"
 							},
-							"f-reboot": {
+							"f-execute-powershell-script-WMF5": {
+								"command": {
+									"Fn::Join": [
+										"", [
+											"powershell.exe ",
+											"-ExecutionPolicy",
+											" RemoteSigned",
+											" C:\\cfn\\scripts\\Install-WMF5.ps1"
+										]
+									]
+								},
+								"waitAfterCompletion": "0"
+							},
+							"g-reboot": {
 								"command": {
 									"Fn::Join": [
 										"", [
@@ -1598,6 +1542,10 @@
 									]
 								},
 								"waitAfterCompletion": "0"
+							},
+							"k-create-document-encryption-cert": {
+								"command": "powershell.exe -Command \"certreq -new C:\\cfn\\scripts\\DocumentEncryption.inf C:\\DocumentEncryption.cer\"",
+								"waitAfterCompletion": "0"
 							}
 						}
 					},
@@ -1616,14 +1564,14 @@
 								},
 								"waitAfterCompletion": "0"
 							},
-                            "b-enable-credssp": {
-                                "command": "powershell.exe -ExecutionPolicy RemoteSigned -Command \"C:\\cfn\\scripts\\EnableCredSsp.ps1",
-                                "waitAfterCompletion": "0"
-                            },
-                            "c-reboot": {
-                                "command": "powershell.exe -Command \"Restart-Computer -Force\"",
-                                "waitAfterCompletion": "forever"
-                            },
+							"b-enable-credssp": {
+								"command": "powershell.exe -ExecutionPolicy RemoteSigned -Command \"C:\\cfn\\scripts\\EnableCredSsp.ps1",
+								"waitAfterCompletion": "0"
+							},
+							"c-reboot": {
+								"command": "powershell.exe -Command \"Restart-Computer -Force\"",
+								"waitAfterCompletion": "forever"
+							},
 							"d-run-dsc-config": {
 								"command": {
 									"Fn::Join": [
@@ -1662,136 +1610,16 @@
 									]
 								},
 								"waitAfterCompletion": "10"
-							},
-							"e-create-dns-entry-sqlserver1 ": {
-								"command": {
-									"Fn::Join": [
-										"", [
-											"powershell.exe -Command ",
-											"\"Invoke-Command -Scriptblock{ Add-DnsServerResourceRecordA -Name siossqlserver",
-											" -ZoneName datakeeper.local -AllowUpdateAny -IPv4Address ", {
-												"Ref": "WSFCNode1SQLServerIp"
-											}, " }",
-											" -ComputerName ", {
-												"Ref": "AD1NetBIOSName"
-											},
-											" -Credential ",
-											"(New-Object System.Management.Automation.PSCredential('", {
-												"Ref": "DomainNetBIOSName"
-											},
-											"\\", {
-												"Ref": "DomainAdminUser"
-											},
-											"',",
-											"(ConvertTo-SecureString ", {
-												"Ref": "DomainAdminPassword"
-											},
-											" -AsPlainText -Force))) ",
-											"\""
-										]
-									]
-								},
-								"waitAfterCompletion": "0"
-							},
-							"f-create-dns-entry-sqlserver2 ": {
-								"command": {
-									"Fn::Join": [
-										"", [
-											"powershell.exe -Command ",
-											"\"Invoke-Command -Scriptblock{ Add-DnsServerResourceRecordA -Name siossqlserver",
-											" -ZoneName datakeeper.local -AllowUpdateAny -IPv4Address ", {
-												"Ref": "WSFCNode2SQLServerIp"
-											}, " }",
-											" -ComputerName ", {
-												"Ref": "AD1NetBIOSName"
-											},
-											" -Credential ",
-											"(New-Object System.Management.Automation.PSCredential('", {
-												"Ref": "DomainNetBIOSName"
-											},
-											"\\", {
-												"Ref": "DomainAdminUser"
-											},
-											"',",
-											"(ConvertTo-SecureString ", {
-												"Ref": "DomainAdminPassword"
-											},
-											" -AsPlainText -Force))) ",
-											"\""
-										]
-									]
-								},
-								"waitAfterCompletion": "0"
-							},
-							"g-create-dns-entry-sqlserver1 ": {
-								"command": {
-									"Fn::Join": [
-										"", [
-											"powershell.exe -Command ",
-											"\"Invoke-Command -Scriptblock{ Add-DnsServerResourceRecordA -Name siossqlserver",
-											" -ZoneName datakeeper.local -AllowUpdateAny -IPv4Address ", {
-												"Ref": "WSFCNode1SQLServerIp"
-											}, " }",
-											" -ComputerName ", {
-												"Ref": "AD2NetBIOSName"
-											},
-											" -Credential ",
-											"(New-Object System.Management.Automation.PSCredential('", {
-												"Ref": "DomainNetBIOSName"
-											},
-											"\\", {
-												"Ref": "DomainAdminUser"
-											},
-											"',",
-											"(ConvertTo-SecureString ", {
-												"Ref": "DomainAdminPassword"
-											},
-											" -AsPlainText -Force))) ",
-											"\""
-										]
-									]
-								},
-								"waitAfterCompletion": "0"
-							},
-							"h-create-dns-entry-sqlserver2 ": {
-								"command": {
-									"Fn::Join": [
-										"", [
-											"powershell.exe -Command ",
-											"\"Invoke-Command -Scriptblock{ Add-DnsServerResourceRecordA -Name siossqlserver",
-											" -ZoneName datakeeper.local -AllowUpdateAny -IPv4Address ", {
-												"Ref": "WSFCNode2SQLServerIp"
-											}, " }",
-											" -ComputerName ", {
-												"Ref": "AD2NetBIOSName"
-											},
-											" -Credential ",
-											"(New-Object System.Management.Automation.PSCredential('", {
-												"Ref": "DomainNetBIOSName"
-											},
-											"\\", {
-												"Ref": "DomainAdminUser"
-											},
-											"',",
-											"(ConvertTo-SecureString ", {
-												"Ref": "DomainAdminPassword"
-											},
-											" -AsPlainText -Force))) ",
-											"\""
-										]
-									]
-								},
-								"waitAfterCompletion": "0"
 							}
 						}
 					},
 					"finalize": {
 						"commands": {
 							"a-disable-credssp": {
-                                "command": "powershell.exe -ExecutionPolicy RemoteSigned -Command \"C:\\cfn\\scripts\\DisableCredSsp.ps1\"",
-                                "waitAfterCompletion": "0"
-                            },
-                            "b-cleanup-registry": {
+								"command": "powershell.exe -ExecutionPolicy RemoteSigned -Command \"C:\\cfn\\scripts\\DisableCredSsp.ps1\"",
+								"waitAfterCompletion": "0"
+							},
+							"b-cleanup-registry": {
 								"command": {
 									"Fn::Join": [
 										"", [
