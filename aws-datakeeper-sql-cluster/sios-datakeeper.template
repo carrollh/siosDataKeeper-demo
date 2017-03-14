@@ -880,7 +880,7 @@
 								"waitAfterCompletion": "0"
 							},
 							"d-create-document-encryption-cert": {
-								"command": "powershell.exe -Command \"certreq -new C:\\cfn\\scripts\\DocumentEncryption.inf C:\\DocumentEncryption.cer\"",
+								"command": "powershell.exe -Command \"certreq -q -new C:\\cfn\\scripts\\DocumentEncryption.inf C:\\DocumentEncryption.cer\"",
 								"waitAfterCompletion": "0"
 							},
 							"e-reboot": {
@@ -1544,7 +1544,7 @@
 								"waitAfterCompletion": "0"
 							},
 							"k-create-document-encryption-cert": {
-								"command": "powershell.exe -Command \"certreq -new C:\\cfn\\scripts\\DocumentEncryption.inf C:\\DocumentEncryption.cer\"",
+								"command": "powershell.exe -Command \"certreq -q -new C:\\cfn\\scripts\\DocumentEncryption.inf C:\\DocumentEncryption.cer\"",
 								"waitAfterCompletion": "0"
 							}
 						}
