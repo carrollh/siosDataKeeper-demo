@@ -225,7 +225,7 @@
 		"apiVersion": "2015-06-15",
 		"location": "[resourceGroup().location]",
 		"dependsOn": [
-			"[concat('Microsoft.Compute/virtualMachines/extensions/', variables('siosVMNamePrefix'), '0', '/configureSiosVM-1')]"
+			"[concat('extensions/', variables('siosVMNamePrefix'), '0', '/configureSiosVM-1')]"
 		],
 		"properties": {
 			"publisher": "Microsoft.Compute",
@@ -245,7 +245,7 @@
 		"apiVersion": "2015-06-15",
 		"location": "[resourceGroup().location]",
 		"dependsOn": [
-			"[concat('Microsoft.Compute/virtualMachines/extensions/', variables('siosVMNamePrefix'), '0', '/configureSiosVM-2')]"
+			"[concat('extensions/', variables('siosVMNamePrefix'), '0', '/configureSiosVM-2')]"
 		],
 		"properties": {
 			"publisher": "Microsoft.Powershell",
