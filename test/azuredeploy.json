@@ -503,9 +503,6 @@
 				"siosVMNamePrefix": {
 					"value": "[parameters('vMNamePrefix')]"
 				},
-				"location": {
-					"value": "[variables('location')]"
-				},
 				"newStorageAccountNamePrefix": {
 					"value": "[parameters('newStorageAccountNamePrefix')]"
 				},
