@@ -68,6 +68,9 @@ This template creates a single virtual machine running Windows Server 2012 R2, S
 <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fcarrollh%2FsiosDataKeeper-demo%2Fmaster%2Ftest%2Fazuredeploy.json" target="_blank">
     <img src="http://azuredeploy.net/deploybutton.png"/>
 </a>
+<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fcarrollh%2FsiosDataKeeper-demo%2Fmaster%2Ftest%2Fnested%2FcreatingSiosVMs.json" target="_blank">
+    <img src="http://azuredeploy.net/deploybutton.png"/>
+</a>
 Deployment testing template.
 
 

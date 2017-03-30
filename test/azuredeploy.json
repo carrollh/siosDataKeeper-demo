@@ -190,8 +190,8 @@
 		}],
 		"configuration": {
 			"vnetwithDNSTemplateURL": "[concat(variables('baseUrl'),'/nested/creatingVNetWithDNSServer.json')]",
-			"adPDCModulesURL": "[concat(variables('baseUrl'),'/scripts/CreateADPDC.ps1.zip')]",
-			"adPDCConfigurationFunction": "CreateADPDC.ps1\\CreateADPDC",
+			"adPDCModulesURL": "[concat(variables('baseUrl'),'/scripts/CreateADPDC.zip')]",
+			"adPDCConfigurationFunction": "CreateADPDC\\CreateADPDC",
 			"rdpIPAdressSetupURL": "[concat(variables('baseUrl'),'/nested/creatingPublicIP-RDP.json')]",
 			"availabilitySetSetupURL": "[concat(variables('baseUrl'),'/nested/creatingAvailabilitySets.json')]",
 			"provisioningPrimaryDCURL": "[concat(variables('baseUrl'),'/nested/provisioningPrimaryDomainController.json')]",
@@ -200,10 +200,10 @@
 			"vnetSetupURL": "[concat(variables('baseUrl'),'/nested/creatingNewVNet.json')]",
 			"creatingNicsUrl": "[concat(variables('baseUrl'),'/nested/creatingNICs.json')]",
 			"creatingInternalLoadBalancerURL": "[concat(variables('baseUrl'),'/nested/creatingInternalLoadBalancer.json')]",
-			"prepareDataKeeperHeadNodeModuleURL": "[concat(variables('baseUrl'),'/scripts/ConfigureSiosVM0.ps1.zip')]",
-			"prepareDataKeeperHeadNodeCommandStr": "ConfigureSiosVM0.ps1\\ConfigureSiosVM0",
-			"prepareDataKeeperNodesModuleURL": "[concat(variables('baseUrl'),'/scripts/ConfigureSiosVM.ps1.zip')]",
-			"prepareDataKeeperNodesCommandStr": "ConfigureSiosVM.ps1\\ConfigureSiosVM"
+			"prepareDataKeeperHeadNodeModuleURL": "[concat(variables('baseUrl'),'/scripts/ConfigureSiosVM0.zip')]",
+			"prepareDataKeeperHeadNodeCommandStr": "ConfigureSiosVM0\\ConfigureSiosVM0",
+			"prepareDataKeeperNodesModuleURL": "[concat(variables('baseUrl'),'/scripts/ConfigureSiosVM.zip')]",
+			"prepareDataKeeperNodesCommandStr": "ConfigureSiosVM\\ConfigureSiosVM"
 		}
 	},
 	"resources": [{
