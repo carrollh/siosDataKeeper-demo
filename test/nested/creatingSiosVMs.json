@@ -1,0 +1,312 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"siosVMNamePrefix": {
+			"type": "string"
+		},
+		"location": {
+			"type": "string"
+		},
+		"newStorageAccountNamePrefix": {
+			"type": "string"
+		},
+		"siosAvailabilitySet": {
+			"type": "string"
+		},
+		"windowsImageSKU": {
+			"type": "string"
+		},
+		"siosVMSize": {
+			"type": "string"
+		},
+		"domainName": {
+			"type": "string"
+		},
+		"adminUsername": {
+			"type": "string"
+		},
+		"adminPassword": {
+			"type": "securestring"
+		},
+		"vmContainerName": {
+			"type": "string"
+		},
+		"licenseKeyFtpURL": {
+			"type": "string"
+		},
+		"clusterName": {
+			"type": "string"
+		},
+		"sharePath": {
+			"type": "string"
+		},
+		"dataDiskSizeGB": {
+			"type": "int"
+		},
+		"prepareDataKeeperHeadNodeModuleURL": {
+			"type": "string"
+		},
+		"prepareDataKeeperHeadNodeCommandStr": {
+			"type": "string"
+		},
+		"prepareDataKeeperNodesModuleURL": {
+			"type": "string"
+		},
+		"prepareDataKeeperNodesCommandStr": {
+			"type": "string"
+		},
+        "_artifactsLocation": {
+            "type": "string",
+            "metadata": {
+                "description": "The base URI where artifacts required by this template are located. When the template is deployed using the accompanying scripts, a private location in the subscription will be used and this value will be automatically generated."
+            },
+            "defaultValue": "https://raw.githubusercontent.com/carrollh/siosDataKeeper-demo/master/test"
+        },
+        "_artifactsLocationSasToken": {
+            "type": "securestring",
+            "metadata": {
+                "description": "The sasToken required to access _artifactsLocation.  When the template is deployed using the accompanying scripts, a sasToken will be automatically generated."
+            },
+            "defaultValue": ""
+        }
+	},
+	"variables": {
+		"sharePathPrefix": "\\\\ad-pdc\\",
+		"siosVMNamePrefix": "[concat(parameters('siosVMNamePrefix'), '-')]",
+		"siosNode0": "[concat(variables('siosVMNamePrefix'), '0')]",
+		"siosNode1": "[concat(variables('siosVMNamePrefix'), '1')]",
+		"prepareDataKeeperHeadNodeModuleURL-1": "[concat(parameters('prepareDataKeeperHeadNodeModuleURL'), '-1')]",
+		"scriptFolder": "scripts",
+		"scriptFileName": "Configure-WSFC.ps1",
+		"scriptParameters": "[concat('-DomainName ', parameters('domainName'), ' -DomainAdminUser ', parameters('adminUsername'), ' -DomainAdminPassword', parameters('adminPassword'), ' -WSFCNode1NetBIOSName', variables('siosNode0'), ' -WSFCNode2NetBIOSName', variables('siosNode1'), ' -WSFCNode1PrivateIP2', '10.0.0.100', ' -NetBIOSName', variables('siosNode0'))]",
+		"prepareDataKeeperHeadNodeModuleURL-3": "[concat(parameters('prepareDataKeeperHeadNodeModuleURL'), '-3')]"
+	},
+	"resources": [{
+		"apiVersion": "2015-06-15",
+		"type": "Microsoft.Compute/virtualMachines",
+		"name": "[concat(variables('siosVMNamePrefix'), '0')]",
+		"location": "[parameters('location')]",
+		"properties": {
+			"hardwareProfile": {
+				"vmSize": "[parameters('siosVMSize')]"
+			},
+			"availabilitySet": {
+				"id": "[parameters('siosAvailabilitySet')]"
+			},
+			"osProfile": {
+				"computerName": "[concat(variables('siosVMNamePrefix'), '0')]",
+				"adminUsername": "[parameters('adminUsername')]",
+				"adminPassword": "[parameters('adminPassword')]"
+			},
+			"storageProfile": {
+				"imageReference": {
+					"publisher": "MicrosoftWindowsServer",
+					"offer": "WindowsServer",
+					"sku": "[parameters('windowsImageSKU')]",
+					"version": "latest"
+				},
+				"osDisk": {
+					"name": "osdisk",
+					"vhd": {
+						"uri": "[concat('http://',parameters('newStorageAccountNamePrefix'),'1.blob.core.windows.net/',parameters('vmContainerName'),'/',variables('siosVMNamePrefix'), '0', '-osdisk.vhd')]"
+					},
+					"caching": "ReadWrite",
+					"createOption": "FromImage"
+				},
+				"dataDisks": [{
+					"vhd": {
+						"uri": "[concat('http://',parameters('newStorageAccountNamePrefix'),'1.blob.core.windows.net/',parameters('vmContainerName'),'/', variables('siosVMNamePrefix'), '0', '-datadisk.vhd')]"
+					},
+					"name": "[concat(variables('siosVMNamePrefix'), '0','-datadisk')]",
+					"caching": "None",
+					"createOption": "empty",
+					"diskSizeGB": "[parameters('dataDiskSizeGB')]",
+					"lun": 0
+				}]
+			},
+			"networkProfile": {
+				"networkInterfaces": [{
+					"id": "[resourceId(resourceGroup().name,'Microsoft.Network/networkInterfaces',concat(variables('siosVMNamePrefix'), '0','-nic'))]"
+				}]
+			},
+			"diagnosticsProfile": {
+				"bootDiagnostics": {
+					"enabled": "true",
+					"storageUri": "[concat('http://',parameters('newStorageAccountNamePrefix'),'diag.blob.core.windows.net')]"
+				}
+			}
+		}
+	}, {
+		"type": "Microsoft.Compute/virtualMachines/extensions",
+		"name": "[concat(variables('siosVMNamePrefix'), '0', '/configureSiosVM-1')]",
+		"apiVersion": "2015-06-15",
+		"location": "[parameters('location')]",
+		"dependsOn": [
+			"[concat('Microsoft.Compute/virtualMachines/', variables('siosVMNamePrefix'), '0')]"
+		],
+		"properties": {
+			"publisher": "Microsoft.Powershell",
+			"type": "DSC",
+			"typeHandlerVersion": "2.6",
+			"autoUpgradeMinorVersion": true,
+			"settings": {
+				"modulesURL": "[variables('prepareDataKeeperHeadNodeModuleURL-1')]",
+				"configurationFunction": "[parameters('prepareDataKeeperHeadNodeCommandStr')]",
+				"properties": {
+					"domainName": "[parameters('domainName')]",
+					"adminCreds": {
+						"userName": "[parameters('adminUserName')]",
+						"password": "PrivateSettingsRef:adminPassword"
+					},
+					"licenseKeyFtpURL": "[parameters('licenseKeyFtpURL')]",
+					"nodes": ["[concat(variables('siosVMNamePrefix'),'0')]", "[concat(variables('siosVMNamePrefix'),'1')]"]
+				}
+			},
+			"protectedSettings": {
+				"items": {
+					"adminPassword": "[parameters('adminPassword')]"
+				}
+			}
+		}
+	}, {
+		"type": "Microsoft.Compute/virtualMachines/extensions",
+		"name": "[concat(variables('siosVMNamePrefix'), '0', '/configureSiosVM-2')]",
+		"apiVersion": "2015-06-15",
+		"location": "[parameters('location')]",
+		"dependsOn": [
+			"[concat('Microsoft.Compute/virtualMachines/extensions', variables('siosVMNamePrefix'), '0', '/configureSiosVM-1')]"
+		],
+		"properties": {
+			"publisher": "Microsoft.Compute",
+			"type": "CustomScriptExtension",
+			"typeHandlerVersion": "1.8",
+			"autoUpgradeMinorVersion": true,
+			"settings": {
+				"fileUris": [
+					"[concat(parameters('_artifactsLocation'), '/', variables('scriptFolder'), '/', variables('scriptFileName'), parameters('_artifactsLocationSasToken'))]"
+				],
+				"commandToExecute": "[concat('powershell -ExecutionPolicy Unrestricted -File ', variables('scriptFolder'), '/', variables('scriptFileName'), ' ', variables('scriptParameters'))]"
+			}
+		}
+	}, {
+		"type": "Microsoft.Compute/virtualMachines/extensions",
+		"name": "[concat(variables('siosVMNamePrefix'), '0', '/configureSiosVM-3')]",
+		"apiVersion": "2015-06-15",
+		"location": "[parameters('location')]",
+		"dependsOn": [
+			"[concat('Microsoft.Compute/virtualMachines/extensions', variables('siosVMNamePrefix'), '0', '/configureSiosVM-2')]"
+		],
+		"properties": {
+			"publisher": "Microsoft.Powershell",
+			"type": "DSC",
+			"typeHandlerVersion": "2.6",
+			"autoUpgradeMinorVersion": true,
+			"settings": {
+				"modulesURL": "[variables('prepareDataKeeperHeadNodeModuleURL-3')]",
+				"configurationFunction": "[parameters('prepareDataKeeperHeadNodeCommandStr')]",
+				"properties": {
+					"domainName": "[parameters('domainName')]",
+					"adminCreds": {
+						"userName": "[parameters('adminUserName')]",
+						"password": "PrivateSettingsRef:adminPassword"
+					},
+					"clusterName": "[parameters('clusterName')]",
+					"sharePath": "[toLower(concat(variables('sharePathPrefix'), parameters('sharePath')))]"
+				}
+			},
+			"protectedSettings": {
+				"items": {
+					"adminPassword": "[parameters('adminPassword')]"
+				}
+			}
+		}
+	}, {
+		"apiVersion": "2015-06-15",
+		"type": "Microsoft.Compute/virtualMachines",
+		"name": "[concat(variables('siosVMNamePrefix'), '1')]",
+		"location": "[parameters('location')]",
+		"properties": {
+			"hardwareProfile": {
+				"vmSize": "[parameters('siosVMSize')]"
+			},
+			"availabilitySet": {
+				"id": "[parameters('siosAvailabilitySet')]"
+			},
+			"osProfile": {
+				"computerName": "[concat(variables('siosVMNamePrefix'), '1')]",
+				"adminUsername": "[parameters('adminUsername')]",
+				"adminPassword": "[parameters('adminPassword')]"
+			},
+			"storageProfile": {
+				"imageReference": {
+					"publisher": "MicrosoftWindowsServer",
+					"offer": "WindowsServer",
+					"sku": "[parameters('windowsImageSKU')]",
+					"version": "latest"
+				},
+				"osDisk": {
+					"name": "osdisk",
+					"vhd": {
+						"uri": "[concat('http://',parameters('newStorageAccountNamePrefix'),'1.blob.core.windows.net/',parameters('vmContainerName'),'/',variables('siosVMNamePrefix'), '1', '-osdisk.vhd')]"
+					},
+					"caching": "ReadWrite",
+					"createOption": "FromImage"
+				},
+				"dataDisks": [{
+					"vhd": {
+						"uri": "[concat('http://',parameters('newStorageAccountNamePrefix'),'1.blob.core.windows.net/',parameters('vmContainerName'),'/', variables('siosVMNamePrefix'), '1', '-datadisk.vhd')]"
+					},
+					"name": "[concat(variables('siosVMNamePrefix'), '1','-datadisk')]",
+					"caching": "None",
+					"createOption": "empty",
+					"diskSizeGB": "[parameters('dataDiskSizeGB')]",
+					"lun": 0
+				}]
+			},
+			"networkProfile": {
+				"networkInterfaces": [{
+					"id": "[resourceId(resourceGroup().name,'Microsoft.Network/networkInterfaces',concat(variables('siosVMNamePrefix'), '1','-nic'))]"
+				}]
+			},
+			"diagnosticsProfile": {
+				"bootDiagnostics": {
+					"enabled": "true",
+					"storageUri": "[concat('http://',parameters('newStorageAccountNamePrefix'),'diag.blob.core.windows.net')]"
+				}
+			}
+		}
+	}, {
+		"type": "Microsoft.Compute/virtualMachines/extensions",
+		"name": "[concat(variables('siosVMNamePrefix'), '1', '/configureSiosVM')]",
+		"apiVersion": "2015-06-15",
+		"location": "[parameters('location')]",
+		"dependsOn": [
+			"[concat('Microsoft.Compute/virtualMachines/', variables('siosVMNamePrefix'), '1')]"
+		],
+		"properties": {
+			"publisher": "Microsoft.Powershell",
+			"type": "DSC",
+			"typeHandlerVersion": "2.6",
+			"autoUpgradeMinorVersion": true,
+			"settings": {
+				"modulesURL": "[parameters('prepareDataKeeperNodesModuleURL')]",
+				"configurationFunction": "[parameters('prepareDataKeeperNodesCommandStr')]",
+				"properties": {
+					"domainName": "[parameters('domainName')]",
+					"adminCreds": {
+						"userName": "[parameters('adminUserName')]",
+						"password": "PrivateSettingsRef:adminPassword"
+					},
+					"licenseKeyFtpURL": "[parameters('licenseKeyFtpURL')]"
+				}
+			},
+			"protectedSettings": {
+				"items": {
+					"adminPassword": "[parameters('adminPassword')]"
+				}
+			}
+		}
+	}],
+	"outputs": {}
+}
