@@ -93,7 +93,6 @@ try {
 	}
 }
 catch {
-    $_ | Write-AWSQuickStartException
 }
 
 function Get-NetBIOSName
