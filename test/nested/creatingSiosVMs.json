@@ -199,7 +199,7 @@
 			"autoUpgradeMinorVersion": true,
 			"settings": {
 				"modulesURL": "[variables('prepareDataKeeperHeadNodeModuleURL')]",
-				"configurationFunction": "[concat(parameters('prepareDataKeeperHeadNodeCommandStr'), '-1']",
+				"configurationFunction": "[concat(parameters('prepareDataKeeperHeadNodeCommandStr'), '-1')]",
 				"properties": {
 					"domainName": "[parameters('domainName')]",
 					"adminCreds": {
@@ -251,7 +251,7 @@
 			"autoUpgradeMinorVersion": true,
 			"settings": {
 				"modulesURL": "[variables('prepareDataKeeperHeadNodeModuleURL')]",
-				"configurationFunction": "[concat(parameters('prepareDataKeeperHeadNodeCommandStr'), '-3']",
+				"configurationFunction": "[concat(parameters('prepareDataKeeperHeadNodeCommandStr'), '-3')]",
 				"properties": {
 					"domainName": "[parameters('domainName')]",
 					"adminCreds": {
