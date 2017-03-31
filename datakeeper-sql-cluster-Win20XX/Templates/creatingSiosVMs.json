@@ -239,7 +239,8 @@
               "userName": "[parameters('adminUserName')]",
               "password": "PrivateSettingsRef:adminPassword"
             },
-            "licenseKeyFtpURL": "[parameters('licenseKeyFtpURL')]"
+            "licenseKeyFtpURL": "[parameters('licenseKeyFtpURL')]",
+			"clusterName": "[parameters('clusterName')]"
           }
         },
         "protectedSettings": {
