@@ -4,63 +4,76 @@
   "parameters": {
     "siosVMNamePrefix": {
       "type": "string"
-    },
-    "location": {
-      "type": "string"
+      "defaultValue": "sios"
     },
     "newStorageAccountNamePrefix": {
-      "type": "string"
+      "type": "string",
+      "defaultValue": "[toLower(resourceGroup().name)]"
     },
     "siosAvailabilitySet": {
-      "type": "string"
+      "type": "string",
+      "defaultValue": "siosAvailabilitySet"
     },
     "clientAvailabilitySet": {
-      "type": "string"
+      "type": "string",
+      "defaultValue": "clientAvailabilitySet"
     },
     "siosVMSize": {
-      "type": "string"
+      "type": "string",
+      "defaultValue": "Standard_DS1",
     },
     "domainName": {
-      "type": "string"
+      "type": "string",
+      "defaultValue": "datakeeper.local",
     },
     "adminUsername": {
-      "type": "string"
+      "type": "string",
+      "defaultValue": "siosadmin",
     },
     "adminPassword": {
-      "type": "securestring"
+      "type": "securestring",
+      "defaultValue": "SIOS!5105"
     },
     "vmContainerName": {
-      "type": "string"
+      "type": "string",
+      "defaultValue": "vhds"
     },
     "licenseKeyFtpURL": {
       "type": "string"
     },
-    "clusterName": {
-      "type": "string"
-    },
     "sharePath": {
-      "type": "string"
+      "type": "string",
+      "defaultValue": "[toLower(concat(resourceGroup().name, '-fsw'))]",
     },
     "prepareDataKeeperHeadNodeModuleURL": {
-      "type": "string"
+      "type": "string",
+      "defaultValue": "[concat(variables('baseUrl'),'/DSC/ConfigureSiosVM0.ps1.zip')]"
     },
     "prepareDataKeeperHeadNodeCommandStr": {
-      "type": "string"
+      "type": "string",
+      "defaultValue": "ConfigureSiosVM0.ps1\\ConfigureSiosVM0"
     },
     "prepareDataKeeperNodesModuleURL": {
-      "type": "string"
+      "type": "string",
+      "defaultValue": "[concat(variables('baseUrl'),'/DSC/ConfigureSiosVM.ps1.zip')]"
     },
     "prepareDataKeeperNodesCommandStr": {
-      "type": "string"
+      "type": "string",
+      "defaultValue": "ConfigureSiosVM.ps1\\ConfigureSiosVM"
     },
     "prepareClientVMModuleURL": {
-      "type": "string"
+      "type": "string",
+      "defaultValue": "[concat(variables('baseUrl'),'/DSC/ConfigureSiosClientVM.ps1.zip')]"
     },
     "prepareClientVMCommandStr": {
-      "type": "string"
+      "type": "string",
+      "defaultValue": "ConfigureSiosClientVM.ps1\\ConfigureSiosClientVM"
     }
   },
   "variables": {
+    "baseUrl": "https://raw.githubusercontent.com/carrollh/siosDataKeeper-sql-cluster/master",
+    "location": "[resourceGroup().location]",
+    "clusterName": "[concat(parameters('siosVMNamePrefix'),'-fc')]",
     "sharePathPrefix": "\\\\ad-pdc\\",
     "siosVMNamePrefix": "[concat(parameters('siosVMNamePrefix'), '-')]"
   },
@@ -69,7 +82,7 @@
       "apiVersion": "2015-06-15",
       "type": "Microsoft.Compute/virtualMachines",
       "name": "[concat(variables('siosVMNamePrefix'), '0')]",
-      "location": "[parameters('location')]",
+      "location": "[variables('location')]",
       "plan": {
         "name": "bring_your_own_license",
         "publisher": "sios_datakeeper",
@@ -134,7 +147,7 @@
       "type": "Microsoft.Compute/virtualMachines/extensions",
       "name": "[concat(variables('siosVMNamePrefix'), '0', '/configureSiosVM')]",
       "apiVersion": "2015-06-15",
-      "location": "[parameters('location')]",
+      "location": "[variables('location')]",
       "dependsOn": [
         "[concat('Microsoft.Compute/virtualMachines/', variables('siosVMNamePrefix'), '0')]"
       ],
@@ -153,7 +166,7 @@
               "password": "PrivateSettingsRef:adminPassword"
             },
             "licenseKeyFtpURL": "[parameters('licenseKeyFtpURL')]",
-            "clusterName": "[parameters('clusterName')]",
+            "clusterName": "[variables('clusterName')]",
             "sharePath": "[toLower(concat(variables('sharePathPrefix'), parameters('sharePath')))]",
             "nodes": [ "[concat(variables('siosVMNamePrefix'),'0')]", "[concat(variables('siosVMNamePrefix'),'1')]" ]
           }
@@ -169,7 +182,7 @@
       "apiVersion": "2015-06-15",
       "type": "Microsoft.Compute/virtualMachines",
       "name": "[concat(variables('siosVMNamePrefix'), '1')]",
-      "location": "[parameters('location')]",
+      "location": "[variables('location')]",
       "plan": {
         "name": "bring_your_own_license",
         "publisher": "sios_datakeeper",
@@ -234,7 +247,7 @@
       "type": "Microsoft.Compute/virtualMachines/extensions",
       "name": "[concat(variables('siosVMNamePrefix'), '1', '/configureSiosVM')]",
       "apiVersion": "2015-06-15",
-      "location": "[parameters('location')]",
+      "location": "[variables('location')]",
       "dependsOn": [
         "[concat('Microsoft.Compute/virtualMachines/', variables('siosVMNamePrefix'), '1')]"
       ],
@@ -266,7 +279,7 @@
       "apiVersion": "2015-06-15",
       "type": "Microsoft.Compute/virtualMachines",
       "name": "[concat(variables('siosVMNamePrefix'), 'client')]",
-      "location": "[parameters('location')]",
+      "location": "[variables('location')]",
       "plan": {
         "name": "bring_your_own_license",
         "publisher": "sios_datakeeper",
@@ -320,7 +333,7 @@
       "type": "Microsoft.Compute/virtualMachines/extensions",
       "name": "[concat(variables('siosVMNamePrefix'), 'client', '/configureSiosVM')]",
       "apiVersion": "2015-06-15",
-      "location": "[parameters('location')]",
+      "location": "[variables('location')]",
       "dependsOn": [
         "[concat('Microsoft.Compute/virtualMachines/', variables('siosVMNamePrefix'), 'client')]"
       ],
