@@ -3,32 +3,32 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "siosVMNamePrefix": {
-      "type": "string"
+      "type": "string",
       "defaultValue": "sios"
     },
     "newStorageAccountNamePrefix": {
       "type": "string",
-      "defaultValue": "[toLower(resourceGroup().name)]"
+      "defaultValue": "resourceGroupName"
     },
     "siosAvailabilitySet": {
       "type": "string",
-      "defaultValue": "siosAvailabilitySet"
+      "defaultValue": "[resourceId('Microsoft.Compute/availabilitySets/siosAvailabilitySet')]"
     },
     "clientAvailabilitySet": {
       "type": "string",
-      "defaultValue": "clientAvailabilitySet"
+      "defaultValue": "[resourceId('Microsoft.Compute/availabilitySets/clientAvailabilitySet')]"
     },
     "siosVMSize": {
       "type": "string",
-      "defaultValue": "Standard_DS1",
+      "defaultValue": "Standard_DS1"
     },
     "domainName": {
       "type": "string",
-      "defaultValue": "datakeeper.local",
+      "defaultValue": "datakeeper.local"
     },
     "adminUsername": {
       "type": "string",
-      "defaultValue": "siosadmin",
+      "defaultValue": "siosadmin"
     },
     "adminPassword": {
       "type": "securestring",
@@ -43,11 +43,11 @@
     },
     "sharePath": {
       "type": "string",
-      "defaultValue": "[toLower(concat(resourceGroup().name, '-fsw'))]",
+      "defaultValue": "resourceGroupName-fsw"
     },
     "prepareDataKeeperHeadNodeModuleURL": {
       "type": "string",
-      "defaultValue": "[concat(variables('baseUrl'),'/DSC/ConfigureSiosVM0.ps1.zip')]"
+      "defaultValue": "https://raw.githubusercontent.com/carrollh/siosDataKeeper-sql-cluster/master/DSC/ConfigureSiosVM0.ps1.zip/DSC/ConfigureSiosVM0.ps1.zip"
     },
     "prepareDataKeeperHeadNodeCommandStr": {
       "type": "string",
@@ -55,7 +55,7 @@
     },
     "prepareDataKeeperNodesModuleURL": {
       "type": "string",
-      "defaultValue": "[concat(variables('baseUrl'),'/DSC/ConfigureSiosVM.ps1.zip')]"
+      "defaultValue": "https://raw.githubusercontent.com/carrollh/siosDataKeeper-sql-cluster/master/DSC/ConfigureSiosVM0.ps1.zip/DSC/ConfigureSiosVM.ps1.zip"
     },
     "prepareDataKeeperNodesCommandStr": {
       "type": "string",
@@ -63,7 +63,7 @@
     },
     "prepareClientVMModuleURL": {
       "type": "string",
-      "defaultValue": "[concat(variables('baseUrl'),'/DSC/ConfigureSiosClientVM.ps1.zip')]"
+      "defaultValue": "https://raw.githubusercontent.com/carrollh/siosDataKeeper-sql-cluster/master/DSC/ConfigureSiosVM0.ps1.zip/DSC/ConfigureSiosClientVM.ps1.zip"
     },
     "prepareClientVMCommandStr": {
       "type": "string",
