@@ -12,11 +12,11 @@
     },
     "siosAvailabilitySet": {
       "type": "string",
-      "defaultValue": "[resourceId('Microsoft.Compute/availabilitySets/siosAvailabilitySet')]"
+      "defaultValue": "/subscriptions/<subscriptionID>/resourceGroups/<resourceGroupName>/providers/Microsoft.Compute/availabilitySets/siosAvailabilitySet"
     },
     "clientAvailabilitySet": {
       "type": "string",
-      "defaultValue": "[resourceId('Microsoft.Compute/availabilitySets/clientAvailabilitySet')]"
+      "defaultValue": "/subscriptions/<subscriptionID>/resourceGroups/<resourceGroupName>/providers/Microsoft.Compute/availabilitySets/clientAvailabilitySet"
     },
     "siosVMSize": {
       "type": "string",
@@ -47,7 +47,7 @@
     },
     "prepareDataKeeperHeadNodeModuleURL": {
       "type": "string",
-      "defaultValue": "https://raw.githubusercontent.com/carrollh/siosDataKeeper-sql-cluster/master/DSC/ConfigureSiosVM0.ps1.zip/DSC/ConfigureSiosVM0.ps1.zip"
+      "defaultValue": "https://raw.githubusercontent.com/carrollh/siosdatakeeper-demo/master/datakeeper-sql-cluster/DSC/ConfigureSiosVM0.ps1.zip"
     },
     "prepareDataKeeperHeadNodeCommandStr": {
       "type": "string",
@@ -55,7 +55,7 @@
     },
     "prepareDataKeeperNodesModuleURL": {
       "type": "string",
-      "defaultValue": "https://raw.githubusercontent.com/carrollh/siosDataKeeper-sql-cluster/master/DSC/ConfigureSiosVM0.ps1.zip/DSC/ConfigureSiosVM.ps1.zip"
+      "defaultValue": "https://raw.githubusercontent.com/carrollh/siosdatakeeper-demo/master/datakeeper-sql-cluster/DSC/ConfigureSiosVM.ps1.zip"
     },
     "prepareDataKeeperNodesCommandStr": {
       "type": "string",
@@ -63,7 +63,7 @@
     },
     "prepareClientVMModuleURL": {
       "type": "string",
-      "defaultValue": "https://raw.githubusercontent.com/carrollh/siosDataKeeper-sql-cluster/master/DSC/ConfigureSiosVM0.ps1.zip/DSC/ConfigureSiosClientVM.ps1.zip"
+      "defaultValue": "https://raw.githubusercontent.com/carrollh/siosdatakeeper-demo/master/datakeeper-sql-cluster/DSC/ConfigureSiosClientVM.ps1.zip"
     },
     "prepareClientVMCommandStr": {
       "type": "string",
