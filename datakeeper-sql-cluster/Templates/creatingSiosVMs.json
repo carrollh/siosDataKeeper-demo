@@ -32,7 +32,7 @@
     },
     "adminPassword": {
       "type": "securestring",
-      "defaultValue": "SIOS!5105"
+      "defaultValue": "SIOS!5105851"
     },
     "vmContainerName": {
       "type": "string",
