@@ -497,9 +497,6 @@
           "siosVMNamePrefix": {
             "value": "[parameters('vMNamePrefix')]"
           },
-          "location": {
-            "value": "[variables('location')]"
-          },
           "newStorageAccountNamePrefix": {
             "value": "[parameters('newStorageAccountNamePrefix')]"
           },
@@ -526,9 +523,6 @@
           },
           "licenseKeyFtpURL": {
             "value": "[parameters('licenseKeyFtpURL')]"
-          },
-          "clusterName": {
-            "value": "[variables('clusterName')]"
           },
           "sharePath": {
             "value": "[variables('sharePath')]"
