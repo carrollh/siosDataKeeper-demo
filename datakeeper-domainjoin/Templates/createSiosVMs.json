@@ -142,10 +142,7 @@
               "userName": "[parameters('adminUserName')]",
               "password": "PrivateSettingsRef:adminPassword"
             },
-            "licenseKeyFtpURL": "[parameters('licenseKeyFtpURL')]",
-            "clusterName": "[variables('clusterName')]",
-            "clusterIPAddress": "[parameters('clusterIPAddress')]".
-            "nodes": "[parameters('vmName')]"
+            "licenseKeyFtpURL": "[parameters('licenseKeyFtpURL')]"
           }
         },
         "protectedSettings": {
