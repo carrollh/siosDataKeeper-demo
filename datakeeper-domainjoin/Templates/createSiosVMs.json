@@ -18,7 +18,8 @@
       "type": "string"
     },
     "availabilitySet": {
-      "type": "string"
+      "type": "string",
+      "defaultValue": "/subscriptions/<subscriptionID>/resourceGroups/<resourceGroupName>/providers/Microsoft.Compute/availabilitySets/siosAvailabilitySet"
     },
     "vmSize": {
       "type": "string"
@@ -60,9 +61,9 @@
       "name": "[parameters('vmName')]",
       "location": "[parameters('location')]",
       "plan": {
-        "name": "bring_your_own_license_dkce_and_sql",
+        "name": "bring_your_own_license",
         "publisher": "sios_datakeeper",
-        "product": "bring_your_own_license_dkce_and_sql"
+        "product": "sios-datakeeper-8"
       },
       "properties": {
         "hardwareProfile": {
@@ -79,8 +80,8 @@
         "storageProfile": {
           "imageReference": {
             "publisher": "sios_datakeeper",
-            "offer": "bring_your_own_license_dkce_and_sql",
-            "sku": "bring_your_own_license_dkce_and_sql",
+            "offer": "sios-datakeeper-8",
+            "sku": "bring_your_own_license",
             "version": "latest"
           },
           "osDisk": {
@@ -142,7 +143,9 @@
               "password": "PrivateSettingsRef:adminPassword"
             },
             "licenseKeyFtpURL": "[parameters('licenseKeyFtpURL')]",
-            "clusterIPAddress": "[parameters('clusterIPAddress')]"
+            "clusterName": "[variables('clusterName')]",
+            "clusterIPAddress": "[parameters('clusterIPAddress')]".
+            "nodes": "[parameters('vmName')]"
           }
         },
         "protectedSettings": {
