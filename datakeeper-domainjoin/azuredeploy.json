@@ -45,7 +45,7 @@
     },
     "privateIPAddress": {
       "type": "string",
-      "defaultValue": "10.0.0.8",
+      "defaultValue": "10.0.0.7",
       "metadata": {
         "description": "The starting private IP address to use for the new VM(s). Additional VMs will use the next IPs in sequence. For example if you provision 3 new VMs with 10.0.0.8 as the starting IP address, they will be given addresses 10.0.0.8, 10.0.0.9, and 10.0.0.10 respectively."
       }
@@ -80,14 +80,14 @@
     },
     "existingDomainAdminPassword": {
       "type": "securestring",
-      "defaultValue": "SIOS!5105",
+      "defaultValue": "SIOS!5105851",
       "metadata": {
         "description": "The password for the Administrator account of the new VMs and Domain"
       }
     },
     "vmName": {
       "type": "string",
-      "defaultValue": "sios",
+      "defaultValue": "sios-2",
       "metadata": {
         "description": "Name for the vm being created."
       }
@@ -137,7 +137,7 @@
     },
     "clusterIPAddress": {
       "type": "string",
-      "defaultValue": "10.0.0.200",
+      "defaultValue": "10.0.0.201",
       "metadata": {
         "description": "IP address for the cluster being joined."
       }
