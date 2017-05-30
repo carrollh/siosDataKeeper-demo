@@ -129,7 +129,7 @@
     },
     "ilbName": "InternalLoadBalancer",
     "ilbID": "[resourceId('Microsoft.Network/loadBalancers',variables('ilbName'))]",
-    "ilbIPAddress": "10.0.0.201",
+    "ilbIPAddress": "10.0.0.200",
     "ilbFE": "ilbFE",
     "ilbBE": "ilbBE",
     "ilbAOProbe": "ilbAlwaysOnEndPointProbe",
