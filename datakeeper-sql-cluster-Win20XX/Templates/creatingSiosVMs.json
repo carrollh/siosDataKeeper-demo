@@ -120,7 +120,35 @@
             "storageUri": "[concat('http://',parameters('newStorageAccountNamePrefix'),'diag.blob.core.windows.net')]"
           }
         }
-      }
+      },
+      "resources": [
+        {
+          "apiVersion": "2015-06-15",
+          "type": "extensions",
+          "name": "config-app",
+          "location": "[resourceGroup().location]",
+          "dependsOn": [
+            "[concat('Microsoft.Compute/virtualMachines/', variables('siosVMNamePrefix'), '0')]"
+          ],
+          "tags": {
+            "displayName": "enable-ps-script-extensions"
+          },
+          "properties": {
+            "publisher": "Microsoft.Compute",
+            "type": "CustomScriptExtension",
+            "typeHandlerVersion": "1.4",
+            "autoUpgradeMinorVersion": true,
+            "settings": {
+              "fileUris": [
+                "https://raw.githubusercontent.com/carrollh/siosDataKeeper-demo/master/datakeeper-sql-cluster-Win20XX/Scripts/Set-ExecutionPolicyUnrestricted.ps1"
+              ]
+            },
+            "protectedSettings": {
+              "commandToExecute": "[concat('powershell -ExecutionPolicy Unrestricted -File Set-ExecutionPolicyUnrestricted.ps1 -AdminUsername ',parameters('adminUsername'),' -AdminPassword ',parameters('adminPassword'))]"
+            }
+          }
+        }
+      ]
     },
     {
       "type": "Microsoft.Compute/virtualMachines/extensions",
@@ -215,7 +243,35 @@
             "storageUri": "[concat('http://',parameters('newStorageAccountNamePrefix'),'diag.blob.core.windows.net')]"
           }
         }
-      }
+      },
+      "resources": [
+        {
+          "apiVersion": "2015-06-15",
+          "type": "extensions",
+          "name": "config-app",
+          "location": "[resourceGroup().location]",
+          "dependsOn": [
+            "[concat('Microsoft.Compute/virtualMachines/', variables('siosVMNamePrefix'), '1')]"
+          ],
+          "tags": {
+            "displayName": "enable-ps-script-extensions"
+          },
+          "properties": {
+            "publisher": "Microsoft.Compute",
+            "type": "CustomScriptExtension",
+            "typeHandlerVersion": "1.4",
+            "autoUpgradeMinorVersion": true,
+            "settings": {
+              "fileUris": [
+                "https://raw.githubusercontent.com/carrollh/siosDataKeeper-demo/master/datakeeper-sql-cluster-Win20XX/Scripts/Set-ExecutionPolicyUnrestricted.ps1"
+              ]
+            },
+            "protectedSettings": {
+              "commandToExecute": "[concat('powershell -ExecutionPolicy Unrestricted -File Set-ExecutionPolicyUnrestricted.ps1 -AdminUsername ',parameters('adminUsername'),' -AdminPassword ',parameters('adminPassword'))]"
+            }
+          }
+        }
+      ]
     },
     {
       "type": "Microsoft.Compute/virtualMachines/extensions",
@@ -240,7 +296,7 @@
               "password": "PrivateSettingsRef:adminPassword"
             },
             "licenseKeyFtpURL": "[parameters('licenseKeyFtpURL')]",
-			"clusterName": "[parameters('clusterName')]"
+            "clusterName": "[parameters('clusterName')]"
           }
         },
         "protectedSettings": {
