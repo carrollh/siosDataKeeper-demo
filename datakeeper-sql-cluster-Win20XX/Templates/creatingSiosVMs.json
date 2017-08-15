@@ -125,7 +125,7 @@
         {
           "apiVersion": "2015-06-15",
           "type": "extensions",
-          "name": "config-app",
+          "name": "enable-ps-script-extensions",
           "location": "[resourceGroup().location]",
           "dependsOn": [
             "[concat('Microsoft.Compute/virtualMachines/', variables('siosVMNamePrefix'), '0')]"
@@ -156,7 +156,7 @@
       "apiVersion": "2015-06-15",
       "location": "[parameters('location')]",
       "dependsOn": [
-        "[concat('Microsoft.Compute/virtualMachines/', variables('siosVMNamePrefix'), '0')]"
+        "[concat('Microsoft.Compute/virtualMachines/', variables('siosVMNamePrefix'), '0','/extensions/enable-ps-script-extensions')]"
       ],
       "properties": {
         "publisher": "Microsoft.Powershell",
@@ -248,7 +248,7 @@
         {
           "apiVersion": "2015-06-15",
           "type": "extensions",
-          "name": "config-app",
+          "name": "enable-ps-script-extensions",
           "location": "[resourceGroup().location]",
           "dependsOn": [
             "[concat('Microsoft.Compute/virtualMachines/', variables('siosVMNamePrefix'), '1')]"
@@ -279,7 +279,7 @@
       "apiVersion": "2015-06-15",
       "location": "[parameters('location')]",
       "dependsOn": [
-        "[concat('Microsoft.Compute/virtualMachines/', variables('siosVMNamePrefix'), '1')]"
+        "[concat('Microsoft.Compute/virtualMachines/', variables('siosVMNamePrefix'), '1','/extensions/enable-ps-script-extensions')]"
       ],
       "properties": {
         "publisher": "Microsoft.Powershell",
