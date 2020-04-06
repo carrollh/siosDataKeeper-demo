@@ -17,9 +17,9 @@
     "siosVMSize": {
       "type": "string"
     },
-		"domainName": {
-			"type": "string"
-		},
+    "domainName": {
+      "type": "string"
+    },
     "adminUsername": {
       "type": "string"
     },
@@ -38,18 +38,13 @@
   },
   "resources": [
     {
-      "apiVersion": "2015-06-15",
+      "apiVersion": "2018-06-01",
       "type": "Microsoft.Compute/virtualMachines",
       "name": "[concat(parameters('siosVMName'), copyIndex())]",
       "location": "[parameters('location')]",
       "copy": {
         "name": "siosVirtualMachineLoop",
         "count": 2
-      },
-      "plan": {
-        "name": "bring_your_own_license",
-        "publisher": "sios_datakeeper",
-        "product": "sios-datakeeper-8"
       },
       "properties": {
         "hardwareProfile": {
@@ -103,31 +98,31 @@
         }
       }
     },
-		{
-			"type": "Microsoft.Compute/virtualMachines/extensions",
-			"name": "[concat(parameters('siosVMName'), copyIndex(), '/configureSiosVM')]",
-			"apiVersion": "2015-06-15",
-			"location": "[parameters('location')]",
-			"dependsOn": [
-					"[concat('Microsoft.Compute/virtualMachines/', concat(parameters('siosVMName'), copyIndex()))]"
-			],
-			"copy": {
-				"name": "SiosVMDiskPrepareLoop",
-				"count": 2
-			},
-			"properties": {
-				"publisher": "Microsoft.Compute",
-				"type": "CustomScriptExtension",
-				"typeHandlerVersion": "1.4",
-				"autoUpgradeMinorVersion": true,
-				"settings": {
-						"fileUris": [
-							"[parameters('prepareDataDisksModuleURL')]"
-						],
-						"commandToExecute": "[parameters('prepareDataDisksCommandStr')]"
-				}
-			}
-		}
+    {
+      "type": "Microsoft.Compute/virtualMachines/extensions",
+      "name": "[concat(parameters('siosVMName'), copyIndex(), '/configureSiosVM')]",
+      "apiVersion": "2015-06-15",
+      "location": "[parameters('location')]",
+      "dependsOn": [
+          "[concat('Microsoft.Compute/virtualMachines/', concat(parameters('siosVMName'), copyIndex()))]"
+      ],
+      "copy": {
+        "name": "SiosVMDiskPrepareLoop",
+        "count": 2
+      },
+      "properties": {
+        "publisher": "Microsoft.Compute",
+        "type": "CustomScriptExtension",
+        "typeHandlerVersion": "1.4",
+        "autoUpgradeMinorVersion": true,
+        "settings": {
+            "fileUris": [
+              "[parameters('prepareDataDisksModuleURL')]"
+            ],
+            "commandToExecute": "[parameters('prepareDataDisksCommandStr')]"
+        }
+      }
+    }
   ],
-	"outputs": { }
+  "outputs": { }
 }
