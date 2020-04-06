@@ -102,7 +102,10 @@
         },
         "storageProfile": {
           "imageReference": {
-            "id": "/subscriptions/1e3aa8ec-3026-406f-a296-fa022343afad/resourceGroups/SIOSDK871/providers/Microsoft.Compute/images/DKv871on2012R2BYOL"
+            "publisher": "sios_datakeeper",
+            "offer": "sios-datakeeper-8",
+            "sku": "bring_your_own_license",
+            "version": "latest"
           },
           "osDisk": {
             "name": "osdisk",
@@ -198,7 +201,10 @@
         },
         "storageProfile": {
           "imageReference": {
-            "id": "/subscriptions/1e3aa8ec-3026-406f-a296-fa022343afad/resourceGroups/SIOSDK871/providers/Microsoft.Compute/images/DKv871on2012R2BYOL"
+            "publisher": "sios_datakeeper",
+            "offer": "sios-datakeeper-8",
+            "sku": "bring_your_own_license",
+            "version": "latest"
           },
           "osDisk": {
             "name": "osdisk",
