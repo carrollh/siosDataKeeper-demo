@@ -43,14 +43,14 @@
     },
     "domainAdminPassword": {
       "type": "securestring",
-      "defaultValue": "SIOS!5105",
+      "defaultValue": "SIOS!5105?sios",
       "metadata": {
         "description": "The password for the Administrator account of the new VMs and Domain"
       }
     },
     "vMNamePrefix": {
       "type": "string",
-      "defaultValue": "sios",
+      "defaultValue": "WSFCNODE",
       "metadata": {
         "description": "Name prefix for all of the DataKeeper / SQL VMs."
       }
