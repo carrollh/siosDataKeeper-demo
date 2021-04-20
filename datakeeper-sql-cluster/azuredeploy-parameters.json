@@ -5,9 +5,9 @@
     "storageAccountType": { "value": "Premium_LRS" },
     "domainName": { "value": "datakeeper.local" },
     "domainAdminUsername": { "value": "siosadmin" },
-    "domainAdminPassword": { "value": "SIOS!5105" },
-    "vMNamePrefix": { "value": "sios" },
-    "aDVMSize": { "value": "Standard_DS1" },
-    "sQLVMSize": { "value": "Standard_DS1" }
+    "domainAdminPassword": { "value": "SIOS!5105?sios" },
+    "vMNamePrefix": { "value": "WSFCNODE" },
+    "aDVMSize": { "value": "Standard_D2_v2" },
+    "sQLVMSize": { "value": "Standard_D2_v2" }
   }
 }
