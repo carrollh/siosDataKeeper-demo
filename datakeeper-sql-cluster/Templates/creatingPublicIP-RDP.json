@@ -20,7 +20,8 @@
       "location": "[parameters('location')]",
       "sku": { "name": "Standard" },
       "properties": {
-        "publicIPAllocationMethod": "dynamic"
+        "publicIPAllocationMethod": "Static",
+        "publicIpAddressVersion": "IPv4"
       }
     },
     {
@@ -30,7 +31,8 @@
       "location": "[parameters('location')]",
       "sku": { "name": "Standard" },
       "properties": {
-        "publicIPAllocationMethod": "dynamic"
+        "publicIPAllocationMethod": "Static",
+        "publicIpAddressVersion": "IPv4"
       }
     },
     {
@@ -40,7 +42,8 @@
       "location": "[parameters('location')]",
       "sku": { "name": "Standard" },
       "properties": {
-        "publicIPAllocationMethod": "dynamic"
+        "publicIPAllocationMethod": "Static",
+        "publicIpAddressVersion": "IPv4"
       }
     },
     {
@@ -50,7 +53,8 @@
       "location": "[parameters('location')]",
       "sku": { "name": "Standard" },
       "properties": {
-        "publicIPAllocationMethod": "dynamic"
+        "publicIPAllocationMethod": "Static",
+        "publicIpAddressVersion": "IPv4"
       }
     }
   ],
