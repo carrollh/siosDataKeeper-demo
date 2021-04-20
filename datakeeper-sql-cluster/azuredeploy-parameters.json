@@ -7,7 +7,7 @@
     "domainAdminUsername": { "value": "siosadmin" },
     "domainAdminPassword": { "value": "SIOS!5105?sios" },
     "vMNamePrefix": { "value": "WSFCNODE" },
-    "aDVMSize": { "value": "Standard_DS2_v4" },
-    "sQLVMSize": { "value": "Standard_DS2_v4" }
+    "aDVMSize": { "value": "Standard_DS1_v2" },
+    "sQLVMSize": { "value": "Standard_DS2_v2" }
   }
 }

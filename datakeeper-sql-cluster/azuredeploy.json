@@ -57,29 +57,14 @@
     },
     "aDVMSize": {
       "type": "string",
-      "defaultValue": "Standard_DS2_v4",
+      "defaultValue": "Standard_DS1_v2",
       "allowedValues": [
         "Standard_D1_v2",
-        "Standard_DS1_v4",
+        "Standard_DS1_v2",
         "Standard_D2_v2",
-        "Standard_DS2_v4",
+        "Standard_DS2_v2",
         "Standard_D3_v2",
-        "Standard_DS3_v4",
-        "Standard_D4_v2",
-        "Standard_DS4_v4",
-        "Standard_D11_v2",
-        "Standard_DS11_v4",
-        "Standard_D12_v2",
-        "Standard_DS12_v4",
-        "Standard_D13_v2",
-        "Standard_DS13_v4",
-        "Standard_D14_v2",
-        "Standard_DS14_v4",
-        "Standard_GS1",
-        "Standard_GS2",
-        "Standard_GS3",
-        "Standard_GS4",
-        "Standard_GS5"
+        "Standard_DS3_v2"
       ],
       "metadata": {
         "description": "The size of the primary domain controller VM. If a DS size is selected, the STORAGEACCOUNTTYPE parameter must have a Premium type selected."
@@ -87,29 +72,14 @@
     },
     "sQLVMSize": {
       "type": "string",
-      "defaultValue": "Standard_DS2_v4",
+      "defaultValue": "Standard_DS2_v2",
       "allowedValues": [
         "Standard_D1_v2",
-        "Standard_DS1_v4",
+        "Standard_DS1_v2",
         "Standard_D2_v2",
-        "Standard_DS2_v4",
+        "Standard_DS2_v2",
         "Standard_D3_v2",
-        "Standard_DS3_v4",
-        "Standard_D4_v2",
-        "Standard_DS4_v4",
-        "Standard_D11_v2",
-        "Standard_DS11_v4",
-        "Standard_D12_v2",
-        "Standard_DS12_v4",
-        "Standard_D13_v2",
-        "Standard_DS13_v4",
-        "Standard_D14_v2",
-        "Standard_DS14_v4",
-        "Standard_GS1",
-        "Standard_GS2",
-        "Standard_GS3",
-        "Standard_GS4",
-        "Standard_GS5"
+        "Standard_DS3_v2"
       ],
       "metadata": {
         "description": "The size of the DataKeeper / SQL VMs. If a DS size is selected, the STORAGEACCOUNTTYPE parameter must have a Premium type selected."
