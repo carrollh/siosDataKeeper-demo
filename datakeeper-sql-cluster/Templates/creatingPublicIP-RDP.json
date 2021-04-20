@@ -18,7 +18,6 @@
       "type": "Microsoft.Network/publicIPAddresses",
       "name": "[parameters('pdcRdpIPAddressName')]",
       "location": "[parameters('location')]",
-      "sku": { "name": "Standard" },
       "properties": {
         "publicIPAllocationMethod": "Static",
         "publicIpAddressVersion": "IPv4"
@@ -29,7 +28,6 @@
       "type": "Microsoft.Network/publicIPAddresses",
       "name": "[concat(parameters('siosVMRdpIPAddressNamePrefix'), '0RdpIP')]",
       "location": "[parameters('location')]",
-      "sku": { "name": "Standard" },
       "properties": {
         "publicIPAllocationMethod": "Static",
         "publicIpAddressVersion": "IPv4"
@@ -40,7 +38,6 @@
       "type": "Microsoft.Network/publicIPAddresses",
       "name": "[concat(parameters('siosVMRdpIPAddressNamePrefix'), '1RdpIP')]",
       "location": "[parameters('location')]",
-      "sku": { "name": "Standard" },
       "properties": {
         "publicIPAllocationMethod": "Static",
         "publicIpAddressVersion": "IPv4"
@@ -51,7 +48,6 @@
       "type": "Microsoft.Network/publicIPAddresses",
       "name": "[concat(parameters('siosVMRdpIPAddressNamePrefix'), 'clientRdpIP')]",
       "location": "[parameters('location')]",
-      "sku": { "name": "Standard" },
       "properties": {
         "publicIPAllocationMethod": "Static",
         "publicIpAddressVersion": "IPv4"
